@@ -16,7 +16,7 @@ const ActorSchema = new Schema({
   },
   language: [{
     type: String,
-    default: 'English',
+    default: 'SPANISH',
     enum: ['ENGLISH', 'SPANISH', ]
   }],
   phone_number: {
