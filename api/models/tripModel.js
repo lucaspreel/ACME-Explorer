@@ -61,3 +61,4 @@
   }, { strict: false })
 
   module.exports = mongoose.model('Trips', TripSchema)
+  module.exports = mongoose.model('Stage', StageSchema)
