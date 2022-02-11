@@ -12,7 +12,6 @@ const ActorSchema = new Schema({
     required: 'Kindly enter the actor surname'
   },
   email: {
-    type: String,
     type: String, 
   },
   language: [{
