@@ -8,7 +8,7 @@ const ApplicationSchema = new Schema({
   },
   comments: { 
     type: String, 
-    required: 'Kindly enter the actor surname'
+    required: 'Kindly enter the comments of the application'
   },
   status: [{
     type: String,
@@ -17,7 +17,7 @@ const ApplicationSchema = new Schema({
   }],
   explorer_Id: {
     type: Schema.Types.ObjectId,
-    required: 'consumer id required'
+    required: 'explorer id required'
   }
 
 }, { strict: false })
