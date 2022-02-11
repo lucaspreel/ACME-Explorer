@@ -13,6 +13,7 @@ const ActorSchema = new Schema({
   },
   email: {
     type: String,
+    type: String, 
   },
   language: [{
     type: String,
