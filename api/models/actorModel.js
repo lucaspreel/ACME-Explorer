@@ -2,6 +2,8 @@
 const mongoose = require('mongoose') 
 const Schema = mongoose.Schema
 
+var mongoose_delete = require('mongoose-delete');
+
 const ActorSchema = new Schema({
   name: {
     type: String,
@@ -35,5 +37,7 @@ const ActorSchema = new Schema({
     enum: ['ADMINISTRATOR', 'MANAGER', 'EXPLORER', 'SPONSOR']
   }],
 }, { strict: false })
+
+ActorSchema.plugin(mongoose_delete, { deletedAt : true });
 
 module.exports = mongoose.model('Actors', ActorSchema)

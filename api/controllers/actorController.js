@@ -5,7 +5,7 @@ const Actor = mongoose.model('Actors')
 
 exports.list_all_actors = function (req, res) {
 
-    Actor.find({}, function (err, actors) {
+    Actor.find({deleted: false}, function (err, actors) {
         if (err) 
         {
             res.send(err)
@@ -107,7 +107,7 @@ exports.delete_an_actor = function (req, res) {
         else
         {
 
-            Actor.deleteOne({ _id: req.params.actorId }, function (err, actor) {
+            Actor.delete({ _id: req.params.actorId }, function (err, actor) {
                 if(err) 
                 {
                     res.status(500).send(err)
