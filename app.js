@@ -76,6 +76,7 @@ app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)))
  *        phone_number: 123456789
  *        address: The world is my playground
  *        role: ADMINISTRATOR
+ *        isActive: true
  *        
  */
 

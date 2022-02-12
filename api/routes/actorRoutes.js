@@ -12,8 +12,6 @@ module.exports = function (app) {
    *      summary: Returns all actors.
    *      tags: [Actor]
    *      responses:
-   *        500: 
-   *          description: Error trying to get all actors.
    *        200: 
    *          description: Actors successfully retrieved.
    *          content: 
@@ -22,6 +20,8 @@ module.exports = function (app) {
    *                type: array
    *                items:
    *                  $ref: '#/components/schemas/Actor'
+   *        500: 
+   *          description: Error trying to get all actors.
    */
   .get(actors.list_all_actors)
 
@@ -39,14 +39,16 @@ module.exports = function (app) {
    *              type: object
    *              $ref: '#/components/schemas/Actor'
    *      responses:
-   *        409: 
-   *          description: Email is already registered.
-   *        400: 
-   *          description: Error trying to create the actor. Bad Request.
-   *        500: 
-   *          description: Error trying to create the actor.
    *        201: 
    *          description: Actor created.
+   *        400: 
+   *          description: Error trying to create the actor. Bad Request.
+   *        403: 
+   *          description: You don't have right role to carry out this operation.
+   *        409: 
+   *          description: Email is already registered.
+   *        500: 
+   *          description: Error trying to create the actor.
    */
   .post(actors.create_an_actor)
 
@@ -66,10 +68,6 @@ module.exports = function (app) {
    *          required: true
    *          description: Actor id.
    *      responses:
-   *        500: 
-   *          description: Error trying to get the actor.
-   *        404: 
-   *          description: Actor not found.
    *        200: 
    *          description: Actor successfully retrieved.
    *          content: 
@@ -77,6 +75,10 @@ module.exports = function (app) {
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
+   *        404: 
+   *          description: Actor not found.
+   *        500: 
+   *          description: Error trying to get the actor.
    */
   .get(actors.read_an_actor)
 
@@ -101,12 +103,6 @@ module.exports = function (app) {
    *              type: object
    *              $ref: '#/components/schemas/Actor'
    *      responses:
-   *        500: 
-   *          description: Error trying to update the actor.
-   *        404: 
-   *          description: Actor not found.
-   *        409: 
-   *          description: Email already registered.
    *        200: 
    *          description: Actor successfully updated.
    *          content: 
@@ -114,6 +110,14 @@ module.exports = function (app) {
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
+   *        403: 
+   *          description: You don't have right role to carry out this operation.
+   *        404: 
+   *          description: Actor not found.
+   *        409: 
+   *          description: Email already registered.
+   *        500: 
+   *          description: Error trying to update the actor.
    */
   .put(actors.update_an_actor)
 
@@ -131,10 +135,6 @@ module.exports = function (app) {
    *          required: true
    *          description: Actor id.
    *      responses:
-   *        500: 
-   *          description: Error trying to delete the actor.
-   *        404: 
-   *          description: Actor not found.
    *        200: 
    *          description: Actor successfully deleted.
    *          content: 
@@ -142,7 +142,75 @@ module.exports = function (app) {
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
+   *        403: 
+   *          description: You don't have right role to carry out this operation.
+   *        404: 
+   *          description: Actor not found.
+   *        500: 
+   *          description: Error trying to delete the actor.
    */
   .delete(actors.delete_an_actor)
+
+  /**
+   * @swagger
+   * /v1/actors/{actorId}/ban:
+   *    patch:
+   *      summary: Ban an actor.
+   *      tags: [Actor]
+   *      parameters:
+   *        - in: path
+   *          name: actorId
+   *          schema:
+   *            type: string
+   *          required: true
+   *          description: Actor id.
+   *      responses:
+   *        200: 
+   *          description: Actor successfully banned.
+   *          content: 
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/Actor'
+   *        403: 
+   *          description: You don't have right role to carry out this operation.
+   *        404: 
+   *          description: Actor not found.
+   *        500: 
+   *          description: Error trying to ban the actor.
+   */
+  app.route('/v1/actors/:actorId/ban')
+  .patch(actors.ban_an_actor)
+
+  /**
+   * @swagger
+   * /v1/actors/{actorId}/unban:
+   *    patch:
+   *      summary: Unban an actor.
+   *      tags: [Actor]
+   *      parameters:
+   *        - in: path
+   *          name: actorId
+   *          schema:
+   *            type: string
+   *          required: true
+   *          description: Actor id.
+   *      responses:
+   *        200: 
+   *          description: Actor successfully unbanned.
+   *          content: 
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/Actor'
+   *        403: 
+   *          description: You don't have right role to carry out this operation.
+   *        404: 
+   *          description: Actor not found.
+   *        500: 
+   *          description: Error trying to unban the actor.
+   */
+  app.route('/v1/actors/:actorId/unban')
+  .patch(actors.unban_an_actor)
 
 }
