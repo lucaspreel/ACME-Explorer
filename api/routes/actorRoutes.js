@@ -39,10 +39,12 @@ module.exports = function (app) {
    *              type: object
    *              $ref: '#/components/schemas/Actor'
    *      responses:
-   *        409: 
-   *          description: Email is already registered.
    *        400: 
    *          description: Error trying to create the actor. Bad Request.
+   *        403: 
+   *          description: You don't have authorization to create the actor with roles Administrator or Manager.
+   *        409: 
+   *          description: Email is already registered.
    *        500: 
    *          description: Error trying to create the actor.
    *        201: 

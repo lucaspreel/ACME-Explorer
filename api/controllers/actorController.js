@@ -22,6 +22,16 @@ exports.create_an_actor = function (req, res) {
 
     const newActor = new Actor(req.body)
 
+    const sessionActorRole = ["EXPLORER"];
+
+    //if the new actor role is administrator or manager
+    //and the session actor role is nor administrator
+    //then the actor cannot be created
+    if((newActor.role.includes("ADMINISTRATOR") || newActor.role.includes("MANAGER")) && !sessionActorRole.includes("ADMINISTRATOR"))
+    {
+        return res.status(403).send()
+    }
+
     newActor.save(function (err, actor) {
         if (err) 
         {
@@ -41,7 +51,7 @@ exports.read_an_actor = function (req, res) {
 
         if (!actor1) 
         {
-            return res.status(404).send()
+            /*return */res.status(404).send()
         }
         else
         {
@@ -72,7 +82,7 @@ exports.update_an_actor = function (req, res) {
     
         if (!actor1) 
         {
-            return res.status(404).send()
+            /*return */res.status(404).send()
         }
         else
         {
@@ -102,7 +112,7 @@ exports.delete_an_actor = function (req, res) {
       
         if (!actor1) 
         {
-            return res.status(404).send()
+            /*return */res.status(404).send()
         }
         else
         {
