@@ -5,14 +5,34 @@ const SystemParameters = mongoose.model('SystemParameters')
 
 exports.create_system_parameters = function (req, res) {
     // only administrators must be able to do that
-    console.log("Create system parameters")
+    const newSystemParameters = new SystemParameters(req.body)
+
+    newSystemParameters.save(function (err, systemParameters) {
+      if (err) {
+        res.send(err)
+      } else {
+        res.json(systemParameters)
+      }
+    })
 }
 
 exports.read_system_parameters = function (req, res) {
-    console.log("Read system parameters")
+    SystemParameters.find({}, function (err, systemParameters) {
+        if (err) {
+          res.send(err)
+        } else {
+          res.json(systemParameters)
+        }
+      })
 }
 
 exports.update_system_parameters = function (req, res) {
     // only administrators must be able to do that
-    console.log("Update system parameters")
+    SystemParameters.findOneAndUpdate({ _id: req.params.systemParametersId }, req.body, { new: true }, function (err, systemParameters) {
+        if (err) {
+            res.send(err)
+        } else {
+            res.json(systemParameters)
+        }
+    })
 }
