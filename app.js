@@ -4,6 +4,8 @@ const port = process.env.PORT || 8080
 const mongoose = require('mongoose')
 
 const Actor = require('./api/models/actorModel')
+const Sponsorship = require('./api/models/sponsorShipModel')
+const SystemParameters = require('./api/models/systemParametersModel')
 //const Item = require('./api/models/itemModel')
 
 const bodyParser = require('body-parser')
@@ -27,6 +29,8 @@ const swaggerSpec = {
     apis: [
       `${path.join(__dirname, "./app.js")}`,
       `${path.join(__dirname, "./api/routes/actorRoutes.js")}`,
+      `${path.join(__dirname, "./api/routes/sponsorshipRoutes.js")}`,
+      `${path.join(__dirname, "./api/routes/systemParametersRoutes.js")}`,
     ]
 };
 
@@ -83,9 +87,13 @@ app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)))
 //swagger documentation config - end
 
 const routesActors = require('./api/routes/actorRoutes')
+const routesSponsorships = require('./api/routes/sponsorshipRoutes')
+const routesSystemParameters = require('./api/routes/systemParametersRoutes')
 //const routesItems = require('./api/routes/itemRoutes')
 
 routesActors(app)
+routesSponsorships(app)
+routesSystemParameters(app)
 //routesItems(app)
 
 // MongoDB URI building
