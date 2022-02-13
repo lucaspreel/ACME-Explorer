@@ -10,7 +10,7 @@ const SponsorshipSchema = new Schema({
     type: String
   },
   tripTicker: {
-    type: string
+    type: String
   },
   sponsor_Id: {
     type: Schema.Types.ObjectId,

@@ -12,5 +12,5 @@ module.exports = function (app) {
     .delete(sponsorships.delete_a_sponsorship)
 
   app.route('/v1/sponsorships/:sponsorshipId/pay')
-    .path(sponsorships.pay_a_sponsorship)
+    .patch(sponsorships.pay_a_sponsorship)
 }
