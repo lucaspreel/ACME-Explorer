@@ -13,7 +13,7 @@ const ApplicationSchema = new Schema({
   status: [{
     type: String,
     default: 'PENDING',
-    enum: ['PENDING', 'DUE', 'ACCEPTED', 'CANCELLED']
+    enum: ['PENDING', 'DUE', 'ACCEPTED', 'CANCELLED', 'REJECTED']
   }],
   explorer_Id: {
     type: Schema.Types.ObjectId,
