@@ -6,7 +6,6 @@ const mongoose = require('mongoose')
 const Actor = require('./api/models/actorModel')
 const Sponsorship = require('./api/models/sponsorShipModel')
 const SystemParameters = require('./api/models/systemParametersModel')
-//const Item = require('./api/models/itemModel')
 
 const bodyParser = require('body-parser')
 
@@ -89,12 +88,10 @@ app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)))
 const routesActors = require('./api/routes/actorRoutes')
 const routesSponsorships = require('./api/routes/sponsorshipRoutes')
 const routesSystemParameters = require('./api/routes/systemParametersRoutes')
-//const routesItems = require('./api/routes/itemRoutes')
 
 routesActors(app)
 routesSponsorships(app)
 routesSystemParameters(app)
-//routesItems(app)
 
 // MongoDB URI building
 const mongoDBHostname = process.env.mongoDBHostname || 'localhost'
