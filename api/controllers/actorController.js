@@ -8,7 +8,7 @@ exports.list_all_actors = function (req, res) {
     Actor.find({deleted: false}, function (err, actors) {
         if (err) 
         {
-            res.send(err)
+            res.status(500).send(err)
         } 
         else 
         {
@@ -35,8 +35,15 @@ exports.create_an_actor = function (req, res) {
     newActor.save(function (err, actor) {
         if (err) 
         {
-            res.send(err)
-        } 
+            if (err.name === 'ValidationError') 
+            {
+                res.status(422).send(err)
+            }
+            else
+            {
+                res.status(500).send(err)
+            }
+        }
         else 
         {
             res.status(201).json(actor)
@@ -59,7 +66,7 @@ exports.read_an_actor = function (req, res) {
             Actor.findById(req.params.actorId, function (err, actor) {
                 if(err) 
                 {
-                    res.send(err)
+                    res.status(500).send(err)
                 } 
                 else 
                 {
@@ -100,7 +107,14 @@ exports.update_an_actor = function (req, res) {
             Actor.findOneAndUpdate({ _id: req.params.actorId }, req.body, { new: true }, function (err, actor) {
                 if(err) 
                 {
-                    res.send(err)
+                    if (err.name === 'ValidationError') 
+                    {
+                        res.status(422).send(err)
+                    }
+                    else
+                    {
+                        res.status(500).send(err)
+                    }
                 } 
                 else 
                 {

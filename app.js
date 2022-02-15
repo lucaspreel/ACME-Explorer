@@ -51,6 +51,9 @@ app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)))
  *        email:
  *          type: string
  *          description: The actor email.
+ *        password:
+ *          type: string
+ *          description: The actor password.
  *        language:
  *          type: string
  *          description: The actor language.
@@ -75,10 +78,11 @@ app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)))
  *        name: John Charles
  *        surname: Road Grandson
  *        email: jcrg@jcrg.com
+ *        password: 1234567890
  *        language: SPANISH
  *        phone_number: 123456789
  *        address: The world is my playground
- *        role: ADMINISTRATOR
+ *        role: EXPLORER
  *        isActive: true
  *        
  */

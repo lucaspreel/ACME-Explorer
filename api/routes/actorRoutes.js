@@ -47,6 +47,8 @@ module.exports = function (app) {
    *          description: You don't have right role to carry out this operation.
    *        409: 
    *          description: Email is already registered.
+   *        422: 
+   *          description: Validation error.
    *        500: 
    *          description: Error trying to create the actor.
    */
@@ -116,6 +118,8 @@ module.exports = function (app) {
    *          description: Actor not found.
    *        409: 
    *          description: Email already registered.
+   *        422: 
+   *          description: Validation error.
    *        500: 
    *          description: Error trying to update the actor.
    */
