@@ -2,6 +2,8 @@
 /* ---------------ACTOR---------------------- */
 const mongoose = require('mongoose')
 const Actor = mongoose.model('Actors')
+const ExpensePeriod = mongoose.model('ExpensePeriod')
+const ExplorerStats = mongoose.model('ExplorerStats')
 
 exports.list_all_actors = function (req, res) {
 
@@ -236,6 +238,61 @@ exports.unban_an_actor = function (req, res) {
 }
 
 exports.list_explorer_stats = function (req, res) {
+
+    const a = new Actor({
+        "name": "John Charles",
+        "surname": "Road Grandson",
+        "email": Date.now()+"@jcrg.com",
+        "password": 1234567890,
+        "language": "SPANISH",
+        "phone_number": 123456789,
+        "address": "The world is my playground",
+        "role": "EXPLORER",
+        "isActive": true
+    });
+    const epm = new ExpensePeriod({ 
+        period: 'M01',
+        moneySpent: 100
+    });
+    const epy = new ExpensePeriod({ 
+        period: 'Y01',
+        moneySpent: 100
+    });
+    const es = new ExplorerStats({ 
+        explorerId: a,
+        yearExpense: [epy], 
+        monthExpense: [epm]
+    });
+    es.save();
+
+    /*
+    var expectedDataSaved = [
+        {
+            explorer: "Actor A object",
+            yearExpense: [
+              {
+                  period: String,
+                  moneySpent: Number
+              },
+              {
+                  period: String,
+                  moneySpent: Number
+              },
+            ],
+            monthExpense: [
+              {
+                  period: String,
+                  moneySpent: Number
+              },
+              {
+                  period: String,
+                  moneySpent: Number
+              },
+            ]
+        }
+    ];
+
+
     var expectedResult = [
         {
             explorer: "Actor A object",
@@ -246,5 +303,6 @@ exports.list_explorer_stats = function (req, res) {
             moneySpent: "a number"
         }
     ];
-    res.json(expectedResult);
+    */
+    res.json(es);
 }

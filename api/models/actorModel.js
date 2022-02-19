@@ -73,41 +73,30 @@ const ActorSchema = new Schema({
 ActorSchema.plugin(mongoose_delete, { deletedAt : true });
 
 
-var expectedDataSaved = [
-  {
-      explorer: "Actor A object",
-      yearExpense: [
-        {
-            period: String,
-            moneySpent: Number
-        },
-        {
-            period: String,
-            moneySpent: Number
-        },
-        ...
-      ],
-      monthExpense: [
-        {
-            period: String,
-            moneySpent: Number
-        },
-        {
-            period: String,
-            moneySpent: Number
-        },
-        ...
-      ]
+const ExpensePeriodSchema = new Schema({
+  period: {
+    type: String
+  },
+  moneySpent: { 
+    type: Number 
   }
-];
+});
+
 const ExplorerStatsSchema = new Schema({
-    explorerId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Actors'
-    },
-    yearExpense: [{ type: Number }],
-    monthExpense: [{ type: Number }]
+  explorerId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Actors'
+  },
+  yearExpense: [{ 
+      type: Schema.Types.ObjectId,
+      ref: 'ExpensePeriod'
+  }],
+  monthExpense: [{ 
+    type: Schema.Types.ObjectId,
+    ref: 'ExpensePeriod'
+  }]
 });
 
 module.exports = mongoose.model('Actors', ActorSchema)
+module.exports = mongoose.model('ExpensePeriod', ExpensePeriodSchema)
 module.exports = mongoose.model('ExplorerStats', ExplorerStatsSchema)
