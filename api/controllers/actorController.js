@@ -234,3 +234,17 @@ exports.unban_an_actor = function (req, res) {
     })
 
 }
+
+exports.list_explorer_stats = function (req, res) {
+    var expectedResult = [
+        {
+            explorer: "Actor A object",
+            moneySpent: "a number"
+        },
+        {
+            explorer: "Actor B object",
+            moneySpent: "a number"
+        }
+    ];
+    res.json(expectedResult);
+}

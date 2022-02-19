@@ -34,59 +34,6 @@ const swaggerSpec = {
 };
 
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)));
-
-/**
- * @swagger
- * components:
- *  schemas:
- *    Actor:
- *      type: object
- *      properties:
- *        name:
- *          type: string
- *          description: The actor name.
- *        surname:
- *          type: string
- *          description: The actor surname.
- *        email:
- *          type: string
- *          description: The actor email.
- *        password:
- *          type: string
- *          description: The actor password.
- *        language:
- *          type: string
- *          description: The actor language.
- *        phone_number:
- *          type: string
- *          description: The actor phone number.
- *        address:
- *          type: string
- *          description: The actor address.
- *        role:
- *          type: string
- *          description: The actor role.
- *      required:
- *        - name
- *        - surname
- *        - email
- *        - language
- *        - phone_number
- *        - address
- *        - role
- *      example:
- *        name: John Charles
- *        surname: Road Grandson
- *        email: jcrg@jcrg.com
- *        password: 1234567890
- *        language: SPANISH
- *        phone_number: 123456789
- *        address: The world is my playground
- *        role: EXPLORER
- *        isActive: true
- *        
- */
-
 //swagger documentation config - end
 
 const routesActors = require('./api/routes/actorRoutes')

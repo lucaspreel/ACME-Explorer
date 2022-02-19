@@ -39,39 +39,6 @@ const ActorSchema = new Schema({
     type: String, 
     required: 'Kindly enter the actor surname'
   },
-  /*
-  //esto funciona, es código original de los profesores
-  email: {
-    type: String,
-    required: 'Kindly enter the actor email',
-    unique: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
-  },
-  */
-  /*
-  //esto también funciona
-  email: {
-    type: String,
-    validate: {
-      
-      validator: async function(email) 
-      {
-          const user = await this.constructor.findOne({ email });
-          if(user) 
-          {
-              if(this.id === user.id) 
-              {
-                  return true;
-              }
-              return false;
-          }
-          return true;
-      },
-      message: props => 'The specified email address is already in use.'
-    },
-    required: [true, 'User email required']
-  },
-  */
   email: { 
       type: String, 
       validate: manyEmailValidators,
@@ -101,10 +68,46 @@ const ActorSchema = new Schema({
     required: 'Kindly enter the user role(s)',
     enum: ['ADMINISTRATOR', 'MANAGER', 'EXPLORER', 'SPONSOR']
   }],
-}, 
-{ strict: false },
-{ timestamps: true })
+}, { strict: false })
 
 ActorSchema.plugin(mongoose_delete, { deletedAt : true });
 
+
+var expectedDataSaved = [
+  {
+      explorer: "Actor A object",
+      yearExpense: [
+        {
+            period: String,
+            moneySpent: Number
+        },
+        {
+            period: String,
+            moneySpent: Number
+        },
+        ...
+      ],
+      monthExpense: [
+        {
+            period: String,
+            moneySpent: Number
+        },
+        {
+            period: String,
+            moneySpent: Number
+        },
+        ...
+      ]
+  }
+];
+const ExplorerStatsSchema = new Schema({
+    explorerId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Actors'
+    },
+    yearExpense: [{ type: Number }],
+    monthExpense: [{ type: Number }]
+});
+
 module.exports = mongoose.model('Actors', ActorSchema)
+module.exports = mongoose.model('ExplorerStats', ExplorerStatsSchema)
