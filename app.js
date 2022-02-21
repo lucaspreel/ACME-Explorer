@@ -80,7 +80,54 @@ app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)))
  *        address: The world is my playground
  *        role: ADMINISTRATOR
  *        isActive: true
- *        
+ *    SystemParameters:
+ *      type: object
+ *      properties:
+ *        maxFinderResults:
+ *          type: number
+ *          description: The number of results that a finder will return.
+ *        flatRateSponsorships:
+ *          type: number
+ *          description: The flat rate for sponsorships.
+ *        cacheHour:
+ *          type: number
+ *          description: The number of hours the system keep data in cache.
+ *      required:
+ *        - maxFinderResults
+ *        - flatRateSponsorships
+ *        - cacheHour
+ *      example:
+ *        maxFinderResults: 25
+ *        flatRateSponsorships: 0 
+ *        cacheHour: 2
+ *    Sponsorship:
+ *      type: object
+ *      properties:
+ *        sponsor_Id:
+ *          type: object
+ *          description: The id of the sponsor making this sponsorship.
+ *        tripTicker:
+ *          type: string
+ *          description: The ticker of the trip sponsored.
+ *        banner:
+ *          type: image
+ *          description: The banner of the sponsor.
+ *        page:
+ *          type: string
+ *          description: The url of the page of the sponsor.
+ *        isPayed:
+ *          type: boolean
+ *          description: Indicate if the sponsor payed for this sponsorship.
+ *      required:
+ *        - sponsor_Id
+ *        - tripTicker
+ *        - banner
+ *        - page
+ *      example:
+ *        sponsor_Id: The id of a sponsor registered in the system.
+ *        tripTicker: 220722-FUJN
+ *        banner: A wonderful banner 
+ *        page: https://an-amazing-sponsor.com
  */
 
 //swagger documentation config - end
