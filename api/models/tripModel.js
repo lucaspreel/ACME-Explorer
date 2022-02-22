@@ -40,6 +40,9 @@
     end_date: {
         type: Date
     },
+    publication_date: {
+      type: Date
+    }, 
     pictures: {
         type: [{data: Buffer, contentType: String}]
     },

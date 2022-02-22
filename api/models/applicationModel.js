@@ -18,6 +18,13 @@ const ApplicationSchema = new Schema({
   explorer_Id: {
     type: Schema.Types.ObjectId,
     required: 'explorer id required'
+  },
+  trip_Id: {
+    type: Schema.Types.ObjectId,
+    required: 'trip id required'
+  },
+  rejected_reason: {
+    type: String
   }
 
 }, { strict: false })
