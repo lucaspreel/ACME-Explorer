@@ -1,6 +1,58 @@
 'use strict'
 module.exports = function (app) {
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *    Actor:
+   *      type: object
+   *      properties:
+   *        name:
+   *          type: string
+   *          description: The actor name.
+   *        surname:
+   *          type: string
+   *          description: The actor surname.
+   *        email:
+   *          type: string
+   *          description: The actor email.
+   *        password:
+   *          type: string
+   *          description: The actor password.
+   *        language:
+   *          type: string
+   *          description: The actor language.
+   *        phone_number:
+   *          type: string
+   *          description: The actor phone number.
+   *        address:
+   *          type: string
+   *          description: The actor address.
+   *        role:
+   *          type: string
+   *          description: The actor role.
+   *      required:
+   *        - name
+   *        - surname
+   *        - email
+   *        - language
+   *        - phone_number
+   *        - address
+   *        - role
+   *      example:
+   *        name: John Charles
+   *        surname: Road Grandson
+   *        email: jcrg@jcrg.com
+   *        password: 1234567890
+   *        language: SPANISH
+   *        phone_number: 123456789
+   *        address: The world is my playground
+   *        role: EXPLORER
+   *        isActive: true
+   *        
+   */
+
   const actors = require('../controllers/actorController')
 
   app.route('/v1/actors')
@@ -47,6 +99,8 @@ module.exports = function (app) {
    *          description: You don't have right role to carry out this operation.
    *        409: 
    *          description: Email is already registered.
+   *        422: 
+   *          description: Validation error.
    *        500: 
    *          description: Error trying to create the actor.
    */
@@ -116,6 +170,8 @@ module.exports = function (app) {
    *          description: Actor not found.
    *        409: 
    *          description: Email already registered.
+   *        422: 
+   *          description: Validation error.
    *        500: 
    *          description: Error trying to update the actor.
    */
@@ -212,5 +268,87 @@ module.exports = function (app) {
    */
   app.route('/v1/actors/:actorId/unban')
   .patch(actors.unban_an_actor)
+
+
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *    ExplorerStats:
+   *      type: object
+   *      properties:
+   *        name:
+   *          type: string
+   *          description: The actor name.
+   *        surname:
+   *          type: string
+   *          description: The actor surname.
+   *        email:
+   *          type: string
+   *          description: The actor email.
+   *        password:
+   *          type: string
+   *          description: The actor password.
+   *        language:
+   *          type: string
+   *          description: The actor language.
+   *        phone_number:
+   *          type: string
+   *          description: The actor phone number.
+   *        address:
+   *          type: string
+   *          description: The actor address.
+   *        role:
+   *          type: string
+   *          description: The actor role.
+   *      required:
+   *        - name
+   *        - surname
+   *        - email
+   *        - language
+   *        - phone_number
+   *        - address
+   *        - role
+   *      example:
+   *        name: John Charles
+   *        surname: Road Grandson
+   *        email: jcrg@jcrg.com
+   *        password: 1234567890
+   *        language: SPANISH
+   *        phone_number: 123456789
+   *        address: The world is my playground
+   *        role: EXPLORER
+   *        isActive: true
+   *        
+   */
+
+  app.route('/v1/explorerStats/:period')
+  /**
+   * @swagger
+   * /v1/explorerStats/{period}:
+   *    get:
+   *      summary: Returns an actor.
+   *      tags: [Actor]
+   *      parameters:
+   *        - in: path
+   *          name: period
+   *          schema:
+   *            type: string
+   *          required: true
+   *          description: A period M01-M36 or Y01-Y03.
+   *      responses:
+   *        200: 
+   *          description: Actor successfully retrieved.
+   *          content: 
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/Actor'
+   *        404: 
+   *          description: Actor not found.
+   *        500: 
+   *          description: Error trying to get the actor.
+   */
+  .get(actors.list_explorer_stats)
 
 }

@@ -34,55 +34,6 @@ const swaggerSpec = {
 };
 
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)));
-
-/**
- * @swagger
- * components:
- *  schemas:
- *    Actor:
- *      type: object
- *      properties:
- *        name:
- *          type: string
- *          description: The actor name.
- *        surname:
- *          type: string
- *          description: The actor surname.
- *        email:
- *          type: string
- *          description: The actor email.
- *        language:
- *          type: string
- *          description: The actor language.
- *        phone_number:
- *          type: string
- *          description: The actor phone number.
- *        address:
- *          type: string
- *          description: The actor address.
- *        role:
- *          type: string
- *          description: The actor role.
- *      required:
- *        - name
- *        - surname
- *        - email
- *        - language
- *        - phone_number
- *        - address
- *        - role
- *      example:
- *        name: John Charles
- *        surname: Road Grandson
- *        email: jcrg@jcrg.com
- *        language: SPANISH
- *        phone_number: 123456789
- *        address: The world is my playground
- *        role: ADMINISTRATOR
- *        isActive: true
- *        
- */
-
 //swagger documentation config - end
 
 const routesActors = require('./api/routes/actorRoutes')
@@ -93,11 +44,17 @@ routesActors(app)
 routesSponsorships(app)
 routesSystemParameters(app)
 
+
 // MongoDB URI building
+const mongoDBUser = process.env.mongoDBUser || 'ACME_EXPLORER_ADMIN_USER'
+const mongoDBPass = process.env.mongoDBPass || '$3CUR3p455W0RDZOZZ'
+const mongoDBCredentials = (mongoDBUser && mongoDBPass) ? mongoDBUser + ':' + mongoDBPass + '@' : ''
+
 const mongoDBHostname = process.env.mongoDBHostname || 'localhost'
 const mongoDBPort = process.env.mongoDBPort || '27017'
 const mongoDBName = process.env.mongoDBName || 'ACME-Explorer'
-const mongoDBURI = 'mongodb://' + mongoDBHostname + ':' + mongoDBPort + '/' + mongoDBName
+
+const mongoDBURI = 'mongodb://' + mongoDBCredentials + mongoDBHostname + ':' + mongoDBPort + '/' + mongoDBName
 
 mongoose.connect(mongoDBURI)
 console.log('Connecting DB to: ' + mongoDBURI)
