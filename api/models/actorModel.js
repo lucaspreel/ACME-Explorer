@@ -71,6 +71,8 @@ const ActorSchema = new Schema({
   }],
 }, { strict: false })
 
+ActorSchema.index({ email: 1, password: 1 });
+
 ActorSchema.plugin(mongoose_delete, { deletedAt : true });
 
 ActorSchema.pre('save', function (callback) {
@@ -137,6 +139,8 @@ const ExplorerStatsSchema = new Schema({
     ref: 'ExpensePeriod'
   }]
 });
+
+ExplorerStatsSchema.index({ explorerId: 1 })
 
 module.exports = mongoose.model('Actors', ActorSchema)
 module.exports = mongoose.model('ExpensePeriod', ExpensePeriodSchema)
