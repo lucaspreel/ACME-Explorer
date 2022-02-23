@@ -1,0 +1,222 @@
+[
+	{
+		"name": "Felix",
+		"surname": "Heaney",
+		"email": "Leonard90@yahoo.com",
+		"password": "J35a2ml0rq0FINE",
+		"language": "SPANISH",
+		"phone_number": "839-429-0730",
+		"address": "8881 McClure Pike",
+		"isActive": false,
+		"role": "ADMINISTRATOR"
+	},
+	{
+		"name": "Modesta",
+		"surname": "Nienow",
+		"email": "Maiya.Fritsch@gmail.com",
+		"password": "ZdxTMb3SnS4wjwr",
+		"language": "ENGLISH",
+		"phone_number": "(853) 414-1082 x6034",
+		"address": "73283 Flatley Plain",
+		"isActive": false,
+		"role": "EXPLORER"
+	},
+	{
+		"name": "Zoie",
+		"surname": "Gutmann",
+		"email": "Beatrice.Stiedemann@gmail.com",
+		"password": "Ph3DmdLwnFMeL0a",
+		"language": "ENGLISH",
+		"phone_number": "629.754.5498 x131",
+		"address": "664 Ignatius Plains",
+		"isActive": true,
+		"role": "MANAGER"
+	},
+	{
+		"name": "Merl",
+		"surname": "Bartoletti",
+		"email": "Bettye76@hotmail.com",
+		"password": "ufDpfCNb9w1jN3Q",
+		"language": "ENGLISH",
+		"phone_number": "(876) 507-6498",
+		"address": "65356 Jameson Road",
+		"isActive": true,
+		"role": "MANAGER"
+	},
+	{
+		"name": "Jewell",
+		"surname": "Pagac",
+		"email": "Merle.Jacobson62@yahoo.com",
+		"password": "j7X61_jK9h4zHm2",
+		"language": "ENGLISH",
+		"phone_number": "524-382-2372 x787",
+		"address": "68934 Edgar Ridge",
+		"isActive": true,
+		"role": "EXPLORER"
+	},
+	{
+		"name": "Jocelyn",
+		"surname": "Mueller",
+		"email": "Lisa84@hotmail.com",
+		"password": "LXcYrAnFjEOcG2P",
+		"language": "ENGLISH",
+		"phone_number": "709-288-1345",
+		"address": "90199 Brielle Mews",
+		"isActive": false,
+		"role": "EXPLORER"
+	},
+	{
+		"name": "Doyle",
+		"surname": "O'Conner",
+		"email": "Nathaniel.Rosenbaum@hotmail.com",
+		"password": "aDF0jrp7zoJYQ9H",
+		"language": "SPANISH",
+		"phone_number": "(388) 864-5787 x651",
+		"address": "89853 Kling Plains",
+		"isActive": false,
+		"role": "ADMINISTRATOR"
+	},
+	{
+		"name": "Gerson",
+		"surname": "Balistreri",
+		"email": "Jamel.Jacobs12@gmail.com",
+		"password": "8TVNyG3003h63Ry",
+		"language": "SPANISH",
+		"phone_number": "886.644.9638 x851",
+		"address": "330 Randi Spring",
+		"isActive": false,
+		"role": "SPONSOR"
+	},
+	{
+		"name": "Leilani",
+		"surname": "Anderson",
+		"email": "Joaquin_Koepp@hotmail.com",
+		"password": "wtvdO5kUZyNzB0u",
+		"language": "ENGLISH",
+		"phone_number": "382.200.8861 x84975",
+		"address": "4546 Josh Vista",
+		"isActive": true,
+		"role": "SPONSOR"
+	},
+	{
+		"name": "Linda",
+		"surname": "Crooks",
+		"email": "Emma_Reinger@yahoo.com",
+		"password": "kXymSLGrLU1_kch",
+		"language": "SPANISH",
+		"phone_number": "571-204-6733 x534",
+		"address": "21783 Maxine Path",
+		"isActive": false,
+		"role": "ADMINISTRATOR"
+	},
+	{
+		"name": "Lizzie",
+		"surname": "Hoppe",
+		"email": "Esteban_Kassulke@hotmail.com",
+		"password": "bl1fBeZXOQed_Ek",
+		"language": "SPANISH",
+		"phone_number": "1-619-222-6593 x052",
+		"address": "2609 Estelle Crossroad",
+		"isActive": true,
+		"role": "EXPLORER"
+	},
+	{
+		"name": "Lela",
+		"surname": "Adams",
+		"email": "Muriel.Jast34@yahoo.com",
+		"password": "SgVghaMahQjlGjU",
+		"language": "SPANISH",
+		"phone_number": "(791) 732-4159 x9821",
+		"address": "4159 Senger Stream",
+		"isActive": true,
+		"role": "EXPLORER"
+	},
+	{
+		"name": "Hunter",
+		"surname": "Bode",
+		"email": "Izaiah_Gusikowski@gmail.com",
+		"password": "iIyjU3OCD39jlzX",
+		"language": "ENGLISH",
+		"phone_number": "261-350-3564",
+		"address": "3174 Zaria Walks",
+		"isActive": false,
+		"role": "MANAGER"
+	},
+	{
+		"name": "Brian",
+		"surname": "Olson",
+		"email": "Dolly_Schaden@hotmail.com",
+		"password": "eNLzFRCNZQr5CEG",
+		"language": "ENGLISH",
+		"phone_number": "1-911-518-9034 x91367",
+		"address": "389 Lela Ways",
+		"isActive": true,
+		"role": "EXPLORER"
+	},
+	{
+		"name": "Brittany",
+		"surname": "Turcotte",
+		"email": "Brayan72@gmail.com",
+		"password": "Ig6hL51eVB4gbDo",
+		"language": "SPANISH",
+		"phone_number": "1-933-611-6589 x4967",
+		"address": "03668 Tiana Pine",
+		"isActive": true,
+		"role": "ADMINISTRATOR"
+	},
+	{
+		"name": "Brennon",
+		"surname": "Roob",
+		"email": "Warren11@yahoo.com",
+		"password": "5sK6Fe2Ewya3txP",
+		"language": "ENGLISH",
+		"phone_number": "654.258.8378 x2702",
+		"address": "7695 Dario Keys",
+		"isActive": true,
+		"role": "ADMINISTRATOR"
+	},
+	{
+		"name": "Oran",
+		"surname": "Auer",
+		"email": "Cheyenne.Price@hotmail.com",
+		"password": "IXUeA0jdKfk0AP4",
+		"language": "ENGLISH",
+		"phone_number": "(588) 700-1226 x4155",
+		"address": "307 Bogan Via",
+		"isActive": true,
+		"role": "ADMINISTRATOR"
+	},
+	{
+		"name": "Ellen",
+		"surname": "Kiehn",
+		"email": "Willow_Hilll82@gmail.com",
+		"password": "ViUyJRcooAgn8LT",
+		"language": "SPANISH",
+		"phone_number": "402-365-4493",
+		"address": "90552 Nayeli Inlet",
+		"isActive": false,
+		"role": "EXPLORER"
+	},
+	{
+		"name": "Bernice",
+		"surname": "Fisher",
+		"email": "Marisa.Ullrich49@gmail.com",
+		"password": "rnBRdYsbXBAVprO",
+		"language": "SPANISH",
+		"phone_number": "876-242-9680 x2242",
+		"address": "2327 Koepp Vista",
+		"isActive": false,
+		"role": "SPONSOR"
+	},
+	{
+		"name": "Olga",
+		"surname": "Schuster",
+		"email": "Emmett5@hotmail.com",
+		"password": "BZWyBv7vgTOKEZf",
+		"language": "SPANISH",
+		"phone_number": "(949) 878-7531",
+		"address": "7837 Elody Village",
+		"isActive": false,
+		"role": "SPONSOR"
+	}
+]
