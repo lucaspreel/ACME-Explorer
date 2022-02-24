@@ -11,7 +11,7 @@
         type: String
       },
       price: {
-        type: Double
+        type: Number
       }
     }, { strict: false })
 
@@ -29,7 +29,7 @@
       required: 'Kindly enter the title of the trip'
     },
     price: {
-      type: Double
+      type: Number
     },
     requirements: {
         type:[String]
@@ -56,10 +56,10 @@
       type: Schema.Types.ObjectId,
       required: 'manager id required'
     },
-    application_id: {
-      type: Schema.Types.ObjectId,
-      required: 'application id required'
-    },
+    //application_id: {
+    //  type: Schema.Types.ObjectId,
+    //  required: 'application id required'
+    //},
     stages : [StageSchema]
   }, { strict: false })
 

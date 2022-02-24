@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const Actor = require('./api/models/actorModel')
 const Sponsorship = require('./api/models/sponsorShipModel')
 const SystemParameters = require('./api/models/systemParametersModel')
+const Trip = require('./api/models/tripModel')
 
 const bodyParser = require('body-parser')
 
