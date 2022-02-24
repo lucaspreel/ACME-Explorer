@@ -1,8 +1,35 @@
 'use strict'
 const mongoose = require('mongoose') 
 const Schema = mongoose.Schema
+const bcrypt = require('bcrypt')
 
 var mongoose_delete = require('mongoose-delete');
+
+var emailInUse = async function(email) 
+{
+    const user = await this.constructor.findOne({ email });
+    if(user) 
+    {
+        if(this.id === user.id) 
+        {
+            return true;
+        }
+        return false;
+    }
+    return true;
+};
+
+var validEmail = function(email)
+{
+    return String(email)
+    .toLowerCase()
+    .match(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/);
+}
+
+var manyEmailValidators = [
+    { validator: emailInUse, msg: 'The specified email address is already in use.'},
+    { validator: validEmail, msg: 'This field must be a valid email.' }
+];
 
 const ActorSchema = new Schema({
   name: {
@@ -13,8 +40,15 @@ const ActorSchema = new Schema({
     type: String, 
     required: 'Kindly enter the actor surname'
   },
-  email: {
-    type: String, 
+  email: { 
+      type: String, 
+      validate: manyEmailValidators,
+      required : true
+  },
+  password: {
+    type: String,
+    minlength: 10,
+    required: 'Kindly enter the actor password'
   },
   language: [{
     type: String,
@@ -22,8 +56,7 @@ const ActorSchema = new Schema({
     enum: ['ENGLISH', 'SPANISH', ]
   }],
   phone_number: {
-    type: String,
-    required: 'Kindly enter the phone number'
+    type: String
   },
   address: {
     type: String
@@ -38,6 +71,77 @@ const ActorSchema = new Schema({
   }],
 }, { strict: false })
 
+ActorSchema.index({ email: 1, password: 1 });
+
 ActorSchema.plugin(mongoose_delete, { deletedAt : true });
 
+ActorSchema.pre('save', function (callback) {
+  const actor = this
+  // Break out if the password hasn't changed
+  // if (!actor.isModified('password')) return callback()
+
+  // Password changed so we need to hash it
+  bcrypt.genSalt(5, function (err, salt) {
+    if (err) return callback(err)
+
+    bcrypt.hash(actor.password, salt, function (err, hash) {
+      if (err) return callback(err)
+      actor.password = hash
+      callback()
+    })
+  })
+})
+
+ActorSchema.pre('findOneAndUpdate', function (callback) {
+  const actor = this._update
+
+  bcrypt.genSalt(5, function (err, salt) {
+    if (err) return callback(err)
+
+    bcrypt.hash(actor.password, salt, function (err, hash) {
+      if (err) return callback(err)
+      actor.password = hash
+      callback()
+    })
+  })
+})
+
+ActorSchema.methods.verifyPassword = function (password, cb) {
+  bcrypt.compare(password, this.password, function (err, isMatch) {
+    // console.log('verifying password in actorModel: ' + password)
+    if (err) return cb(err)
+    // console.log('iMatch: ' + isMatch)
+    cb(null, isMatch)
+  })
+}
+
+
+const ExpensePeriodSchema = new Schema({
+  period: {
+    type: String
+  },
+  moneySpent: { 
+    type: Number 
+  }
+});
+
+const ExplorerStatsSchema = new Schema({
+  explorerId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Actors'
+  },
+  yearExpense: [{ 
+      type: Schema.Types.ObjectId,
+      ref: 'ExpensePeriod'
+  }],
+  monthExpense: [{ 
+    type: Schema.Types.ObjectId,
+    ref: 'ExpensePeriod'
+  }]
+});
+
+ExplorerStatsSchema.index({ explorerId: 1 })
+
 module.exports = mongoose.model('Actors', ActorSchema)
+module.exports = mongoose.model('ExpensePeriod', ExpensePeriodSchema)
+module.exports = mongoose.model('ExplorerStats', ExplorerStatsSchema)

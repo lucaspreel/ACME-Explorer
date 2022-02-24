@@ -10,6 +10,7 @@
   "author": "Lucas Preel, Juan Carlos, Jessie, Rocío Vecino",
   "license": "ISC",
   "devDependencies": {
+    "@faker-js/faker": "^6.0.0-alpha.7",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "eslint": "^7.32.0",
@@ -20,6 +21,7 @@
     "eslint-plugin-react": "^7.28.0"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "express": "^4.17.2",
     "mongoose": "^6.2.1",
     "mongoose-delete": "^0.5.4",
