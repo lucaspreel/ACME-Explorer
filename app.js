@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const Actor = require('./api/models/actorModel')
 const Sponsorship = require('./api/models/sponsorShipModel')
 const SystemParameters = require('./api/models/systemParametersModel')
+const Trip = require('./api/models/tripModel')
 
 const bodyParser = require('body-parser')
 
@@ -56,7 +57,16 @@ const mongoDBName = process.env.mongoDBName || 'ACME-Explorer'
 
 const mongoDBURI = 'mongodb://' + mongoDBCredentials + mongoDBHostname + ':' + mongoDBPort + '/' + mongoDBName
 
-mongoose.connect(mongoDBURI)
+mongoose.set('debug', true); //util para ver detalle de las operaciones que se realizan contra mongodb
+
+// mongoose.connect(mongoDBURI)
+mongoose.connect(mongoDBURI, {
+  // reconnectTries: 10,
+  // reconnectInterval: 500,
+  connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
+  socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+  family: 4, // skip trying IPv6
+})
 console.log('Connecting DB to: ' + mongoDBURI)
 
 mongoose.connection.on('open', function () {

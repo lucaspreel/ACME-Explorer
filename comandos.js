@@ -10,3 +10,6 @@ db.createUser({
         db: "ACME-Explorer"
     }]
 })
+
+//instalar el complemento para generar data falsa
+npm install @faker-js/faker --save-dev

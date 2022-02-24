@@ -1,0 +1,122 @@
+[
+	{
+		"_id": "62180514614434ac703926ba",
+		"name": "Ramon",
+		"surname": "Lockman",
+		"email": "Zola94@gmail.com",
+		"password": "pP0s75rM5RNky0E",
+		"language": "SPANISH",
+		"phone_number": "512-617-2752 x55414",
+		"address": "923 Bruen Meadows",
+		"isActive": true,
+		"role": "MANAGER"
+	},
+	{
+		"_id": "62180514f432f8f04f5ee700",
+		"name": "Darrin",
+		"surname": "Gutkowski",
+		"email": "Hellen.Anderson81@gmail.com",
+		"password": "VH8MbsUoLJ7suBU",
+		"language": "ENGLISH",
+		"phone_number": "1-676-440-8125 x909",
+		"address": "1986 Spinka Groves",
+		"isActive": true,
+		"role": "ADMINISTRATOR"
+	},
+	{
+		"_id": "621805141b25207c3463f3f2",
+		"name": "Ashlee",
+		"surname": "Towne",
+		"email": "Nicklaus25@yahoo.com",
+		"password": "uLbZGgSAFhqCHr4",
+		"language": "SPANISH",
+		"phone_number": "1-593-638-9583 x324",
+		"address": "93442 Tristian Drive",
+		"isActive": true,
+		"role": "SPONSOR"
+	},
+	{
+		"_id": "6218051403d84a599bfaad74",
+		"name": "Laney",
+		"surname": "Murazik",
+		"email": "Francis.Mitchell12@gmail.com",
+		"password": "tHhoYzMxfVYMfF4",
+		"language": "ENGLISH",
+		"phone_number": "1-806-719-8025 x3464",
+		"address": "1756 Conn Track",
+		"isActive": true,
+		"role": "EXPLORER"
+	},
+	{
+		"_id": "62180514ef83c429b597ed84",
+		"name": "Paula",
+		"surname": "Anderson",
+		"email": "Mathew.Morar@yahoo.com",
+		"password": "_F5w3ShA3MrcOjI",
+		"language": "ENGLISH",
+		"phone_number": "(204) 308-9505",
+		"address": "03515 Rau Ridge",
+		"isActive": false,
+		"role": "MANAGER"
+	},
+	{
+		"_id": "62180514ba4cf0e8fa35de03",
+		"name": "Jonathan",
+		"surname": "Weber",
+		"email": "Ellie12@yahoo.com",
+		"password": "NqEIl221NodHUkr",
+		"language": "SPANISH",
+		"phone_number": "(285) 865-4722",
+		"address": "4501 Ethan Path",
+		"isActive": true,
+		"role": "ADMINISTRATOR"
+	},
+	{
+		"_id": "62180514bf40ac2d51403ccb",
+		"name": "Pearline",
+		"surname": "Raynor",
+		"email": "Rozella.Volkman@hotmail.com",
+		"password": "01Yu5lw8HRCEYjw",
+		"language": "SPANISH",
+		"phone_number": "1-297-209-1889",
+		"address": "08418 Littel Greens",
+		"isActive": false,
+		"role": "MANAGER"
+	},
+	{
+		"_id": "621805149b39e1225f3de7e1",
+		"name": "Schuyler",
+		"surname": "Welch",
+		"email": "Lenore.Kohler38@hotmail.com",
+		"password": "5gW3EInk1iQfq5S",
+		"language": "ENGLISH",
+		"phone_number": "442-952-0089 x8737",
+		"address": "6051 Marian Viaduct",
+		"isActive": false,
+		"role": "MANAGER"
+	},
+	{
+		"_id": "62180514b23b09e9fa8f918c",
+		"name": "Marcelina",
+		"surname": "Romaguera",
+		"email": "Marilyne_Ryan78@hotmail.com",
+		"password": "IgCccfFq3N26p9d",
+		"language": "ENGLISH",
+		"phone_number": "415-633-9601",
+		"address": "28636 Casey Via",
+		"isActive": true,
+		"role": "ADMINISTRATOR"
+	},
+	{
+		"_id": "621805143fb687026b954f9b",
+		"name": "Buddy",
+		"surname": "Boyer",
+		"email": "Elisa8@hotmail.com",
+		"password": "D2QSNGXZzRILPDE",
+		"language": "SPANISH",
+		"phone_number": "279.540.9443",
+		"address": "315 Opal Keys",
+		"isActive": false,
+		"role": "SPONSOR"
+	}
+]

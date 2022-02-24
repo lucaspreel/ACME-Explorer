@@ -54,6 +54,22 @@ exports.create_an_actor = function (req, res) {
 
 }
 
+exports.create_many_actors = function (req, res) {
+
+    //console.log(req.body);
+    var allActors = req.body
+    console.log(allActors);
+ 
+    Actor.insertMany(allActors)
+    .then(function (docs) {
+        res.json(docs);
+    })
+    .catch(function (err) {
+        res.status(500).send(err);
+    });
+
+}
+
 exports.read_an_actor = function (req, res) {
 
     Actor.findOne({_id: req.params.actorId}).then((actor1) => {
