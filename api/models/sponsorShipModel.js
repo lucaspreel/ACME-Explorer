@@ -12,6 +12,10 @@ const SponsorshipSchema = new Schema({
   tripTicker: {
     type: String
   },
+  isPayed: {
+    type: Boolean,
+    default: false
+  },
   sponsor_Id: {
     type: Schema.Types.ObjectId,
     required: 'sponsor id required'

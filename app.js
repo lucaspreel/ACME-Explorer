@@ -35,7 +35,6 @@ const swaggerSpec = {
 };
 
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)));
-//swagger documentation config - end
 
 const routesActors = require('./api/routes/actorRoutes')
 const routesSponsorships = require('./api/routes/sponsorshipRoutes')
