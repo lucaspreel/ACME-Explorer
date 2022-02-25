@@ -143,7 +143,7 @@ module.exports = function (app) {
    *                type: object
    *                $ref: '#/components/schemas/Sponsorship'
    *        403:
-   *          description: You don't have right role to carry out this operation.
+   *          description: You don't have right role to carry out this operation. Only the sponsor who created this sponsorship can update it.
    *        404:
    *          description: Sponsorship not found.
    *        500:
@@ -173,7 +173,7 @@ module.exports = function (app) {
    *                type: object
    *                $ref: '#/components/schemas/Sponsorship'
    *        403:
-   *          description: You don't have right role to carry out this operation.
+   *          description: You don't have right role to carry out this operation. Only the sponsor who created this sponsorship can update it.
    *        404:
    *          description: Sponsorship not found.
    *        500:
@@ -205,7 +205,7 @@ module.exports = function (app) {
    *                type: object
    *                $ref: '#/components/schemas/Sponsorship'
    *        403:
-   *          description: You don't have right role to carry out this operation.
+   *          description: You don't have right role to carry out this operation. Only the sponsor who created this sponsorship can update it.
    *        404:
    *          description: Sponsorship not found.
    *        409:

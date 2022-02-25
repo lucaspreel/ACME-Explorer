@@ -50,7 +50,7 @@ module.exports = function (app) {
    *        400:
    *          description: Error trying to create the system parameters. Bad Request.
    *        403:
-   *          description: You don't have right role to carry out this operation.
+   *          description: You don't have right role to carry out this operation. Only administrators can do that.
    *        409:
    *          description: System parameters already exist.
    *        500:
@@ -100,7 +100,7 @@ module.exports = function (app) {
    *                type: object
    *                $ref: '#/components/schemas/SystemParameters'
    *        403:
-   *          description: You don't have right role to carry out this operation.
+   *          description: You don't have right role to carry out this operation. Only administrators can do that.
    *        404:
    *          description: System parameters not found.
    *        500:

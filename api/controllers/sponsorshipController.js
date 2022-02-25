@@ -8,12 +8,12 @@ exports.create_a_sponsorship = function (req, res) {
     if (sponsorship) {
       res.status(409).json({ error: true, message: 'There is already a sponsorship between this sponsor and this trip.' });
     } else {
-      // if the actor does not have the role  "SPONSOR"
+      // if the sponsorship does not have the role  "SPONSOR"
       // then send error 403
       const newSponsorship = new Sponsorship(req.body);
       newSponsorship.save(function (err, sponsorship) {
         if (err) {
-          res.status(500).send(err);
+          res.status(500).json({ error: true, message: 'Error trying to create the sponsorship.' });
         } else {
           res.status(201).json({ error: false, message: 'Sponsorship created.', sponsorship });
         }
@@ -47,28 +47,50 @@ exports.read_a_sponsorship = function (req, res) {
 };
 
 exports.update_a_sponsorship = function (req, res) {
-  // only the sponsor concerned by this sponsorship must be able to do that
+  // if the sponsorship who try to update a sponsorship is not the one who created it
+  // then return error 403
   Sponsorship.findOneAndUpdate({ _id: req.params.sponsorshipId }, req.body, { new: true }, function (err, sponsorship) {
-    if (err) {
-      res.send(err);
+    if (!sponsorship) {
+      res.status(404).send({ error: true, message: 'Sponsorship not found.' });
     } else {
-      res.json(sponsorship);
+      if (err) {
+        res.status(500).json({ error: true, message: 'Error trying to update the sponsorship.' });
+      } else {
+        res.status(200).json({ error: false, message: 'Sponsorship successfully updated.', sponsorship });
+      }
     }
   });
 };
 
 exports.delete_a_sponsorship = function (req, res) {
-  // only the sponsor concerned by this sponsorship must be able to do that
+  // if the sponsorship who try to delete a sponsorship is not the one who created it
+  // then return error 403
   Sponsorship.deleteOne({ _id: req.params.sponsorshipId }, function (err, sponsorship) {
-    if (err) {
-      res.send(err);
+    if (!sponsorship) {
+      res.status(404).send({ error: true, message: 'Sponsorship not found.' });
     } else {
-      res.json({ message: 'Sponsorship successfully deleted' });
+      if (err) {
+        res.status(500).json({ error: true, message: 'Error trying to delete the sponsorship.' });
+      } else {
+        res.status(200).json({ error: false, message: 'Sponsorship successfully deleted.', sponsorship });
+      }
     }
   });
 };
 
 exports.pay_a_sponsorship = function (req, res) {
-  // only the sponsor concerned by this sponsorship must be able to do that
-  console.log('Pay a sponsorship');
+  // if the sponsorship who try to pay a sponsorship is not the one who created it
+  // then return error 403
+  console.log('coucou');
+  Sponsorship.findOneAndUpdate({ _id: req.params.sponsorshipId }, { isPayed: true }, { new: true }, function (err, sponsorship) {
+    if (!sponsorship) {
+      res.status(404).send({ error: true, message: 'Sponsorship not found.' });
+    } else {
+      if (err) {
+        res.status(500).json({ error: true, message: 'Error trying to pay the sponsorship.' });
+      } else {
+        res.status(200).json({ error: false, message: 'Sponsorship successfully payed.', sponsorship });
+      }
+    }
+  });
 };
