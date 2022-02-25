@@ -1,6 +1,5 @@
-'use strict'
+'use strict';
 module.exports = function (app) {
-
   /**
    * @swagger
    * components:
@@ -23,12 +22,12 @@ module.exports = function (app) {
    *        - cacheHour
    *      example:
    *        maxFinderResults: 25
-   *        flatRateSponsorships: 0 
+   *        flatRateSponsorships: 0
    *        cacheHour: 2
-   * 
-   */  
+   *
+   */
 
-  const systemParameters = require('../controllers/systemParametersController')
+  const systemParameters = require('../controllers/systemParametersController');
 
   app.route('/v1/systemParameters')
 
@@ -46,15 +45,15 @@ module.exports = function (app) {
    *              type: object
    *              $ref: '#/components/schemas/SystemParameters'
    *      responses:
-   *        201: 
+   *        201:
    *          description: System parameters created.
-   *        400: 
+   *        400:
    *          description: Error trying to create the system parameters. Bad Request.
-   *        403: 
+   *        403:
    *          description: You don't have right role to carry out this operation.
    *        409:
    *          description: System parameters already exist.
-   *        500: 
+   *        500:
    *          description: Error trying to create the system parameters.
    */
     .post(systemParameters.create_system_parameters)
@@ -66,20 +65,20 @@ module.exports = function (app) {
    *      summary: Return system parameters.
    *      tags: [SystemParameters]
    *      responses:
-   *        200: 
+   *        200:
    *          description: System parameters successfully retrieved.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: Object
    *                items:
    *                $ref: '#/components/schemas/SystemParameters'
-   *        500: 
+   *        500:
    *          description: Error trying to get system parameters.
    */
     .get(systemParameters.read_system_parameters)
 
-   /**
+  /**
    * @swagger
    * /v1/systemParameters:
    *    put:
@@ -93,19 +92,19 @@ module.exports = function (app) {
    *              type: object
    *              $ref: '#/components/schemas/SystemParameters'
    *      responses:
-   *        200: 
+   *        200:
    *          description: System parameters successfully updated.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/SystemParameters'
-   *        403: 
+   *        403:
    *          description: You don't have right role to carry out this operation.
-   *        404: 
+   *        404:
    *          description: System parameters not found.
-   *        500: 
+   *        500:
    *          description: Error trying to update the system parameters.
    */
-    .put(systemParameters.update_system_parameters)
-}
+    .put(systemParameters.update_system_parameters);
+};

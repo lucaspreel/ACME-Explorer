@@ -1,6 +1,5 @@
-'use strict'
+'use strict';
 module.exports = function (app) {
-
   /**
    * @swagger
    * components:
@@ -26,17 +25,15 @@ module.exports = function (app) {
    *      required:
    *        - sponsor_Id
    *        - tripTicker
-   *        - banner
    *        - page
    *      example:
-   *        sponsor_Id: The id of a sponsor registered in the system.
+   *        sponsor_Id: 6218eca775428925392c633f
    *        tripTicker: 220722-FUJN
-   *        banner: A wonderful banner 
    *        page: https://an-amazing-sponsor.com
-   * 
+   *
    */
-  
-  const sponsorships = require('../controllers/sponsorshipController')
+
+  const sponsorships = require('../controllers/sponsorshipController');
 
   app.route('/v1/sponsorships')
 
@@ -54,15 +51,15 @@ module.exports = function (app) {
    *              type: object
    *              $ref: '#/components/schemas/Sponsorship'
    *      responses:
-   *        201: 
+   *        201:
    *          description: Sponsorship created.
-   *        400: 
+   *        400:
    *          description: Error trying to create the sponsorship. Bad Request.
-   *        403: 
-   *          description: You don't have right role to carry out this operation.
+   *        403:
+   *          description: You don't have right role to carry out this operation. Only sponsors can create sponsorships.
    *        409:
    *          description: There is already a sponsorship between this sponsor and this trip.
-   *        500: 
+   *        500:
    *          description: Error trying to create the sponsorship.
    */
     .post(sponsorships.create_a_sponsorship)
@@ -74,21 +71,21 @@ module.exports = function (app) {
    *      summary: Return all sponsorships.
    *      tags: [Sponsorship]
    *      responses:
-   *        200: 
+   *        200:
    *          description: Sponsorships successfully retrieved.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: array
    *                items:
    *                  $ref: '#/components/schemas/Sponsorship'
-   *        500: 
+   *        500:
    *          description: Error trying to get all sponsorships.
    */
-    .get(sponsorships.list_all_sponsorships)
-  
+    .get(sponsorships.list_all_sponsorships);
+
   app.route('/v1/sponsorships/:sponsorshipId')
-  
+
   /**
    * @swagger
    * /v1/sponsorships/{sponsorshipId}:
@@ -103,21 +100,21 @@ module.exports = function (app) {
    *          required: true
    *          description: Sponsorship id.
    *      responses:
-   *        200: 
+   *        200:
    *          description: Sponsorship successfully retrieved.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Sponsorship'
-   *        404: 
+   *        404:
    *          description: Sponsorship not found.
-   *        500: 
+   *        500:
    *          description: Error trying to get the sponsorship.
    */
     .get(sponsorships.read_a_sponsorship)
 
-   /**
+  /**
    * @swagger
    * /v1/sponsorships/{sponsorshipId}:
    *    put:
@@ -138,18 +135,18 @@ module.exports = function (app) {
    *              type: object
    *              $ref: '#/components/schemas/Sponsorship'
    *      responses:
-   *        200: 
+   *        200:
    *          description: Sponsorship successfully updated.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Sponsorship'
-   *        403: 
+   *        403:
    *          description: You don't have right role to carry out this operation.
-   *        404: 
+   *        404:
    *          description: Sponsorship not found.
-   *        500: 
+   *        500:
    *          description: Error trying to update the sponsorship.
    */
     .put(sponsorships.update_a_sponsorship)
@@ -168,21 +165,21 @@ module.exports = function (app) {
    *          required: true
    *          description: Sponsorship id.
    *      responses:
-   *        200: 
+   *        200:
    *          description: Sponsorship successfully deleted.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Sponsorship'
-   *        403: 
+   *        403:
    *          description: You don't have right role to carry out this operation.
-   *        404: 
+   *        404:
    *          description: Sponsorship not found.
-   *        500: 
+   *        500:
    *          description: Error trying to delete the sponsorship.
    */
-    .delete(sponsorships.delete_a_sponsorship)
+    .delete(sponsorships.delete_a_sponsorship);
 
   app.route('/v1/sponsorships/:sponsorshipId/pay')
 
@@ -200,21 +197,21 @@ module.exports = function (app) {
    *          required: true
    *          description: Sponsorship id.
    *      responses:
-   *        200: 
+   *        200:
    *          description: Sponsorship successfully payed.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Sponsorship'
-   *        403: 
+   *        403:
    *          description: You don't have right role to carry out this operation.
-   *        404: 
+   *        404:
    *          description: Sponsorship not found.
    *        409:
    *          description: Sponsorship already payed.
-   *        500: 
+   *        500:
    *          description: Error trying to pay the sponsorship.
    */
-    .patch(sponsorships.pay_a_sponsorship)
-}
+    .patch(sponsorships.pay_a_sponsorship);
+};

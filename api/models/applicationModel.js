@@ -1,13 +1,13 @@
-'use strict'
-const mongoose = require('mongoose') 
-const Schema = mongoose.Schema
+'use strict';
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const ApplicationSchema = new Schema({
   applicationMoment: {
     type: Date
   },
-  comments: { 
-    type: String, 
+  comments: {
+    type: String,
     required: 'Kindly enter the comments of the application'
   },
   status: [{
@@ -27,6 +27,6 @@ const ApplicationSchema = new Schema({
     type: String
   }
 
-}, { strict: false })
+}, { strict: false });
 
-module.exports = mongoose.model('Application', ApplicationSchema)
+module.exports = mongoose.model('Application', ApplicationSchema);
