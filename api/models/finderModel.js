@@ -1,22 +1,22 @@
-'use strict'
-const mongoose = require('mongoose') 
-const Schema = mongoose.Schema
+'use strict';
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const FinderSchema = new Schema({
   keyWord: {
     type: String,
     required: 'Kindly enter the actor surname'
   },
-  priceLowerBound: { 
+  priceLowerBound: {
     type: Double
   },
-  priceUpperBound: { 
+  priceUpperBound: {
     type: Double
   },
-  dateLowerBound: { 
+  dateLowerBound: {
     type: Date
   },
-  dateUpperBound: { 
+  dateUpperBound: {
     type: Date
   },
   results: {
@@ -27,6 +27,6 @@ const FinderSchema = new Schema({
     required: 'consumer id required'
   }
 
-}, { strict: false })
+}, { strict: false });
 
-module.exports = mongoose.model('Finder', FinderSchema)
+module.exports = mongoose.model('Finder', FinderSchema);

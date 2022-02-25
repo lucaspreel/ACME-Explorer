@@ -1,6 +1,5 @@
-'use strict'
+'use strict';
 module.exports = function (app) {
-
   /**
    * @swagger
    * components:
@@ -50,10 +49,10 @@ module.exports = function (app) {
    *        address: The world is my playground
    *        role: EXPLORER
    *        isActive: true
-   *        
+   *
    */
 
-  const actors = require('../controllers/actorController')
+  const actors = require('../controllers/actorController');
 
   app.route('/v1/actors')
 
@@ -64,18 +63,18 @@ module.exports = function (app) {
    *      summary: Returns all actors.
    *      tags: [Actor]
    *      responses:
-   *        200: 
+   *        200:
    *          description: Actors successfully retrieved.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: array
    *                items:
    *                  $ref: '#/components/schemas/Actor'
-   *        500: 
+   *        500:
    *          description: Error trying to get all actors.
    */
-  .get(actors.list_all_actors)
+    .get(actors.list_all_actors)
 
   /**
    * @swagger
@@ -91,20 +90,20 @@ module.exports = function (app) {
    *              type: object
    *              $ref: '#/components/schemas/Actor'
    *      responses:
-   *        201: 
+   *        201:
    *          description: Actor created.
-   *        400: 
+   *        400:
    *          description: Error trying to create the actor. Bad Request.
-   *        403: 
+   *        403:
    *          description: You don't have right role to carry out this operation.
-   *        409: 
+   *        409:
    *          description: Email is already registered.
-   *        422: 
+   *        422:
    *          description: Validation error.
-   *        500: 
+   *        500:
    *          description: Error trying to create the actor.
    */
-  .post(actors.create_an_actor)
+    .post(actors.create_an_actor);
 
   app.route('/v1/actors2')
 
@@ -126,20 +125,20 @@ module.exports = function (app) {
    *                  items:
    *                    $ref: "#/components/schemas/Actor"
    *      responses:
-   *        201: 
+   *        201:
    *          description: Actor created.
-   *        400: 
+   *        400:
    *          description: Error trying to create the actor. Bad Request.
-   *        403: 
+   *        403:
    *          description: You don't have right role to carry out this operation.
-   *        409: 
+   *        409:
    *          description: Email is already registered.
-   *        422: 
+   *        422:
    *          description: Validation error.
-   *        500: 
+   *        500:
    *          description: Error trying to create the actor.
    */
-  .post(actors.create_many_actors)
+    .post(actors.create_many_actors);
 
   app.route('/v1/actors/:actorId')
 
@@ -157,21 +156,21 @@ module.exports = function (app) {
    *          required: true
    *          description: Actor id.
    *      responses:
-   *        200: 
+   *        200:
    *          description: Actor successfully retrieved.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
-   *        404: 
+   *        404:
    *          description: Actor not found.
-   *        500: 
+   *        500:
    *          description: Error trying to get the actor.
    */
-  .get(actors.read_an_actor)
+    .get(actors.read_an_actor)
 
-   /**
+  /**
    * @swagger
    * /v1/actors/{actorId}:
    *    put:
@@ -192,25 +191,25 @@ module.exports = function (app) {
    *              type: object
    *              $ref: '#/components/schemas/Actor'
    *      responses:
-   *        200: 
+   *        200:
    *          description: Actor successfully updated.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
-   *        403: 
+   *        403:
    *          description: You don't have right role to carry out this operation.
-   *        404: 
+   *        404:
    *          description: Actor not found.
-   *        409: 
+   *        409:
    *          description: Email already registered.
-   *        422: 
+   *        422:
    *          description: Validation error.
-   *        500: 
+   *        500:
    *          description: Error trying to update the actor.
    */
-  .put(actors.update_an_actor)
+    .put(actors.update_an_actor)
 
   /**
    * @swagger
@@ -226,21 +225,21 @@ module.exports = function (app) {
    *          required: true
    *          description: Actor id.
    *      responses:
-   *        200: 
+   *        200:
    *          description: Actor successfully deleted.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
-   *        403: 
+   *        403:
    *          description: You don't have right role to carry out this operation.
-   *        404: 
+   *        404:
    *          description: Actor not found.
-   *        500: 
+   *        500:
    *          description: Error trying to delete the actor.
    */
-  .delete(actors.delete_an_actor)
+    .delete(actors.delete_an_actor);
 
   /**
    * @swagger
@@ -256,22 +255,22 @@ module.exports = function (app) {
    *          required: true
    *          description: Actor id.
    *      responses:
-   *        200: 
+   *        200:
    *          description: Actor successfully banned.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
-   *        403: 
+   *        403:
    *          description: You don't have right role to carry out this operation.
-   *        404: 
+   *        404:
    *          description: Actor not found.
-   *        500: 
+   *        500:
    *          description: Error trying to ban the actor.
    */
   app.route('/v1/actors/:actorId/ban')
-  .patch(actors.ban_an_actor)
+    .patch(actors.ban_an_actor);
 
   /**
    * @swagger
@@ -287,23 +286,22 @@ module.exports = function (app) {
    *          required: true
    *          description: Actor id.
    *      responses:
-   *        200: 
+   *        200:
    *          description: Actor successfully unbanned.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
-   *        403: 
+   *        403:
    *          description: You don't have right role to carry out this operation.
-   *        404: 
+   *        404:
    *          description: Actor not found.
-   *        500: 
+   *        500:
    *          description: Error trying to unban the actor.
    */
   app.route('/v1/actors/:actorId/unban')
-  .patch(actors.unban_an_actor)
-
+    .patch(actors.unban_an_actor);
 
   /**
    * @swagger
@@ -354,7 +352,7 @@ module.exports = function (app) {
    *        address: The world is my playground
    *        role: EXPLORER
    *        isActive: true
-   *        
+   *
    */
 
   app.route('/v1/explorerStats/:period')
@@ -372,18 +370,17 @@ module.exports = function (app) {
    *          required: true
    *          description: A period M01-M36 or Y01-Y03.
    *      responses:
-   *        200: 
+   *        200:
    *          description: Actor successfully retrieved.
-   *          content: 
+   *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
-   *        404: 
+   *        404:
    *          description: Actor not found.
-   *        500: 
+   *        500:
    *          description: Error trying to get the actor.
    */
-  .get(actors.list_explorer_stats)
-
-}
+    .get(actors.list_explorer_stats);
+};
