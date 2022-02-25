@@ -1,5 +1,40 @@
 'use strict'
 module.exports = function (app) {
+
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *    Sponsorship:
+   *      type: object
+   *      properties:
+   *        sponsor_Id:
+   *          type: object
+   *          description: The id of the sponsor making this sponsorship.
+   *        tripTicker:
+   *          type: string
+   *          description: The ticker of the trip sponsored.
+   *        banner:
+   *          type: image
+   *          description: The banner of the sponsor.
+   *        page:
+   *          type: string
+   *          description: The url of the page of the sponsor.
+   *        isPayed:
+   *          type: boolean
+   *          description: Indicate if the sponsor payed for this sponsorship.
+   *      required:
+   *        - sponsor_Id
+   *        - tripTicker
+   *        - banner
+   *        - page
+   *      example:
+   *        sponsor_Id: The id of a sponsor registered in the system.
+   *        tripTicker: 220722-FUJN
+   *        banner: A wonderful banner 
+   *        page: https://an-amazing-sponsor.com
+   * 
+   */
   
   const sponsorships = require('../controllers/sponsorshipController')
 

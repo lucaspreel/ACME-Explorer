@@ -1,6 +1,33 @@
 'use strict'
 module.exports = function (app) {
 
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *    SystemParameters:
+   *      type: object
+   *      properties:
+   *        maxFinderResults:
+   *          type: number
+   *          description: The number of results that a finder will return.
+   *        flatRateSponsorships:
+   *          type: number
+   *          description: The flat rate for sponsorships.
+   *        cacheHour:
+   *          type: number
+   *          description: The number of hours the system keep data in cache.
+   *      required:
+   *        - maxFinderResults
+   *        - flatRateSponsorships
+   *        - cacheHour
+   *      example:
+   *        maxFinderResults: 25
+   *        flatRateSponsorships: 0 
+   *        cacheHour: 2
+   * 
+   */  
+
   const systemParameters = require('../controllers/systemParametersController')
 
   app.route('/v1/systemParameters')

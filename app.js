@@ -44,7 +44,6 @@ routesActors(app)
 routesSponsorships(app)
 routesSystemParameters(app)
 
-
 // MongoDB URI building
 const mongoDBUser = process.env.mongoDBUser || 'ACME_EXPLORER_ADMIN_USER'
 const mongoDBPass = process.env.mongoDBPass || '$3CUR3p455W0RDZOZZ'
