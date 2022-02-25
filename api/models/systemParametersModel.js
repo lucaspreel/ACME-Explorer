@@ -6,6 +6,7 @@ const SystemParametersSchema = new Schema({
   maxFinderResults: {
     type: Number,
     default: 10,
+    min: 10,
     max: 100
   },
   flatRateSponsorships: {
@@ -15,6 +16,7 @@ const SystemParametersSchema = new Schema({
   cacheHour: {
     type: Number,
     default: 1,
+    min: 1,
     max: 24
   }
 }, { strict: false });
