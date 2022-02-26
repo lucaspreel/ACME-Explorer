@@ -13,3 +13,6 @@ db.createUser({
 
 //instalar el complemento para generar data falsa
 npm install @faker-js/faker --save-dev
+
+//detectar errores en sintaxis
+npx semistandard api/ --fix

@@ -7,6 +7,8 @@ const Actor = require('./api/models/actorModel');
 const Sponsorship = require('./api/models/sponsorShipModel');
 const SystemParameters = require('./api/models/systemParametersModel');
 const Trip = require('./api/models/tripModel');
+const Application = require('./api/models/applicationModel');
+const Finder = require('./api/models/finderModel');
 
 const bodyParser = require('body-parser');
 
