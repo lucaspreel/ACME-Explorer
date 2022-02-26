@@ -25,6 +25,9 @@ const ApplicationSchema = new Schema({
   },
   rejected_reason: {
     type: String
+  },
+  tripPrice: {
+    type: Number
   }
 
 }, { strict: false });
