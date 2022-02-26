@@ -83,7 +83,7 @@ exports.update_an_actor = function (req, res) {
     } else {
       // if the session actor role is not administrator
       // the actor only can modify his or her own actor
-      if (!sessionActorRole.includes('ADMINISTRATOR') && sessionActorId != actor1._id) {
+      if (!sessionActorRole.includes('ADMINISTRATOR') && sessionActorId !== actor1._id) {
         return res.status(403).send();
       }
 

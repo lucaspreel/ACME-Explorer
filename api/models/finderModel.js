@@ -8,10 +8,10 @@ const FinderSchema = new Schema({
     required: 'Kindly enter the actor surname'
   },
   priceLowerBound: {
-    type: Double
+    type: Number
   },
   priceUpperBound: {
-    type: Double
+    type: Number
   },
   dateLowerBound: {
     type: Date
