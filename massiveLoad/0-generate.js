@@ -216,7 +216,7 @@ for (i = 0; i < amountOfApplications; i++) {
     comments: faker.lorem.sentence(),
     status: status,
     explorer_Id: explorer_Id,
-    trip_Id: trip._id,
+    trip_Id: trip._id.$oid,
     manager_Id: trip.manager_Id,
     deleted: false,
     rejected_reason: rejected_reason,
