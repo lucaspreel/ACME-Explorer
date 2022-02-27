@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 
-const mongoose_delete = require('mongoose-delete');
+const mongooseDelete = require('mongoose-delete');
 
 const emailInUse = async function (email) {
   const user = await this.constructor.findOne({ email });
@@ -69,7 +69,7 @@ const ActorSchema = new Schema({
 
 ActorSchema.index({ email: 1, password: 1 });
 
-ActorSchema.plugin(mongoose_delete, { deletedAt: true });
+ActorSchema.plugin(mongooseDelete, { deletedAt: true });
 
 ActorSchema.pre('save', function (callback) {
   const actor = this;
