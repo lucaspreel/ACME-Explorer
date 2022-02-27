@@ -79,7 +79,6 @@ exports.delete_a_sponsorship = function (req, res) {
 };
 
 exports.list_sponsorships_of_a_sponsor = function (req, res) {
-  console.log('coucou');
   Sponsorship.find({ sponsor_Id: req.params.sponsorID }, function (err, sponsorships) {
     if (err) {
       res.status(500).json({ error: true, message: 'Error trying to get all sponsorships of the sponsor.' });
@@ -90,7 +89,6 @@ exports.list_sponsorships_of_a_sponsor = function (req, res) {
 };
 
 exports.list_sponsorships_of_a_trip = function (req, res) {
-  console.log('coucou trip');
   Sponsorship.find({ tripTicker: req.params.tripTicker }, function (err, sponsorships) {
     if (err) {
       res.status(500).json({ error: true, message: 'Error trying to get all sponsorships of the trip.' });
