@@ -1,10 +1,10 @@
 const { faker } = require('@faker-js/faker');
 const fs = require('fs');
 
-var amountOfActors = 10000;
-var amountOfTrips = 10000;
+var amountOfActors = 10;
+var amountOfTrips = 10;
 var amountOfStagesByTrip = 3;
-var amountOfApplications = 10000;
+var amountOfApplications = 10;
 
 var minumunStagePrice = 10;
 var maximunStagePrice = 50;
@@ -198,7 +198,6 @@ for (i = 0; i < amountOfApplications; i++)
 		explorer_Id: explorer_Id,
 		trip_Id: trip._id,
 		rejected_reason: rejected_reason,
-		tripPrice: trip.price,
 	};
 	// console.log(newApplication);
 	

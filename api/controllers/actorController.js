@@ -2,6 +2,7 @@
 /* ---------------ACTOR---------------------- */
 const mongoose = require('mongoose');
 const Actor = mongoose.model('Actors');
+const Application = mongoose.model('Application');
 const ExpensePeriod = mongoose.model('ExpensePeriod');
 const ExplorerStats = mongoose.model('ExplorerStats');
 
@@ -175,6 +176,7 @@ exports.unban_an_actor = function (req, res) {
 };
 
 exports.list_explorer_stats = function (req, res) {
+  /*
   const a = new Actor({
     name: 'John Charles',
     surname: 'Road Grandson',
@@ -200,6 +202,7 @@ exports.list_explorer_stats = function (req, res) {
     monthExpense: [epm]
   });
   es.save();
+  */
 
   /*
     var expectedDataSaved = [
@@ -239,5 +242,67 @@ exports.list_explorer_stats = function (req, res) {
         }
     ];
     */
-  res.json(es);
+
+    Application.aggregate([
+      {
+          $lookup :
+          {
+              from: "trips",
+              localField: "trip_Id",
+              foreignField: "_id",
+              as: "trip",
+          }
+      },
+      {
+          $unwind: "$trip"
+      },
+      {
+          $project: {
+              explorer_Id: "$explorer_Id",
+              tripPrice: "$trip.price",
+              "applicationMoment": { $toDate: "$applicationMoment"}
+          }
+      },
+      {
+          $project: {
+              explorer_Id: "$explorer_Id",
+              tripPrice: "$tripPrice",
+              year: {$year: "$applicationMoment"},
+              month: {$month: "$applicationMoment"}
+          }
+      },
+      {
+          $group: {
+              _id: {explorer_Id: "$explorer_Id", year: '$year', month: '$month'},
+              moneySpent : {$sum : "$tripPrice"}
+          }
+      },
+      {
+          $project: {
+              _id : 0 ,
+              explorer_Id: "$_id.explorer_Id",
+              year: "$_id.year",
+              month: "$_id.month",
+              moneySpent: "$moneySpent",
+          }
+      },
+      {
+          $sort: { explorer_Id: 1, year: -1, month: -1}
+      }
+  ])
+  .exec((err, results) => {
+      if (err) 
+      {
+          console.log(err);
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ message: 'Failure' }));
+          res.sendStatus(500);
+      } 
+      else 
+      {
+          res.send(results);
+      }
+  });
+
+  //res.json(stats);
 };

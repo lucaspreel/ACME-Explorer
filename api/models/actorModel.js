@@ -133,7 +133,7 @@ const ExplorerStatsSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'ExpensePeriod'
   }]
-});
+}); 
 
 ExplorerStatsSchema.index({ explorerId: 1 });
 
