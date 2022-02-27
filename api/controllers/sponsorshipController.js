@@ -78,10 +78,29 @@ exports.delete_a_sponsorship = function (req, res) {
   });
 };
 
+exports.list_sponsorships_of_a_sponsor = function (req, res) {
+  Sponsorship.find({ sponsor_Id: req.params.sponsorID }, function (err, sponsorships) {
+    if (err) {
+      res.status(500).json({ error: true, message: 'Error trying to get all sponsorships of the sponsor.' });
+    } else {
+      res.status(200).json({ error: false, message: 'Sponsorships of the sponsor successfully retrieved.', sponsorships });
+    }
+  });
+};
+
+exports.list_sponsorships_of_a_trip = function (req, res) {
+  Sponsorship.find({ tripTicker: req.params.tripTicker }, function (err, sponsorships) {
+    if (err) {
+      res.status(500).json({ error: true, message: 'Error trying to get all sponsorships of the trip.' });
+    } else {
+      res.status(200).json({ error: false, message: 'Sponsorships of the trip successfully retrieved.', sponsorships });
+    }
+  });
+};
+
 exports.pay_a_sponsorship = function (req, res) {
   // if the sponsorship who try to pay a sponsorship is not the one who created it
   // then return error 403
-  console.log('coucou');
   Sponsorship.findOneAndUpdate({ _id: req.params.sponsorshipId }, { isPayed: true }, { new: true }, function (err, sponsorship) {
     if (!sponsorship) {
       res.status(404).send({ error: true, message: 'Sponsorship not found.' });
