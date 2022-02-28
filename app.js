@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 18080;
+// const port = process.env.PORT || 8089;
 const mongoose = require('mongoose');
 
 const Actor = require('./api/models/actorModel');
@@ -8,6 +9,7 @@ const Sponsorship = require('./api/models/sponsorShipModel');
 const SystemParameters = require('./api/models/systemParametersModel');
 const Trip = require('./api/models/tripModel');
 const Application = require('./api/models/applicationModel');
+const Finder = require('./api/models/finderModel');
 
 const bodyParser = require('body-parser');
 
@@ -32,7 +34,8 @@ const swaggerSpec = {
       `${path.join(__dirname, './api/routes/actorRoutes.js')}`,
       `${path.join(__dirname, './api/routes/sponsorshipRoutes.js')}`,
       `${path.join(__dirname, './api/routes/systemParametersRoutes.js')}`,
-      `${path.join(__dirname, './api/routes/applicationRoutes.js')}`
+      `${path.join(__dirname, './api/routes/applicationRoutes.js')}`,
+      `${path.join(__dirname, './api/routes/finderRoutes.js')}`
   ]
 };
 
@@ -42,19 +45,23 @@ const routesActors = require('./api/routes/actorRoutes');
 const routesSponsorships = require('./api/routes/sponsorshipRoutes');
 const routesSystemParameters = require('./api/routes/systemParametersRoutes');
 const routesApplication = require('./api/routes/applicationRoutes');
+const routesFinder = require('./api/routes/finderRoutes');
 
 routesActors(app);
 routesSponsorships(app);
 routesSystemParameters(app);
 routesApplication(app);
+routesFinder(app);
 
 // MongoDB URI building
-const mongoDBUser = process.env.mongoDBUser || 'ACME_EXPLORER_ADMIN_USER';
-const mongoDBPass = process.env.mongoDBPass || '$3CUR3p455W0RDZOZZ';
-const mongoDBCredentials = (mongoDBUser && mongoDBPass) ? mongoDBUser + ':' + mongoDBPass + '@' : '';
+// const mongoDBUser = process.env.mongoDBUser || 'ACME_EXPLORER_ADMIN_USER';
+// const mongoDBPass = process.env.mongoDBPass || '$3CUR3p455W0RDZOZZ';
+// const mongoDBCredentials = (mongoDBUser && mongoDBPass) ? mongoDBUser + ':' + mongoDBPass + '@' : '';
+const mongoDBCredentials = "";
 
 const mongoDBHostname = process.env.mongoDBHostname || 'localhost';
-const mongoDBPort = process.env.mongoDBPort || '27017';
+// const mongoDBPort = process.env.mongoDBPort || '27017';
+const mongoDBPort = process.env.mongoDBPort || '30017';
 const mongoDBName = process.env.mongoDBName || 'ACME-Explorer';
 
 const mongoDBURI = 'mongodb://' + mongoDBCredentials + mongoDBHostname + ':' + mongoDBPort + '/' + mongoDBName;

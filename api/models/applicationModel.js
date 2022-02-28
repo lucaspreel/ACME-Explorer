@@ -38,4 +38,6 @@ const ApplicationSchema = new Schema({
 
 }, { strict: false });
 
+ApplicationSchema.index({ explorer_Id: 1, status: 1 });
+ApplicationSchema.index({ explorer_Id: 1, applicationMoment: 1 });
 module.exports = mongoose.model('Application', ApplicationSchema);
