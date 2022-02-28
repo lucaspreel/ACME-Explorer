@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 /* ---------------Application---------------------- */
-const mongoose = require("mongoose");
-const Application = mongoose.model("Application");
-const Trip = mongoose.model("Trips");
+const mongoose = require('mongoose');
+const Application = mongoose.model('Application');
+const Trip = mongoose.model('Trips');
 
 exports.list_all_application = function (req, res) {
   Application.find({ deleted: false }, function (err, application) {
@@ -19,12 +19,12 @@ exports.create_an_application = function (req, res) {
 
   if (!newApplication) {
     console.warn(
-      "New POST request to /application/ without application, sending 400..."
+      'New POST request to /application/ without application, sending 400...'
     );
     res.sendStatus(400); // bad request
   } else {
     console.info(
-      "New POST request to /applications with body: " +
+      'New POST request to /applications with body: ' +
         JSON.stringify(newApplication, 2, null)
     );
     if (
@@ -33,39 +33,39 @@ exports.create_an_application = function (req, res) {
       !newApplication.trip_Id
     ) {
       console.warn(
-        "The application " +
+        'The application ' +
           JSON.stringify(newApplication, 2, null) +
-          " is not well-formed, sending 422..."
+          ' is not well-formed, sending 422...'
       );
       res.sendStatus(422); // unprocessable entity
     } else {
       Application.find(
         {
           explorer_Id: newApplication.explorer_Id,
-          trip_Id: newApplication.trip_Id,
+          trip_Id: newApplication.trip_Id
         },
         function (err, applications) {
           if (err) {
-            console.error("Error getting data from DB");
+            console.error('Error getting data from DB');
             res.json(err);
             res.sendStatus(500); // internal server error
           } else {
             if (applications.length > 0) {
               console.warn(
-                "The Application " +
+                'The Application ' +
                   JSON.stringify(newApplication, 2, null) +
-                  " already exists, sending 409..."
+                  ' already exists, sending 409...'
               );
               res.sendStatus(409); // conflict
             } else {
               Trip.findById(newApplication.trip_Id, function (err, trip) {
                 if (err) {
-                  console.error("Error getting data from DB");
+                  console.error('Error getting data from DB');
                   res.sendStatus(500); // internal server error
                 } else {
                   const hoy = Date.now();
                   if (!trip) {
-                    console.error("Not found trip");
+                    console.error('Not found trip');
                     res.sendStatus(400);
                   } else {
                     if (
@@ -73,12 +73,12 @@ exports.create_an_application = function (req, res) {
                       trip.start_date < hoy ||
                       trip.canceled === true
                     ) {
-                      console.error("Error on trip data");
+                      console.error('Error on trip data');
                       res.sendStatus(400);
                     } else {
                       console.info(trip.manager_Id);
                       newApplication.manager_Id = trip.manager_Id;
-                      newApplication.status = "PENDING";
+                      newApplication.status = 'PENDING';
                       newApplication.deleted = false;
 
                       newApplication.save(function (err, applications) {
@@ -106,7 +106,7 @@ exports.delete_an_application = function (req, res) {
     if (err) {
       res.send(err);
     } else {
-      res.json({ message: "Application successfully deleted" });
+      res.json({ message: 'Application successfully deleted' });
     }
   });
 };
