@@ -1,251 +1,286 @@
 const { faker } = require('@faker-js/faker');
 const fs = require('fs');
 
-var amountOfActors = 10;
-var amountOfTrips = 10;
-var amountOfStagesByTrip = 3;
-var amountOfApplications = 10;
+const amountOfActors = 10000;
+const amountOfTrips = 10000;
+const amountOfStagesByTrip = 3;
+let amountOfApplications = 10000;
 
-var minumunStagePrice = 10;
-var maximunStagePrice = 50;
-var minimunFinderPriceLowerBound = 0;
-var maximunFinderPriceLowerBound = 50;
-var maximunFinderPriceUpperBound = 150;
+const minumunStagePrice = 10;
+const maximunStagePrice = 50;
+const minimunFinderPriceLowerBound = 0;
+const maximunFinderPriceLowerBound = 50;
+const maximunFinderPriceUpperBound = 150;
 
-var threeYearsAgo = new Date();
+const threeYearsAgo = new Date();
 threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
 // console.log(threeYearsAgo);
 
-//------------------------------------------------------------------------------
-//FUNCTIONS
-//------------------------------------------------------------------------------
-var generateMongoObjectId = function () {
-    var timestamp = (new Date().getTime() / 1000 | 0).toString(16);
-    return timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function() {
-        return (Math.random() * 16 | 0).toString(16);
-    }).toLowerCase();
+// ------------------------------------------------------------------------------
+// FUNCTIONS
+// ------------------------------------------------------------------------------
+const generateMongoObjectId = function () {
+  const timestamp = ((new Date().getTime() / 1000) | 0).toString(16);
+  return (
+    timestamp +
+    'xxxxxxxxxxxxxxxx'
+      .replace(/[x]/g, function () {
+        return ((Math.random() * 16) | 0).toString(16);
+      })
+      .toLowerCase()
+  );
 };
 
-var getRandomArrayValue = function(array) {
-	return array[Math.floor(Math.random()*array.length)];
-}
+const getRandomArrayValue = function (array) {
+  return array[Math.floor(Math.random() * array.length)];
+};
 
-var formatJsonToBeWrittenToAFile = function(jsonData) {
-	// convert JSON object to string
-	return JSON.stringify(jsonData, null, "\t");
-}
+const formatJsonToBeWrittenToAFile = function (jsonData) {
+  // convert JSON object to string
+  return JSON.stringify(jsonData, null, '\t');
+};
 
-var saveJsonFile = function(jsonData, filePath) {
+const saveJsonFile = function (jsonData, filePath) {
+  // truncate file
+  fs.truncate(filePath, 0, function () {
+    console.log('File ' + filePath + ' truncated');
+  });
 
-	//truncate file 
-	fs.truncate(filePath, 0, function(){
-		console.log("File "+filePath+" truncated")
-	})
+  // write JSON string to a file
+  fs.writeFile(filePath, jsonData, (err) => {
+    if (err) {
+      throw err;
+    }
+    console.log(
+      'JSON data has been successfully saved in file ' + filePath + '.'
+    );
+  });
+};
 
-	// write JSON string to a file
-	fs.writeFile(filePath, jsonData, (err) => {
-		if (err) {
-			throw err;
-		}
-		console.log("JSON data has been successfully saved in file "+filePath+".");
-	});
-}
+// ------------------------------------------------------------------------------
+// ACTORS' DATA
+// ------------------------------------------------------------------------------
+const languages = ['ENGLISH', 'SPANISH'];
+const statuses = [true, false];
+const roles = ['ADMINISTRATOR', 'MANAGER', 'EXPLORER', 'SPONSOR'];
 
-//------------------------------------------------------------------------------
-//ACTORS' DATA
-//------------------------------------------------------------------------------
-var languages = ['ENGLISH', 'SPANISH'];
-var statuses = [true, false];
-var roles = ['ADMINISTRATOR', 'MANAGER', 'EXPLORER', 'SPONSOR'];
+const allActors = [];
+const managersIds = [];
+const explorersIds = [];
 
-var allActors = [];
-var managersIds = [];
-var explorersIds = [];
+for (let i = 0; i < amountOfActors; i++) {
+  const language = getRandomArrayValue(languages);
+  const isActive = getRandomArrayValue(statuses);
+  const role = getRandomArrayValue(roles);
+  const actorId = generateMongoObjectId();
 
-for (i = 0; i < amountOfActors; i++) 
-{
-	var language = getRandomArrayValue(languages);
-	var isActive = getRandomArrayValue(statuses);
-	var role = getRandomArrayValue(roles);
-	var actorId = generateMongoObjectId();
+  if (role === 'MANAGER') managersIds.push(actorId);
+  if (role === 'EXPLORER') explorersIds.push(actorId);
 
-	if(role == "MANAGER")managersIds.push(actorId);
-	if(role == "EXPLORER")explorersIds.push(actorId);
+  const newActor = {
+    _id: {
+      $oid: actorId
+    },
+    name: faker.name.firstName(),
+    surname: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+    language: language,
+    phone_number: faker.phone.phoneNumber(),
+    address: faker.address.streetAddress(),
+    isActive: isActive,
+    role: role,
+    deleted: false
+  };
+  // console.log(newActor);
 
-	var newActor = {
-		_id: actorId,
-		name: faker.name.firstName(),
-		surname: faker.name.lastName(),
-		email: faker.internet.email(),
-		password: faker.internet.password(),
-		language: language,
-		phone_number: faker.phone.phoneNumber(),
-		address: faker.address.streetAddress(),
-		isActive: isActive,
-		role: role,
-	};
-	//console.log(newActor);
-
-	allActors.push(newActor);
+  allActors.push(newActor);
 }
 
 const actorsJsonData = formatJsonToBeWrittenToAFile(allActors);
-var actorsJsonDataFilePath = "./massiveLoad/1-actors.json";
+const actorsJsonDataFilePath = './massiveLoad/1-actors.json';
 saveJsonFile(actorsJsonData, actorsJsonDataFilePath);
 
-//------------------------------------------------------------------------------
-//TRIPS' DATA
-//------------------------------------------------------------------------------
-var allTrips = [];
-var nonCanceledTrips = [];
-var canceledStatuses = [true, false, false, false, false];//more false options so that the amount of canceled trips is minor
+// ------------------------------------------------------------------------------
+// TRIPS' DATA
+// ------------------------------------------------------------------------------
+const allTrips = [];
+const nonCanceledTrips = [];
+const canceledStatuses = [true, false, false, false, false]; // more false options so that the amount of canceled trips is minor
 
-for (i = 0; i < amountOfTrips; i++) 
-{
-	var tripId = generateMongoObjectId();
-	var city = faker.address.city();
-	var manager_Id = getRandomArrayValue(managersIds);
-	var tripPrice = 0;
-	var canceled = getRandomArrayValue(canceledStatuses);
-	var cancelReason = (canceled == true) ? faker.lorem.sentence() : "";
-	var publication_date = faker.date.future(years = 3, refDate = threeYearsAgo);
-	var start_date = faker.date.future(years = 3, refDate = publication_date);
-	var end_date = faker.date.future(years = 3, refDate = start_date);
+for (let i = 0; i < amountOfTrips; i++) {
+  const tripId = generateMongoObjectId();
+  const city = faker.address.city();
+  const managerId = getRandomArrayValue(managersIds);
+  let tripPrice = 0;
+  const canceled = getRandomArrayValue(canceledStatuses);
+  const cancelReason = (canceled === true) ? faker.lorem.sentence() : '';
+  const publicationDate = faker.date.future(/* years */ 3, /* refDate */ threeYearsAgo);
+  const startDate = faker.date.future((/* years */ 3), /* refDate */ publicationDate);
+  const endDate = faker.date.future((/* years */ 3), /* refDate */ startDate);
 
-	//stages start
-	var allTripStages = [];
-	for (j = 0; j < amountOfStagesByTrip; j++)
-	{
-		var price = Number(faker.commerce.price(min = minumunStagePrice, max = maximunStagePrice));
-		tripPrice += price;
+  // stages start
+  const allTripStages = [];
+  for (let j = 0; j < amountOfStagesByTrip; j++) {
+    const price = Number(faker.commerce.price((/* min */minumunStagePrice), (/* max */ maximunStagePrice)));
 
-		var newStage = {
-			title: "Zone "+(j+1)+" of city "+city,
-			description: faker.lorem.paragraph(),
-			price: price
-		};
-		allTripStages.push(newStage)
-	} 
-	//stages end
+    tripPrice += price;
 
-	var newTrip = {
-		_id: tripId,
-		ticker: faker.datatype.string(11),
-		title: "A trip to "+city,
-		description: faker.lorem.paragraph(),
-		price: tripPrice,
-		publication_date: publication_date ,
-		start_date: start_date, 
-		end_date: end_date,
-		manager_Id: manager_Id,
-		stages: allTripStages,
-		canceled: canceled,
-		cancelReason: cancelReason
-	};
-	//console.log(newTrip);
+    const newStage = {
+      title: 'Zone ' + (j + 1) + ' of city ' + city,
+      description: faker.lorem.paragraph(),
+      price: price
+    };
+    allTripStages.push(newStage);
+  }
+  // stages end
 
-	if(canceled == false)nonCanceledTrips.push(newTrip);
-	allTrips.push(newTrip);
+  const newTrip = {
+    _id: {
+      $oid: tripId
+    },
+    ticker: faker.datatype.string(11),
+    title: 'A trip to ' + city,
+    description: faker.lorem.paragraph(),
+    price: tripPrice,
+    publication_date: publicationDate,
+    start_date: startDate,
+    end_date: endDate,
+    manager_Id: managerId,
+    stages: allTripStages,
+    canceled: canceled,
+    cancelReason: cancelReason
+  };
+  // console.log(newTrip);
+
+  if (canceled === false) nonCanceledTrips.push(newTrip);
+  allTrips.push(newTrip);
 }
 
 const tripsJsonData = formatJsonToBeWrittenToAFile(allTrips);
-var tripsJsonDataFilePath = "./massiveLoad/2-trips.json";
+const tripsJsonDataFilePath = './massiveLoad/2-trips.json';
 saveJsonFile(tripsJsonData, tripsJsonDataFilePath);
 
-//------------------------------------------------------------------------------
-//APPLICATIONS' DATA
-//------------------------------------------------------------------------------
-var allApplications = [];
-var statuses = ['PENDING', 'DUE', 'ACCEPTED', 'CANCELLED', 'REJECTED'];
-var maximunPossibleApplications = nonCanceledTrips.length * explorersIds.length;
-var amountOfApplications = Math.min(amountOfApplications, maximunPossibleApplications);
-console.log("amountOfApplications");
+// ------------------------------------------------------------------------------
+// APPLICATIONS' DATA
+// ------------------------------------------------------------------------------
+const allApplications = [];
+const applicationStatuses = ['PENDING', 'DUE', 'ACCEPTED', 'CANCELLED', 'REJECTED'];
+const maximunPossibleApplications = nonCanceledTrips.length * explorersIds.length;
+amountOfApplications = Math.min(
+  amountOfApplications,
+  maximunPossibleApplications
+);
+console.log('amountOfApplications');
 console.log(amountOfApplications);
 
-for (i = 0; i < amountOfApplications; i++) 
-{
-	var trip = null;
-	var explorer_Id = null;
-	var passedVerificationExplorerHasNotYetApplied = false;
+for (let i = 0; i < amountOfApplications; i++) {
+  let trip = null;
+  let explorerId = null;
+  let passedVerificationExplorerHasNotYetApplied = false;
 
-	while(passedVerificationExplorerHasNotYetApplied == false)
-	{
-		trip = getRandomArrayValue(nonCanceledTrips);
-		explorer_Id = getRandomArrayValue(explorersIds);
+  while (passedVerificationExplorerHasNotYetApplied === false) {
+    trip = getRandomArrayValue(nonCanceledTrips);
+    explorerId = getRandomArrayValue(explorersIds);
 
-		var explorerAlreadyApplied = allApplications.filter(function(application){
-			return application.trip_Id == trip._id && application.explorer_Id == explorer_Id;
-		});
-		// console.log("explorerAlreadyApplied");
-		// console.log(explorerAlreadyApplied);
-		// console.log(explorerAlreadyApplied.length);
-		if(explorerAlreadyApplied.length == 0)
-		{
-			passedVerificationExplorerHasNotYetApplied = true;
-		}
-	}
+    const explorerAlreadyApplied = allApplications.filter(function (application) {
+      return (
+        application.trip_Id === trip._id &&
+        application.explorer_Id === explorerId
+      );
+    });
+    // console.log("explorerAlreadyApplied");
+    // console.log(explorerAlreadyApplied);
+    // console.log(explorerAlreadyApplied.length);
+    if (explorerAlreadyApplied.length === 0) {
+      passedVerificationExplorerHasNotYetApplied = true;
+    }
+  }
 
-	var status = getRandomArrayValue(statuses);
-	var publication_date = trip.publication_date;
-	var start_date = trip.start_date;
-	var applicationMoment = (faker.date.betweens(from = publication_date, to = start_date, num = 1))[0];
-	var rejected_reason = (status == 'REJECTED') ? faker.lorem.sentence() : "";
-	
-	var newApplication = {
-		applicationMoment: applicationMoment,
-		comments: faker.lorem.sentence(),
-		status: status,
-		explorer_Id: explorer_Id,
-		trip_Id: trip._id,
-		rejected_reason: rejected_reason,
-	};
-	// console.log(newApplication);
-	
-	allApplications.push(newApplication);
+  const applicationStatus = getRandomArrayValue(applicationStatuses);
+  const publicationDate = trip.publication_date;
+  const startDate = trip.start_date;
+  const applicationMoment = faker.date.betweens(
+    (/* from */ publicationDate),
+    (/* to */ startDate),
+    (/* num */ 1)
+  )[0];
+  const rejectedReason = (applicationStatus === 'REJECTED') ? faker.lorem.sentence() : '';
+
+  const newApplication = {
+    applicationMoment: applicationMoment,
+    comments: faker.lorem.sentence(),
+    status: applicationStatus,
+    explorer_Id: explorerId,
+    trip_Id: trip._id.$oid,
+    manager_Id: trip.manager_Id,
+    deleted: false,
+    rejected_reason: rejectedReason,
+    tripPrice: trip.price
+  };
+  // console.log(newApplication);
+
+  allApplications.push(newApplication);
 }
 
 const applciationsJsonData = formatJsonToBeWrittenToAFile(allApplications);
-var applciationsJsonDataFilePath = "./massiveLoad/3-applications.json";
+const applciationsJsonDataFilePath = './massiveLoad/3-applications.json';
 saveJsonFile(applciationsJsonData, applciationsJsonDataFilePath);
 
-//------------------------------------------------------------------------------
-//FINDERS' DATA
-//------------------------------------------------------------------------------
-var allFinders = [];
+// ------------------------------------------------------------------------------
+// FINDERS' DATA
+// ------------------------------------------------------------------------------
+const allFinders = [];
 
-for (i = 0; i < explorersIds.length; i++) 
-{
-	var explorer_Id = explorersIds[i];
+for (let i = 0; i < explorersIds.length; i++) {
+  const explorerId = explorersIds[i];
 
-	var keyWord = faker.lorem.word();
-	var priceLowerBound = Number(faker.commerce.price(min = minimunFinderPriceLowerBound), max = maximunFinderPriceLowerBound);
-	var priceUpperBound = Number(faker.commerce.price(min = (priceLowerBound + 1)), max = maximunFinderPriceUpperBound);
-	var dateLowerBound = faker.date.future(years = 3, refDate = threeYearsAgo);
-	var dateUpperBound = faker.date.future(years = 3, refDate = dateLowerBound);
+  const keyWord = faker.lorem.word();
+  const priceLowerBound = Number(
+    faker.commerce.price((/* min */ minimunFinderPriceLowerBound)),
+    (/* max */ maximunFinderPriceLowerBound)
+  );
+  const priceUpperBound = Number(
+    faker.commerce.price((/* min */ priceLowerBound + 1)),
+    (/* max */ maximunFinderPriceUpperBound)
+  );
+  const dateLowerBound = faker.date.future(
+    (/* years */ 3),
+    (/* refDate */ threeYearsAgo)
+  );
+  const dateUpperBound = faker.date.future(
+    (/* years */ 3),
+    (/* refDate */ dateLowerBound)
+  );
 
-	var results = allTrips.filter(function (trip) {
+  const results = allTrips.filter(function (trip) {
+    const priceMatchs =
+      priceLowerBound <= trip.price && trip.price <= priceUpperBound;
+    const dateMatches =
+      new Date(dateLowerBound) <= new Date(trip.start_date) &&
+      new Date(trip.end_date) <= new Date(dateUpperBound);
+    const keyWordMatches =
+      trip.ticker.includes(keyWord) ||
+      trip.title.includes(keyWord) ||
+      trip.description.includes(keyWord);
 
-		var priceMatchs = priceLowerBound <= trip.price && trip.price <= priceUpperBound;
-		var dateMatches = (new Date(dateLowerBound)) <= (new Date(trip.start_date)) && (new Date(trip.end_date)) <= (new Date(dateUpperBound));
-		var keyWordMatches = trip.ticker.includes(keyWord) || trip.title.includes(keyWord) || trip.description.includes(keyWord);
+    return priceMatchs && dateMatches && keyWordMatches;
+  });
 
-		return priceMatchs && dateMatches && keyWordMatches;
-	});
+  const newFinder = {
+    keyWord: keyWord,
+    priceLowerBound: priceLowerBound,
+    priceUpperBound: priceUpperBound,
+    dateLowerBound: dateLowerBound,
+    dateUpperBound: dateUpperBound,
+    results: results,
+    explorer_Id: explorerId
+  };
+  // console.log(newFinder);
 
-	var newFinder = {
-		keyWord: keyWord,
-		priceLowerBound: priceLowerBound,
-		priceUpperBound: priceUpperBound,
-		dateLowerBound: dateLowerBound,
-		dateUpperBound: dateUpperBound,
-		results: results,
-		explorer_Id: explorer_Id,
-	};
-	//console.log(newFinder);
-	
-	allFinders.push(newFinder);
+  allFinders.push(newFinder);
 }
 
 const findersJsonData = formatJsonToBeWrittenToAFile(allFinders);
-var findersJsonDataFilePath = "./massiveLoad/4-finders.json";
+const findersJsonDataFilePath = './massiveLoad/4-finders.json';
 saveJsonFile(findersJsonData, findersJsonDataFilePath);

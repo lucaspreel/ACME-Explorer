@@ -181,6 +181,64 @@ module.exports = function (app) {
    */
     .delete(sponsorships.delete_a_sponsorship);
 
+  app.route('/v1/sponsorships/sponsors/:sponsorID')
+
+  /**
+   * @swagger
+   * /v1/sponsorships/sponsors/{sponsorId}:
+   *    get:
+   *      summary: Return all sponsorships of a sponsor.
+   *      tags: [Sponsorship]
+   *      parameters:
+   *        - in: path
+   *          name: sponsorId
+   *          schema:
+   *            type: string
+   *          required: true
+   *          description: Sponsor id.
+   *      responses:
+   *        200:
+   *          description: Sponsorships of the sponsor successfully retrieved.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: array
+   *                items:
+   *                  $ref: '#/components/schemas/Sponsorship'
+   *        500:
+   *          description: Error trying to get all sponsorships of this sponsor.
+   */
+    .get(sponsorships.list_sponsorships_of_a_sponsor);
+
+  app.route('/v1/sponsorships/trips/:tripTicker')
+
+  /**
+   * @swagger
+   * /v1/sponsorships/trips/{tripTicker}:
+   *    get:
+   *      summary: Return all sponsorships of a trip.
+   *      tags: [Sponsorship]
+   *      parameters:
+   *        - in: path
+   *          name: tripTicker
+   *          schema:
+   *            type: string
+   *          required: true
+   *          description: Ticker of a trip.
+   *      responses:
+   *        200:
+   *          description: Sponsorships of the trip successfully retrieved.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: array
+   *                items:
+   *                  $ref: '#/components/schemas/Sponsorship'
+   *        500:
+   *          description: Error trying to get all sponsorships of this trip.
+   */
+    .get(sponsorships.list_sponsorships_of_a_trip);
+
   app.route('/v1/sponsorships/:sponsorshipId/pay')
 
   /**
