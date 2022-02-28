@@ -1,10 +1,10 @@
 const { faker } = require('@faker-js/faker');
 const fs = require('fs');
 
-const amountOfActors = 10000;
-const amountOfTrips = 10000;
+const amountOfActors = 10;
+const amountOfTrips = 10;
 const amountOfStagesByTrip = 3;
-let amountOfApplications = 10000;
+let amountOfApplications = 10;
 
 const minumunStagePrice = 10;
 const maximunStagePrice = 50;
@@ -62,7 +62,8 @@ const saveJsonFile = function (jsonData, filePath) {
 // ------------------------------------------------------------------------------
 const languages = ['ENGLISH', 'SPANISH'];
 const statuses = [true, false];
-const roles = ['ADMINISTRATOR', 'MANAGER', 'EXPLORER', 'SPONSOR'];
+//more chances to occur MANAGER and EXPLORER
+const roles = ['ADMINISTRATOR', 'SPONSOR', 'MANAGER', 'MANAGER', 'EXPLORER', 'EXPLORER', 'EXPLORER', 'EXPLORER', 'EXPLORER'];
 
 const allActors = [];
 const managersIds = [];
@@ -146,7 +147,9 @@ for (let i = 0; i < amountOfTrips; i++) {
     publication_date: publicationDate,
     start_date: startDate,
     end_date: endDate,
-    manager_Id: managerId,
+    manager_Id: {
+      $oid: managerId
+    },
     stages: allTripStages,
     canceled: canceled,
     cancelReason: cancelReason
@@ -211,9 +214,11 @@ for (let i = 0; i < amountOfApplications; i++) {
     applicationMoment: applicationMoment,
     comments: faker.lorem.sentence(),
     status: applicationStatus,
-    explorer_Id: explorerId,
-    trip_Id: trip._id.$oid,
-    manager_Id: trip.manager_Id,
+    explorer_Id: {
+      $oid: explorerId
+    },
+    trip_Id: trip._id,
+    manager_Id: trip.manager_Id,//this is already object type
     deleted: false,
     rejected_reason: rejectedReason,
     tripPrice: trip.price
@@ -274,7 +279,9 @@ for (let i = 0; i < explorersIds.length; i++) {
     dateLowerBound: dateLowerBound,
     dateUpperBound: dateUpperBound,
     results: results,
-    explorer_Id: explorerId
+    explorer_Id: {
+      $oid: explorerId
+    }
   };
   // console.log(newFinder);
 

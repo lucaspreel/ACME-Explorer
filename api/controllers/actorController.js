@@ -244,6 +244,7 @@ exports.list_explorer_stats = function (req, res) {
     */
 
     Application.aggregate([
+      //inner join with trips
       {
           $lookup :
           {
@@ -253,9 +254,11 @@ exports.list_explorer_stats = function (req, res) {
               as: "trip",
           }
       },
+      //convert trip array to single json object
       {
           $unwind: "$trip"
       },
+      //extract relevant fields and transform stringDate to date type
       {
           $project: {
               explorer_Id: "$explorer_Id",
@@ -263,6 +266,8 @@ exports.list_explorer_stats = function (req, res) {
               "applicationMoment": { $toDate: "$applicationMoment"}
           }
       },
+
+      //extract year and month from date
       {
           $project: {
               explorer_Id: "$explorer_Id",
@@ -271,12 +276,16 @@ exports.list_explorer_stats = function (req, res) {
               month: {$month: "$applicationMoment"}
           }
       },
+
+      //group data by explorer, year and month
       {
           $group: {
               _id: {explorer_Id: "$explorer_Id", year: '$year', month: '$month'},
               moneySpent : {$sum : "$tripPrice"}
           }
       },
+
+      //put all fields in first level, now we have month expense
       {
           $project: {
               _id : 0 ,
@@ -286,9 +295,203 @@ exports.list_explorer_stats = function (req, res) {
               moneySpent: "$moneySpent",
           }
       },
+
+      //order data
+      /*
       {
-          $sort: { explorer_Id: 1, year: -1, month: -1}
+          $sort: { explorer_Id: 1, year: 1, month: 1}
+      },
+      */
+
+      //up to this point the data is separated by months correctly
+
+      /*
+      facet to execute two group data by months and year separately
+      it works, the result is two arrays, one for months data and one for years data
+      but I couldn't join the resulting pipelines to have a single object for every explorer
+      */
+      /*
+      {
+          $facet: {
+              "monthExpense": [
+                  //group by explorer and create sub object with month expense
+                  {
+                      $group: {
+                          _id: "$explorer_Id",
+                          "months": {
+                              $addToSet: {
+                                  year: "$year",
+                                  month: "$month",
+                                  moneySpent: "$moneySpent"
+                              }
+                          }
+                      }
+                  },
+                  //rename fields, delete grouping id
+                  {
+                      $project: {
+                          _id: 0,
+                          explorer_Id: "$_id",
+                          months: "$months"
+                      }
+                  }
+              ],
+              "yearExpense": [
+                  {
+                      //group by explorer and year
+                      $group: {
+                          _id: {explorer_Id: "$explorer_Id", year: '$year'},
+                          moneySpent : {$sum : "$moneySpent"}
+                      }
+                  },
+                  //put all fields in first level, now we have year expense
+                  {
+                      $project: {
+                          _id : 0 ,
+                          explorer_Id: "$_id.explorer_Id",
+                          year: "$_id.year",
+                          moneySpent: "$moneySpent",
+                      }
+                  },
+                  //create sub object with year expense
+                  {
+                      $group: {
+                          _id: "$explorer_Id",
+                          "years": {
+                              $addToSet: {
+                                  year: "$year",
+                                  moneySpent: "$moneySpent"
+                              }
+                          }
+                      }
+                  },
+                  //rename fields, delete grouping id
+                  {
+                      $project: {
+                          _id: 0,
+                          explorer_Id: "$_id",
+                          years: "$years"
+                      }
+                  }
+              ]
+          }
       }
+      */
+
+      //other way to do the job without using $facet
+      //in this case every explorer has an object in the resulting collection
+      {
+          $group: {
+              _id: {explorer_Id: "$explorer_Id", year: '$year'},
+              "months": {
+                  $addToSet: {
+                      year: "$year",
+                      month: "$month",
+                      moneySpent: "$moneySpent"
+                  }
+              },
+              moneySpent : {$sum : "$moneySpent"}
+          }
+      },
+      {
+          $project: {
+              _id : 0 ,
+              explorer_Id: "$_id.explorer_Id",
+              year: "$_id.year",
+              months: "$months",
+              moneySpent : {$sum : "$moneySpent"}
+          }
+      },
+      {
+          $group: {
+              _id: {explorer_Id: "$explorer_Id"},
+              "months": {
+                  $addToSet: "$months"
+              },
+              "years": {
+                  $addToSet: {
+                      year: "$year",
+                      moneySpent : {$sum : "$moneySpent"}
+                  }
+              },
+          }
+      },
+      {
+          $project: {
+              _id : 0 ,
+              explorer_Id: "$_id.explorer_Id",
+              months: "$months",
+              years: "$years",
+          }
+      },
+
+      //up to this point the data is ready as required, but lack of order 
+      //and has useless nested arrays
+
+      //unwind months array to sort it by year and month
+      { $unwind: "$months" },
+      { $unwind: "$months" },
+      {
+          $sort: { explorer_Id: 1, "months.year": 1, "months.month": 1}
+      },
+      {
+          $group: {
+              _id: {explorer_Id: "$explorer_Id"},
+              //"months": {
+              //    $addToSet: "$months"
+              //},
+
+              //when you unwind a field this has to be added via $push
+              months: {$push:"$months"},
+              //years: {$push:"$years"},
+
+              //anothe array not unwinded has to be added via $addToSet
+              "years": {
+                  $addToSet: "$years"
+              },
+
+          }
+      },
+      {
+          $project: {
+              _id : 0 ,
+              explorer_Id: "$_id.explorer_Id",
+              months: "$months",
+              years: "$years",
+          }
+      },
+
+      //unwind years array to sort it by year
+      { $unwind: "$years" },
+      { $unwind: "$years" },
+      {
+          $sort: { explorer_Id: 1, "years.year": 1}
+      },
+      {
+          $group: {
+              _id: {explorer_Id: "$explorer_Id"},
+
+              "months": {
+                  $addToSet: "$months"
+              },
+              //months: {$push:"$months"},
+              years: {$push:"$years"},
+              //"years": {
+              //    $addToSet: "$years"
+              //},
+          }
+      },
+
+      {
+          $project: {
+              _id : 0 ,
+              explorer_Id: "$_id.explorer_Id",
+              months: { $first: "$months" },
+              years: "$years",
+              moneySpent: { $sum: "$years.moneySpent" }
+          }
+      }
+
   ])
   .exec((err, results) => {
       if (err) 
