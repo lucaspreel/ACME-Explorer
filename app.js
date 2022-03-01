@@ -12,9 +12,10 @@ const Finder = require('./api/models/finderModel');
 
 const bodyParser = require('body-parser');
 
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
+express.urlencoded({ extended: true })
 app.use(bodyParser.json({limit: '300mb'}));
-app.use(express.urlencoded({limit: '300mb'}));
+app.use(express.urlencoded({limit: '300mb', extended: true}));
 
 // swagger documentation config - start
 const swaggerUI = require('swagger-ui-express');
