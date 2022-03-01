@@ -1,6 +1,6 @@
 {
-  "thunder-client.workspaceRelativePath": "./example_api_client",
-  "thunder-client.customLocation": "./example_api_client",
+  "thunder-client.workspaceRelativePath": ".",
+  "thunder-client.customLocation": ".",
   "thunder-client.loadFromProject": true,
   "thunder-client.enableSaveOption": true,
   "eslint.alwaysShowStatus": true,
