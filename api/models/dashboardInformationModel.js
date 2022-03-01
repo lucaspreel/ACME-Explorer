@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const ApplicationsRatioPerStatus = new mongoose.Schema({
+const ApplicationsRatioPerStatusSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['PENDING', 'DUE', 'ACCEPTED', 'CANCELLED', 'REJECTED']
@@ -12,7 +12,7 @@ const ApplicationsRatioPerStatus = new mongoose.Schema({
   }
 }, { strict: false });
 
-const DispersionMeasures = new mongoose.Schema({
+const DispersionMeasuresSchema = new mongoose.Schema({
   average: {
     type: Number
   },
@@ -28,24 +28,21 @@ const DispersionMeasures = new mongoose.Schema({
 }, { strict: false });
 
 const DashboardInformationSchema = new mongoose.Schema({
-  tripsPerManager: {
-    type: Schema.Types.ObjectId,
-    ref: 'DispersionMeasures'
+  tripsPerManager: {DispersionMeasuresSchema},
+  applicationsPerTrip: {DispersionMeasuresSchema},
+  priceOfTrips: {DispersionMeasuresSchema},
+  applicationsRatioPerStatus: [ApplicationsRatioPerStatusSchema],
+  computationMoment: {
+    type: Date,
+    default: Date.now
   },
-  applicationsPerTrip: {
-    type: Schema.Types.ObjectId,
-    ref: 'DispersionMeasures'
-  },
-  priceOfTrips: {
-    type: Schema.Types.ObjectId,
-    ref: 'DispersionMeasures'
-  },
-  applicationsRatioPerStatus: [{
-    type: Schema.Types.ObjectId,
-    ref: 'applicationsRatioPerStatus'
-  }]
+  rebuildPeriod: {
+    type: String
+  }
 }, { strict: false });
 
-module.exports = mongoose.model('ApplicationsRatioPerStatus', ApplicationsRatioPerStatus);
-module.exports = mongoose.model('DispersionMeasures', DispersionMeasures);
+DashboardInformationSchema.index({ computationMoment: -1 })
+
+module.exports = mongoose.model('ApplicationsRatioPerStatus', ApplicationsRatioPerStatusSchema);
+module.exports = mongoose.model('DispersionMeasures', DispersionMeasuresSchema);
 module.exports = mongoose.model('DashboardInformation', DashboardInformationSchema);

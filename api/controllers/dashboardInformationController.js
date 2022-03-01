@@ -10,3 +10,4 @@ exports.read_dashboard_information = function (req, res) {
 exports.compute_dashboard_information = function (req, res) {
   console.log('compute_dashboard_information');
 };
+
