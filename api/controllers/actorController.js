@@ -3,7 +3,6 @@
 const mongoose = require('mongoose');
 const Actor = mongoose.model('Actors');
 const Application = mongoose.model('Application');
-const ExpensePeriod = mongoose.model('ExpensePeriod');
 const ExplorerStats = mongoose.model('ExplorerStats');
 
 exports.list_all_actors = function (req, res) {
@@ -486,8 +485,8 @@ exports.list_explorer_stats = function (req, res) {
           $project: {
               _id : 0 ,
               explorer_Id: "$_id.explorer_Id",
-              months: { $first: "$months" },
-              years: "$years",
+              monthExpense: { $first: "$months" },
+              yearExpense: "$years",
               moneySpent: { $sum: "$years.moneySpent" }
           }
       }
@@ -503,7 +502,36 @@ exports.list_explorer_stats = function (req, res) {
       } 
       else 
       {
+          /*
+          const es = new ExplorerStats({
+            explorerId: a,
+            yearExpense: [epy],
+            monthExpense: [epm]
+          });
+          es.save();
+          */
+
+          // console.log("results");
+          // console.log(results);
+          
+          // const results2 = JSON.stringify(results);
+          // const results3 = JSON.parse(results2);
+
+          // console.log("results3");
+          // console.log(results3);
+          
+
+          /*
+          ExplorerStats.insertMany(results)
+          .then(function(){
+              console.log("Data inserted")  // Success
+              res.send(results);
+          }).catch(function(error){
+              console.log(error)      // Failure
+          });
+          */
           res.send(results);
+          
       }
   });
 

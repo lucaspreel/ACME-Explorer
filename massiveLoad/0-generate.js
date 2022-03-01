@@ -1,5 +1,6 @@
 const { faker } = require('@faker-js/faker');
 const fs = require('fs');
+var functions = require('./functions');
 
 const amountOfActors = 10;
 const amountOfTrips = 10;
@@ -19,18 +20,6 @@ threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
 // ------------------------------------------------------------------------------
 // FUNCTIONS
 // ------------------------------------------------------------------------------
-const generateMongoObjectId = function () {
-  const timestamp = ((new Date().getTime() / 1000) | 0).toString(16);
-  return (
-    timestamp +
-    'xxxxxxxxxxxxxxxx'
-      .replace(/[x]/g, function () {
-        return ((Math.random() * 16) | 0).toString(16);
-      })
-      .toLowerCase()
-  );
-};
-
 const getRandomArrayValue = function (array) {
   return array[Math.floor(Math.random() * array.length)];
 };
@@ -73,7 +62,7 @@ for (let i = 0; i < amountOfActors; i++) {
   const language = getRandomArrayValue(languages);
   const isActive = getRandomArrayValue(statuses);
   const role = getRandomArrayValue(roles);
-  const actorId = generateMongoObjectId();
+  const actorId = functions.generateMongoObjectId();
 
   if (role === 'MANAGER') managersIds.push(actorId);
   if (role === 'EXPLORER') explorersIds.push(actorId);
@@ -110,7 +99,7 @@ const nonCanceledTrips = [];
 const canceledStatuses = [true, false, false, false, false]; // more false options so that the amount of canceled trips is minor
 
 for (let i = 0; i < amountOfTrips; i++) {
-  const tripId = generateMongoObjectId();
+  const tripId = functions.generateMongoObjectId();
   const city = faker.address.city();
   const managerId = getRandomArrayValue(managersIds);
   let tripPrice = 0;
