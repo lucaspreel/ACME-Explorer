@@ -521,7 +521,7 @@ exports.list_explorer_stats = function (req, res) {
           // console.log(results3);
           
 
-          /*
+          
           ExplorerStats.insertMany(results)
           .then(function(){
               console.log("Data inserted")  // Success
@@ -529,8 +529,8 @@ exports.list_explorer_stats = function (req, res) {
           }).catch(function(error){
               console.log(error)      // Failure
           });
-          */
-          res.send(results);
+          
+          //res.send(results);
           
       }
   });
