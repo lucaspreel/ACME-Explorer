@@ -113,7 +113,10 @@ ActorSchema.methods.verifyPassword = function (password, cb) {
 };
 
 const MonthExpenseSchema = new Schema({
-  period: {
+  year: {
+    type: Number
+  },
+  month: {
     type: Number
   },
   moneySpent: {
@@ -122,7 +125,7 @@ const MonthExpenseSchema = new Schema({
 });
 
 const YearExpenseSchema = new Schema({
-  period: {
+  year: {
     type: Number
   },
   moneySpent: {
@@ -135,14 +138,8 @@ const ExplorerStatsSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Actors'
   },
-  monthExpense: [{
-    type: Schema.Types.ObjectId,
-    ref: 'MonthExpense'
-  }],
-  yearExpense: [{
-    type: Schema.Types.Array,
-    // ref: 'YearExpense'
-  }],
+  monthExpense: [MonthExpenseSchema],
+  yearExpense: [YearExpenseSchema],
   moneySpent: {
     type: Number
   }
