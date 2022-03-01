@@ -9,6 +9,7 @@ const SystemParameters = require('./api/models/systemParametersModel');
 const Trip = require('./api/models/tripModel');
 const Application = require('./api/models/applicationModel');
 const Finder = require('./api/models/finderModel');
+const DashboardInformation = require('./api/models/dashboardInformationModel')
 
 const bodyParser = require('body-parser');
 
@@ -35,7 +36,8 @@ const swaggerSpec = {
       `${path.join(__dirname, './api/routes/actorRoutes.js')}`,
       `${path.join(__dirname, './api/routes/sponsorshipRoutes.js')}`,
       `${path.join(__dirname, './api/routes/systemParametersRoutes.js')}`,
-      `${path.join(__dirname, './api/routes/applicationRoutes.js')}`
+      `${path.join(__dirname, './api/routes/applicationRoutes.js')}`,
+      `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`
   ]
 };
 
@@ -45,11 +47,13 @@ const routesActors = require('./api/routes/actorRoutes');
 const routesSponsorships = require('./api/routes/sponsorshipRoutes');
 const routesSystemParameters = require('./api/routes/systemParametersRoutes');
 const routesApplication = require('./api/routes/applicationRoutes');
+const routesDashboardInformation = require('./api/routes/dashboardInformationRoutes');
 
 routesActors(app);
 routesSponsorships(app);
 routesSystemParameters(app);
 routesApplication(app);
+routesDashboardInformation(app);
 
 // MongoDB URI building
 const mongoDBUser = process.env.mongoDBUser || 'ACME_EXPLORER_ADMIN_USER';
