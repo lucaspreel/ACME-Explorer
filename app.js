@@ -9,7 +9,7 @@ const SystemParameters = require('./api/models/systemParametersModel');
 const Trip = require('./api/models/tripModel');
 const Application = require('./api/models/applicationModel');
 const Finder = require('./api/models/finderModel');
-const DashboardInformation = require('./api/models/dashboardInformationModel')
+const DashboardInformation = require('./api/models/dashboardInformationModel');
 
 const bodyParser = require('body-parser');
 
