@@ -16,3 +16,6 @@ npm install @faker-js/faker --save-dev
 
 //detectar errores en sintaxis
 npx semistandard api/ --fix
+
+//generar datos de prueba
+node .\massiveLoad\0-generate.js

@@ -13,8 +13,10 @@ const DashboardInformation = require('./api/models/dashboardInformationModel')
 
 const bodyParser = require('body-parser');
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
+express.urlencoded({ extended: true })
+app.use(bodyParser.json({limit: '300mb'}));
+app.use(express.urlencoded({limit: '300mb', extended: true}));
 
 // swagger documentation config - start
 const swaggerUI = require('swagger-ui-express');
@@ -34,6 +36,7 @@ const swaggerSpec = {
       `${path.join(__dirname, './api/routes/actorRoutes.js')}`,
       `${path.join(__dirname, './api/routes/sponsorshipRoutes.js')}`,
       `${path.join(__dirname, './api/routes/systemParametersRoutes.js')}`,
+      `${path.join(__dirname, './api/routes/applicationRoutes.js')}`,
       `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`
   ]
 };
@@ -43,11 +46,13 @@ app.use('/api-doc', swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)))
 const routesActors = require('./api/routes/actorRoutes');
 const routesSponsorships = require('./api/routes/sponsorshipRoutes');
 const routesSystemParameters = require('./api/routes/systemParametersRoutes');
-const routesDashboardInformation = require('./api/routes/dashboardInformationRoutes')
+const routesApplication = require('./api/routes/applicationRoutes');
+const routesDashboardInformation = require('./api/routes/dashboardInformationRoutes');
 
 routesActors(app);
 routesSponsorships(app);
 routesSystemParameters(app);
+routesApplication(app);
 routesDashboardInformation(app);
 
 // MongoDB URI building

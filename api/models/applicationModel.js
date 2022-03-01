@@ -10,17 +10,17 @@ const ApplicationSchema = new Schema({
     type: String,
     required: 'Kindly enter the comments of the application'
   },
-  status: [{
+  status: {
     type: String,
     default: 'PENDING',
     enum: ['PENDING', 'DUE', 'ACCEPTED', 'CANCELLED', 'REJECTED']
-  }],
+  },
   explorer_Id: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: 'explorer id required'
   },
   trip_Id: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: 'trip id required'
   },
   rejected_reason: {
@@ -28,8 +28,13 @@ const ApplicationSchema = new Schema({
   },
   tripPrice: {
     type: Number
+  },
+  manager_Id: {
+    type: String
+  },
+  deleted: {
+    type: Boolean
   }
-
 }, { strict: false });
 
 module.exports = mongoose.model('Application', ApplicationSchema);

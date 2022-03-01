@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 
 const mongooseDelete = require('mongoose-delete');
+var functions = require('../../massiveLoad/functions');
 
 const emailInUse = async function (email) {
   const user = await this.constructor.findOne({ email });
@@ -111,9 +112,18 @@ ActorSchema.methods.verifyPassword = function (password, cb) {
   });
 };
 
-const ExpensePeriodSchema = new Schema({
+const MonthExpenseSchema = new Schema({
   period: {
-    type: String
+    type: Number
+  },
+  moneySpent: {
+    type: Number
+  }
+});
+
+const YearExpenseSchema = new Schema({
+  period: {
+    type: Number
   },
   moneySpent: {
     type: Number
@@ -125,18 +135,52 @@ const ExplorerStatsSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Actors'
   },
-  yearExpense: [{
-    type: Schema.Types.ObjectId,
-    ref: 'ExpensePeriod'
-  }],
   monthExpense: [{
     type: Schema.Types.ObjectId,
-    ref: 'ExpensePeriod'
-  }]
-});
+    ref: 'MonthExpense'
+  }],
+  yearExpense: [{
+    type: Schema.Types.Array,
+    // ref: 'YearExpense'
+  }],
+  moneySpent: {
+    type: Number
+  }
+}); 
 
 ExplorerStatsSchema.index({ explorerId: 1 });
+/*
+ExplorerStatsSchema.pre('insertMany', function (next, docs) {
+  const allExplorerStats = docs;
+
+  allExplorerStats.map(function(singleExplorerStats){
+
+    
+    //console.log("mongoId");
+    //console.log(mongoId);
+    let allMonthsExpense = singleExplorerStats.monthExpense;
+    allMonthsExpense.map(function(singleMonth){
+      let mongoId = functions.generateMongoObjectId();
+      singleMonth._id = {
+        $oid: mongoId
+      };
+      return singleMonth;
+    });
+
+    let allYearsExpense = singleExplorerStats.yearExpense;
+    //singleExplorerStats.monthExpense = JSON.parse(JSON.stringify(singleExplorerStats.monthExpense)); 
+    // singleExplorerStats.yearExpense = JSON.parse(JSON.stringify(singleExplorerStats.yearExpense)); 
+    console.log("singleExplorerStats");
+    console.log(singleExplorerStats);
+    return singleExplorerStats;
+  });
+
+  // explorerStats.years = null;
+  next();
+});
+*/
 
 module.exports = mongoose.model('Actors', ActorSchema);
-module.exports = mongoose.model('ExpensePeriod', ExpensePeriodSchema);
+module.exports = mongoose.model('MonthExpense', MonthExpenseSchema);
+module.exports = mongoose.model('YearExpense', YearExpenseSchema);
 module.exports = mongoose.model('ExplorerStats', ExplorerStatsSchema);
