@@ -88,6 +88,4 @@ mongoose.connection.on('open', function () {
 mongoose.connection.on('error', function (err) {
   console.error('DB init error ' + err);
 });
-console.log("Let's create dashboard");
 DashboardInformationTools.createDashboardInformationJob();
-console.log("Dashboard created");

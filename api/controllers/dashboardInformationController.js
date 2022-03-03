@@ -55,7 +55,6 @@ exports.read_last_dashboard = function (req, res) {
 };
 
 function createDashboardInformationJob () {
-  console.log('Create dashboardInformation');
   computeDashboardInformationJob = new CronJob(rebuildPeriod, function () {
     console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod)
     const newDashboardInformation = new DashboardInformation();
@@ -68,13 +67,11 @@ function createDashboardInformationJob () {
       if (err) {
         console.log('Error computing dashboardInformation: ' + err);
       } else {
-        console.log("Results: "+JSON.stringify(results));
         newDashboardInformation.tripsPerManager = results[0];
         newDashboardInformation.applicationsPerTrip = results[1];
         newDashboardInformation.priceOfTrips = results[2];
         newDashboardInformation.applicationsRatioPerStatus = results[3];
         newDashboardInformation.rebuildPeriod = rebuildPeriod;
-        console.log("New dashboard : "+newDashboardInformation);
 
         newDashboardInformation.save(function (err, dashboardInformation) {
           if (err) {
@@ -91,7 +88,6 @@ function createDashboardInformationJob () {
 module.exports.createDashboardInformationJob = createDashboardInformationJob;
 
 function computeTripsPerManager (callback) {
-  console.log('enter tripspermanager');
   const tripsPerManager = new DispersionMeasures();
   tripsPerManager.average = 10;
   tripsPerManager.minimum = 5;
