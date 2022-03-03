@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const ApplicationsRatioPerStatusSchema = new mongoose.Schema({
+const ApplicationsRatioPerStatusSchema = new Schema({
   status: {
     type: String,
     enum: ['PENDING', 'DUE', 'ACCEPTED', 'CANCELLED', 'REJECTED']
@@ -12,7 +12,7 @@ const ApplicationsRatioPerStatusSchema = new mongoose.Schema({
   }
 }, { strict: false });
 
-const DispersionMeasuresSchema = new mongoose.Schema({
+const DispersionMeasuresSchema = new Schema({
   average: {
     type: Number
   },
@@ -27,10 +27,10 @@ const DispersionMeasuresSchema = new mongoose.Schema({
   }
 }, { strict: false });
 
-const DashboardInformationSchema = new mongoose.Schema({
-  tripsPerManager: {DispersionMeasuresSchema},
-  applicationsPerTrip: {DispersionMeasuresSchema},
-  priceOfTrips: {DispersionMeasuresSchema},
+const DashboardInformationSchema = new Schema({
+  tripsPerManager: { DispersionMeasuresSchema },
+  applicationsPerTrip: { DispersionMeasuresSchema },
+  priceOfTrips: { DispersionMeasuresSchema },
   applicationsRatioPerStatus: [ApplicationsRatioPerStatusSchema],
   computationMoment: {
     type: Date,
@@ -41,7 +41,7 @@ const DashboardInformationSchema = new mongoose.Schema({
   }
 }, { strict: false });
 
-DashboardInformationSchema.index({ computationMoment: -1 })
+DashboardInformationSchema.index({ computationMoment: -1 });
 
 module.exports = mongoose.model('ApplicationsRatioPerStatus', ApplicationsRatioPerStatusSchema);
 module.exports = mongoose.model('DispersionMeasures', DispersionMeasuresSchema);

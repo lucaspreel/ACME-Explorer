@@ -322,7 +322,7 @@ module.exports = function (app) {
    *        year: 2021
    *        month: 8
    *        moneySpent: 73
-   * 
+   *
    *    YearExpense:
    *      type: object
    *      properties:
@@ -335,7 +335,7 @@ module.exports = function (app) {
    *      example:
    *        year: 2021
    *        moneySpent: 146
-   * 
+   *
    *    ExplorerStats:
    *      type: object
    *      properties:
@@ -364,7 +364,7 @@ module.exports = function (app) {
    *        monthExpense:  [{"year":2021,"month":8,"moneySpent":73},{"year":2021,"month":12,"moneySpent":73},{"year":2022,"month":2,"moneySpent":104}]
    *        yearExpense: [{"year":2021,"moneySpent":146},{"year":2022,"moneySpent":104}]
    *        moneySpent: 250
-   * 
+   *
    *    ExplorersStats:
    *      type: object
    *      properties:

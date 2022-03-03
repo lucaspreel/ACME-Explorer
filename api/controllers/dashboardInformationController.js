@@ -3,11 +3,14 @@
 const mongoose = require('mongoose');
 const DashboardInformation = mongoose.model('DashboardInformation');
 
-exports.read_dashboard_information = function (req, res) {
-  console.log('read_dashboard_information');
+exports.read_all_dashboards = function (req, res) {
+  console.log('read_all_dashboards');
 };
 
-exports.compute_dashboard_information = function (req, res) {
-  console.log('compute_dashboard_information');
+exports.rebuild_period = function (req, res) {
+  console.log('rebuild period');
 };
 
+exports.read_last_dashboard = function (req, res) {
+  console.log('read last dashboards');
+};
