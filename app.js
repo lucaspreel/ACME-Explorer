@@ -10,6 +10,7 @@ const Trip = require('./api/models/tripModel');
 const Application = require('./api/models/applicationModel');
 const Finder = require('./api/models/finderModel');
 const DashboardInformation = require('./api/models/dashboardInformationModel');
+const DashboardInformationTools = require('./api/controllers/dashboardInformationController');
 
 const bodyParser = require('body-parser');
 
@@ -87,3 +88,6 @@ mongoose.connection.on('open', function () {
 mongoose.connection.on('error', function (err) {
   console.error('DB init error ' + err);
 });
+console.log("Let's create dashboard");
+DashboardInformationTools.createDashboardInformationJob();
+console.log("Dashboard created");

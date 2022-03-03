@@ -60,7 +60,7 @@ module.exports = function (app) {
 
   const dashboardInformation = require('../controllers/dashboardInformationController');
 
-  app.route('v1/dashboardInformation')
+  app.route('/v1/dashboardInformation')
   /**
    * @swagger
    * /v1/dashboardInformation:
@@ -76,6 +76,8 @@ module.exports = function (app) {
    *                type: array
    *                items:
    *                  $ref: '#/components/schemas/DashboardInformation'
+   *        403:
+   *          description: You don't have right role to carry out this operation. Only administrators can do that.
    *        500:
    *          description: Error trying to get all dashboards.
    */
@@ -105,7 +107,7 @@ module.exports = function (app) {
    */
     .post(dashboardInformation.rebuild_period);
 
-  app.route('v1/dashboardInformation/latest')
+  app.route('/v1/dashboardInformation/latest')
   /**
    * @swagger
    * /v1/dashboardInformation/latest:
@@ -120,6 +122,8 @@ module.exports = function (app) {
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/DashboardInformation'
+   *        403:
+   *          description: You don't have right role to carry out this operation. Only administrators can do that.
    *        404:
    *          description: Dashboard not found.
    *        500:
