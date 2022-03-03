@@ -60,7 +60,7 @@ module.exports = function (app) {
 
   const dashboardInformation = require('../controllers/dashboardInformationController');
 
-  app.route('v1//dashboardInformation')
+  app.route('v1/dashboardInformation')
   /**
    * @swagger
    * /v1/dashboardInformation:
@@ -105,7 +105,7 @@ module.exports = function (app) {
    */
     .post(dashboardInformation.rebuild_period);
 
-  app.route('v1//dashboardInformation/latest')
+  app.route('v1/dashboardInformation/latest')
   /**
    * @swagger
    * /v1/dashboardInformation/latest:
