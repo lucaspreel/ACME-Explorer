@@ -1,6 +1,10 @@
 'use strict';
 /* ---------------ACTOR---------------------- */
 const mongoose = require('mongoose');
+const async = require('async');
+const CronJob = require('cron').CronJob;
+const CronTime = require('cron').CronTime;
+
 const Actor = mongoose.model('Actors');
 const Application = mongoose.model('Application');
 const ExplorerStats = mongoose.model('ExplorerStats');
@@ -175,72 +179,74 @@ exports.unban_an_actor = function (req, res) {
 };
 
 exports.list_explorer_stats = function (req, res) {
-  /*
-  const a = new Actor({
-    name: 'John Charles',
-    surname: 'Road Grandson',
-    email: Date.now() + '@jcrg.com',
-    password: 1234567890,
-    language: 'SPANISH',
-    phone_number: 123456789,
-    address: 'The world is my playground',
-    role: 'EXPLORER',
-    isActive: true
-  });
-  const epm = new ExpensePeriod({
-    period: 'M01',
-    moneySpent: 100
-  });
-  const epy = new ExpensePeriod({
-    period: 'Y01',
-    moneySpent: 100
-  });
-  const es = new ExplorerStats({
-    explorerId: a,
-    yearExpense: [epy],
-    monthExpense: [epm]
-  });
-  es.save();
-  */
 
-  /*
-    var expectedDataSaved = [
-        {
-            explorer: "Actor A object",
-            yearExpense: [
-              {
-                  period: String,
-                  moneySpent: Number
-              },
-              {
-                  period: String,
-                  moneySpent: Number
-              },
-            ],
-            monthExpense: [
-              {
-                  period: String,
-                  moneySpent: Number
-              },
-              {
-                  period: String,
-                  moneySpent: Number
-              },
-            ]
-        }
-    ];
+  ExplorerStats.find({  }, function (err, actors) {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.json(actors);
+    }
+  });
 
-    var expectedResult = [
-        {
-            explorer: "Actor A object",
-            moneySpent: "a number"
-        },
-        {
-            explorer: "Actor B object",
-            moneySpent: "a number"
-        }
-    ];
-    */
+};
+
+exports.createExplorerStatsJob = function () {
+
+  let rebuildPeriod = '*/10 * * * * *';
+  let explorerStatsJob = new CronJob(rebuildPeriod, function () {
+
+    console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod)
+
+    async.parallel([
+      computeExplorerStats,
+    ], 
+    function (err, results) {
+
+      if (err) 
+      {
+        console.log('Error computing datawarehouse: ' + err)
+      } 
+      else 
+      {
+
+        let explorerStats = results[0];
+
+        //preparing data to masive upsert
+        const bulkUpsert = explorerStats.map(function(singleExplorerStats) {
+
+          var upsertConfig =   {
+            updateOne: {
+              filter: { explorerId: singleExplorerStats.explorerId },
+              update: singleExplorerStats,
+              upsert: true
+            }
+          };
+
+          return upsertConfig;
+
+        });
+
+        // console.log("bulkUpsert");
+        // console.log(bulkUpsert);
+
+        ExplorerStats.bulkWrite(bulkUpsert)
+        .then(function () {
+          console.log('ExplorerStats successfully computed and saved at '+ new Date()); // Success
+        })
+        .catch(function (error) {
+          console.log('Error saving explorerStats: ' + error)
+        });
+        
+      }
+    })
+
+  }, null, true, 'Europe/Madrid');
+
+  explorerStatsJob.setTime(new CronTime(rebuildPeriod));
+  explorerStatsJob.start();
+}
+
+function computeExplorerStats(callback){
 
   Application.aggregate([
     // inner join with trips
@@ -300,7 +306,7 @@ exports.list_explorer_stats = function (req, res) {
       {
           $sort: { explorer_Id: 1, year: 1, month: 1}
       },
-      */
+    */
 
     // up to this point the data is separated by months correctly
 
@@ -308,7 +314,7 @@ exports.list_explorer_stats = function (req, res) {
       facet to execute two group data by months and year separately
       it works, the result is two arrays, one for months data and one for years data
       but I couldn't join the resulting pipelines to have a single object for every explorer
-      */
+    */
     /*
       {
           $facet: {
@@ -375,7 +381,7 @@ exports.list_explorer_stats = function (req, res) {
               ]
           }
       }
-      */
+    */
 
     // other way to do the job without using $facet
     // in this case every explorer has an object in the resulting collection
@@ -444,7 +450,7 @@ exports.list_explorer_stats = function (req, res) {
         months: { $push: '$months' },
         // years: {$push:"$years"},
 
-        // anothe array not unwinded has to be added via $addToSet
+        // another array not unwinded has to be added via $addToSet
         years: {
           $addToSet: '$years'
         }
@@ -484,7 +490,7 @@ exports.list_explorer_stats = function (req, res) {
     {
       $project: {
         _id: 0,
-        explorer_Id: '$_id.explorer_Id',
+        explorerId: '$_id.explorer_Id',
         monthExpense: { $first: '$months' },
         yearExpense: '$years',
         moneySpent: { $sum: '$years.moneySpent' }
@@ -493,41 +499,21 @@ exports.list_explorer_stats = function (req, res) {
 
   ])
     .exec((err, results) => {
-      if (err) {
+
+      if (err) 
+      {
         console.log(err);
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({ message: 'Failure' }));
         res.sendStatus(500);
-      } else {
-        /*
-          const es = new ExplorerStats({
-            explorerId: a,
-            yearExpense: [epy],
-            monthExpense: [epm]
-          });
-          es.save();
-          */
+      } 
+      else 
+      {
 
-        // console.log("results");
-        // console.log(results);
+        callback(err, results)
 
-        // const results2 = JSON.stringify(results);
-        // const results3 = JSON.parse(results2);
-
-        // console.log("results3");
-        // console.log(results3);
-
-        ExplorerStats.insertMany(results)
-          .then(function () {
-            console.log('Data inserted'); // Success
-            res.send(results);
-          }).catch(function (error) {
-            console.log(error); // Failure
-          });
-
-        // res.send(results);
       }
+
     });
 
-  // res.json(stats);
-};
+}
