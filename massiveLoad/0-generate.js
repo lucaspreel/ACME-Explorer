@@ -1,10 +1,10 @@
 const { faker } = require('@faker-js/faker');
 var massiveLoadTools = require('./massiveLoadTools');
 
-const amountOfActors = 10;
-const amountOfTrips = 10;
+const amountOfActors = 10000;
+const amountOfTrips = 10000;
 const amountOfStagesByTrip = 3;
-let amountOfApplications = 10;
+let amountOfApplications = 10000;
 
 const minumunStagePrice = 10;
 const maximunStagePrice = 50;

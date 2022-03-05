@@ -90,5 +90,5 @@ mongoose.connection.on('error', function (err) {
   console.error('DB init error ' + err);
 });
 
-DashboardInformationTools.createDashboardInformationJob();
+//DashboardInformationTools.createDashboardInformationJob();
 actorController.createExplorerStatsJob();

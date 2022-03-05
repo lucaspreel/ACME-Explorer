@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const async = require('async');
 const CronJob = require('cron').CronJob;
 const CronTime = require('cron').CronTime;
+const ObjectId = mongoose.Types.ObjectId;
 
 const Actor = mongoose.model('Actors');
 const Application = mongoose.model('Application');
@@ -180,19 +181,101 @@ exports.unban_an_actor = function (req, res) {
 
 exports.list_explorer_stats = function (req, res) {
 
-  ExplorerStats.find({  }, function (err, actors) {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.json(actors);
-    }
-  });
+  let startYear = Number(req.params.startYear);
+  let startMonth = Number(req.params.startMonth);
+  let endYear = Number(req.params.endYear);
+  let endMonth = Number(req.params.endMonth);
+  let validYears = Array.from({length: 3}, (item, index) => (new Date().getFullYear()) - index);
+  let validMonths = Array.from({length: 12}, (item, index) => index + 1);
+
+  if(!validYears.includes(startYear))
+  {
+    res.status(422).send("Error: startYear is not a valid year.");
+  }
+  else if(!validMonths.includes(startMonth))
+  {
+    res.status(422).send("Error: startMonth is not a valid month.");
+  }
+  else if(!validYears.includes(endYear))
+  {
+    res.status(422).send("Error: endYear is not a valid year.");
+  }
+  else if(!validMonths.includes(endMonth))
+  {
+    res.status(422).send("Error: endMonth is not a valid month.");
+  }
+  else
+  {
+    
+    const explorerId = req.params.explorerId;
+
+    let aggregations = [
+      {
+        $project: {
+           explorerId: "$explorerId",
+           yearExpense: {
+              $filter: {
+                 input: "$yearExpense",
+                 as: "singleYearExpense",
+                 cond: {
+                     $and: [
+                         { $gte: [ "$$singleYearExpense.year", startYear ] },
+                         { $lte: [ "$$singleYearExpense.year", endYear ] }
+                     ]
+                 }
+              }
+           },
+           monthExpense: {
+              $filter: {
+                 input: "$monthExpense",
+                 as: "singleMonthExpense",
+                 cond: {
+                     $and: [
+                         { $gte: [ "$$singleMonthExpense.year", startYear ] },
+                         { $lte: [ "$$singleMonthExpense.year", endYear ] },
+                         { $gte: [ "$$singleMonthExpense.month", startMonth ] },
+                         { $lte: [ "$$singleMonthExpense.month", endMonth ] }
+                     ]
+                 }
+              }
+           }
+        }
+     }
+    ];
+
+    //it is used unshift instead of push because according to the documentation the match has to be at the beggining to leverage the indexes
+    if(typeof explorerId !== "undefined")aggregations.unshift({ $match : { explorerId: ObjectId(explorerId) } });
+    // console.log("aggregations");
+    // console.log(aggregations);
+
+    ExplorerStats.aggregate(aggregations)
+    .exec((err, results) => {
+
+      if (err) 
+      {
+        console.log(err);
+        res.status(500).send(err);
+      } 
+      else 
+      {
+        res.json(results);
+      }
+
+    });
+
+  }
 
 };
 
+function isIsoDate(str) {
+  if (!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(str)) return false;
+  var d = new Date(str); 
+  return d.toISOString()===str;
+}
+
 exports.createExplorerStatsJob = function () {
 
-  let rebuildPeriod = '*/10 * * * * *';
+  let rebuildPeriod = '*/600 * * * * *';
   let explorerStatsJob = new CronJob(rebuildPeriod, function () {
 
     console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod)
@@ -503,15 +586,11 @@ function computeExplorerStats(callback){
       if (err) 
       {
         console.log(err);
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ message: 'Failure' }));
-        res.sendStatus(500);
+        callback(err, {})
       } 
       else 
       {
-
         callback(err, results)
-
       }
 
     });
