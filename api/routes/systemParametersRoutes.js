@@ -16,10 +16,6 @@ module.exports = function (app) {
    *        cacheHour:
    *          type: number
    *          description: The number of hours the system keep data in cache.
-   *      required:
-   *        - maxFinderResults
-   *        - flatRateSponsorships
-   *        - cacheHour
    *      example:
    *        maxFinderResults: 25
    *        flatRateSponsorships: 0
