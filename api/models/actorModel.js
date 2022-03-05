@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 
 const mongooseDelete = require('mongoose-delete');
-var functions = require('../../massiveLoad/functions');
+const functions = require('../../massiveLoad/functions');
 
 const emailInUse = async function (email) {
   const user = await this.constructor.findOne({ email });
@@ -143,7 +143,7 @@ const ExplorerStatsSchema = new Schema({
   moneySpent: {
     type: Number
   }
-}); 
+});
 
 ExplorerStatsSchema.index({ explorerId: 1 });
 /*
@@ -152,7 +152,6 @@ ExplorerStatsSchema.pre('insertMany', function (next, docs) {
 
   allExplorerStats.map(function(singleExplorerStats){
 
-    
     //console.log("mongoId");
     //console.log(mongoId);
     let allMonthsExpense = singleExplorerStats.monthExpense;
@@ -165,8 +164,8 @@ ExplorerStatsSchema.pre('insertMany', function (next, docs) {
     });
 
     let allYearsExpense = singleExplorerStats.yearExpense;
-    //singleExplorerStats.monthExpense = JSON.parse(JSON.stringify(singleExplorerStats.monthExpense)); 
-    // singleExplorerStats.yearExpense = JSON.parse(JSON.stringify(singleExplorerStats.yearExpense)); 
+    //singleExplorerStats.monthExpense = JSON.parse(JSON.stringify(singleExplorerStats.monthExpense));
+    // singleExplorerStats.yearExpense = JSON.parse(JSON.stringify(singleExplorerStats.yearExpense));
     console.log("singleExplorerStats");
     console.log(singleExplorerStats);
     return singleExplorerStats;

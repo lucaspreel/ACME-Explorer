@@ -4,12 +4,12 @@ const mongoose = require('mongoose');
 const Sponsorship = mongoose.model('Sponsorship');
 
 exports.create_a_sponsorship = function (req, res) {
+  // if the sponsorship does not have the role  "SPONSOR"
+  // then send error 403
   Sponsorship.findOne({ tripTicker: req.body.tripTicker, sponsor_Id: req.body.sponsor_Id }).then((sponsorship) => {
     if (sponsorship) {
       res.status(409).json({ error: true, message: 'There is already a sponsorship between this sponsor and this trip.' });
     } else {
-      // if the sponsorship does not have the role  "SPONSOR"
-      // then send error 403
       const newSponsorship = new Sponsorship(req.body);
       newSponsorship.save(function (err, sponsorship) {
         if (err) {

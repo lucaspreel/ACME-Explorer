@@ -242,74 +242,74 @@ exports.list_explorer_stats = function (req, res) {
     ];
     */
 
-    Application.aggregate([
-      //inner join with trips
-      {
-          $lookup :
+  Application.aggregate([
+    // inner join with trips
+    {
+      $lookup:
           {
-              from: "trips",
-              localField: "trip_Id",
-              foreignField: "_id",
-              as: "trip",
+            from: 'trips',
+            localField: 'trip_Id',
+            foreignField: '_id',
+            as: 'trip'
           }
-      },
-      //convert trip array to single json object
-      {
-          $unwind: "$trip"
-      },
-      //extract relevant fields and transform stringDate to date type
-      {
-          $project: {
-              explorer_Id: "$explorer_Id",
-              tripPrice: "$trip.price",
-              "applicationMoment": { $toDate: "$applicationMoment"}
-          }
-      },
+    },
+    // convert trip array to single json object
+    {
+      $unwind: '$trip'
+    },
+    // extract relevant fields and transform stringDate to date type
+    {
+      $project: {
+        explorer_Id: '$explorer_Id',
+        tripPrice: '$trip.price',
+        applicationMoment: { $toDate: '$applicationMoment' }
+      }
+    },
 
-      //extract year and month from date
-      {
-          $project: {
-              explorer_Id: "$explorer_Id",
-              tripPrice: "$tripPrice",
-              year: {$year: "$applicationMoment"},
-              month: {$month: "$applicationMoment"}
-          }
-      },
+    // extract year and month from date
+    {
+      $project: {
+        explorer_Id: '$explorer_Id',
+        tripPrice: '$tripPrice',
+        year: { $year: '$applicationMoment' },
+        month: { $month: '$applicationMoment' }
+      }
+    },
 
-      //group data by explorer, year and month
-      {
-          $group: {
-              _id: {explorer_Id: "$explorer_Id", year: '$year', month: '$month'},
-              moneySpent : {$sum : "$tripPrice"}
-          }
-      },
+    // group data by explorer, year and month
+    {
+      $group: {
+        _id: { explorer_Id: '$explorer_Id', year: '$year', month: '$month' },
+        moneySpent: { $sum: '$tripPrice' }
+      }
+    },
 
-      //put all fields in first level, now we have month expense
-      {
-          $project: {
-              _id : 0 ,
-              explorer_Id: "$_id.explorer_Id",
-              year: "$_id.year",
-              month: "$_id.month",
-              moneySpent: "$moneySpent",
-          }
-      },
+    // put all fields in first level, now we have month expense
+    {
+      $project: {
+        _id: 0,
+        explorer_Id: '$_id.explorer_Id',
+        year: '$_id.year',
+        month: '$_id.month',
+        moneySpent: '$moneySpent'
+      }
+    },
 
-      //order data
-      /*
+    // order data
+    /*
       {
           $sort: { explorer_Id: 1, year: 1, month: 1}
       },
       */
 
-      //up to this point the data is separated by months correctly
+    // up to this point the data is separated by months correctly
 
-      /*
+    /*
       facet to execute two group data by months and year separately
       it works, the result is two arrays, one for months data and one for years data
       but I couldn't join the resulting pipelines to have a single object for every explorer
       */
-      /*
+    /*
       {
           $facet: {
               "monthExpense": [
@@ -377,132 +377,129 @@ exports.list_explorer_stats = function (req, res) {
       }
       */
 
-      //other way to do the job without using $facet
-      //in this case every explorer has an object in the resulting collection
-      {
-          $group: {
-              _id: {explorer_Id: "$explorer_Id", year: '$year'},
-              "months": {
-                  $addToSet: {
-                      year: "$year",
-                      month: "$month",
-                      moneySpent: "$moneySpent"
-                  }
-              },
-              moneySpent : {$sum : "$moneySpent"}
+    // other way to do the job without using $facet
+    // in this case every explorer has an object in the resulting collection
+    {
+      $group: {
+        _id: { explorer_Id: '$explorer_Id', year: '$year' },
+        months: {
+          $addToSet: {
+            year: '$year',
+            month: '$month',
+            moneySpent: '$moneySpent'
           }
-      },
-      {
-          $project: {
-              _id : 0 ,
-              explorer_Id: "$_id.explorer_Id",
-              year: "$_id.year",
-              months: "$months",
-              moneySpent : {$sum : "$moneySpent"}
-          }
-      },
-      {
-          $group: {
-              _id: {explorer_Id: "$explorer_Id"},
-              "months": {
-                  $addToSet: "$months"
-              },
-              "years": {
-                  $addToSet: {
-                      year: "$year",
-                      moneySpent : {$sum : "$moneySpent"}
-                  }
-              },
-          }
-      },
-      {
-          $project: {
-              _id : 0 ,
-              explorer_Id: "$_id.explorer_Id",
-              months: "$months",
-              years: "$years",
-          }
-      },
-
-      //up to this point the data is ready as required, but lack of order 
-      //and has useless nested arrays
-
-      //unwind months array to sort it by year and month
-      { $unwind: "$months" },
-      { $unwind: "$months" },
-      {
-          $sort: { explorer_Id: 1, "months.year": 1, "months.month": 1}
-      },
-      {
-          $group: {
-              _id: {explorer_Id: "$explorer_Id"},
-              //"months": {
-              //    $addToSet: "$months"
-              //},
-
-              //when you unwind a field this has to be added via $push
-              months: {$push:"$months"},
-              //years: {$push:"$years"},
-
-              //anothe array not unwinded has to be added via $addToSet
-              "years": {
-                  $addToSet: "$years"
-              },
-
-          }
-      },
-      {
-          $project: {
-              _id : 0 ,
-              explorer_Id: "$_id.explorer_Id",
-              months: "$months",
-              years: "$years",
-          }
-      },
-
-      //unwind years array to sort it by year
-      { $unwind: "$years" },
-      { $unwind: "$years" },
-      {
-          $sort: { explorer_Id: 1, "years.year": 1}
-      },
-      {
-          $group: {
-              _id: {explorer_Id: "$explorer_Id"},
-
-              "months": {
-                  $addToSet: "$months"
-              },
-              //months: {$push:"$months"},
-              years: {$push:"$years"},
-              //"years": {
-              //    $addToSet: "$years"
-              //},
-          }
-      },
-
-      {
-          $project: {
-              _id : 0 ,
-              explorer_Id: "$_id.explorer_Id",
-              monthExpense: { $first: "$months" },
-              yearExpense: "$years",
-              moneySpent: { $sum: "$years.moneySpent" }
-          }
+        },
+        moneySpent: { $sum: '$moneySpent' }
       }
+    },
+    {
+      $project: {
+        _id: 0,
+        explorer_Id: '$_id.explorer_Id',
+        year: '$_id.year',
+        months: '$months',
+        moneySpent: { $sum: '$moneySpent' }
+      }
+    },
+    {
+      $group: {
+        _id: { explorer_Id: '$explorer_Id' },
+        months: {
+          $addToSet: '$months'
+        },
+        years: {
+          $addToSet: {
+            year: '$year',
+            moneySpent: { $sum: '$moneySpent' }
+          }
+        }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        explorer_Id: '$_id.explorer_Id',
+        months: '$months',
+        years: '$years'
+      }
+    },
+
+    // up to this point the data is ready as required, but lack of order
+    // and has useless nested arrays
+
+    // unwind months array to sort it by year and month
+    { $unwind: '$months' },
+    { $unwind: '$months' },
+    {
+      $sort: { explorer_Id: 1, 'months.year': 1, 'months.month': 1 }
+    },
+    {
+      $group: {
+        _id: { explorer_Id: '$explorer_Id' },
+        // "months": {
+        //    $addToSet: "$months"
+        // },
+
+        // when you unwind a field this has to be added via $push
+        months: { $push: '$months' },
+        // years: {$push:"$years"},
+
+        // anothe array not unwinded has to be added via $addToSet
+        years: {
+          $addToSet: '$years'
+        }
+
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        explorer_Id: '$_id.explorer_Id',
+        months: '$months',
+        years: '$years'
+      }
+    },
+
+    // unwind years array to sort it by year
+    { $unwind: '$years' },
+    { $unwind: '$years' },
+    {
+      $sort: { explorer_Id: 1, 'years.year': 1 }
+    },
+    {
+      $group: {
+        _id: { explorer_Id: '$explorer_Id' },
+
+        months: {
+          $addToSet: '$months'
+        },
+        // months: {$push:"$months"},
+        years: { $push: '$years' }
+        // "years": {
+        //    $addToSet: "$years"
+        // },
+      }
+    },
+
+    {
+      $project: {
+        _id: 0,
+        explorer_Id: '$_id.explorer_Id',
+        monthExpense: { $first: '$months' },
+        yearExpense: '$years',
+        moneySpent: { $sum: '$years.moneySpent' }
+      }
+    }
 
   ])
-  .exec((err, results) => {
-      if (err) 
-      {
-          console.log(err);
-          res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify({ message: 'Failure' }));
-          res.sendStatus(500);
-      } 
-      else 
-      {
-          /*
+    .exec((err, results) => {
+      if (err) {
+        console.log(err);
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ message: 'Failure' }));
+        res.sendStatus(500);
+      } else {
+        /*
           const es = new ExplorerStats({
             explorerId: a,
             yearExpense: [epy],
@@ -511,29 +508,26 @@ exports.list_explorer_stats = function (req, res) {
           es.save();
           */
 
-          // console.log("results");
-          // console.log(results);
-          
-          // const results2 = JSON.stringify(results);
-          // const results3 = JSON.parse(results2);
+        // console.log("results");
+        // console.log(results);
 
-          // console.log("results3");
-          // console.log(results3);
-          
+        // const results2 = JSON.stringify(results);
+        // const results3 = JSON.parse(results2);
 
-          
-          ExplorerStats.insertMany(results)
-          .then(function(){
-              console.log("Data inserted")  // Success
-              res.send(results);
-          }).catch(function(error){
-              console.log(error)      // Failure
+        // console.log("results3");
+        // console.log(results3);
+
+        ExplorerStats.insertMany(results)
+          .then(function () {
+            console.log('Data inserted'); // Success
+            res.send(results);
+          }).catch(function (error) {
+            console.log(error); // Failure
           });
-          
-          //res.send(results);
-          
-      }
-  });
 
-  //res.json(stats);
+        // res.send(results);
+      }
+    });
+
+  // res.json(stats);
 };
