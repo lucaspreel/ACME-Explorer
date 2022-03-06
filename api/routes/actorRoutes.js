@@ -374,22 +374,45 @@ module.exports = function (app) {
    *            $ref: '#/components/schemas/ExplorerStats'
    *          description: All explorers stats.
    *
+   *
    */
 
-  app.route('/v1/explorerStats/:period')
+  app.route('/v1/explorerStats/:startYear/:startMonth/:endYear/:endMonth/:explorerId?')
   /**
    * @swagger
-   * /v1/explorerStats/{period}:
+   * /v1/explorerStats/{startYear}/{startMonth}/{endYear}/{endMonth}:
    *    get:
    *      summary: Returns explorer stats.
    *      tags: [ExplorerStats]
    *      parameters:
    *        - in: path
-   *          name: period
+   *          name: startYear
    *          schema:
-   *            type: string
+   *            type: number
    *          required: true
-   *          description: A period M01-M36 or Y01-Y03.
+   *          description: A valid year number. Last three years.
+   *          example: 2021
+   *        - in: path
+   *          name: startMonth
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid month number, from 1 to 12.
+   *          example: 3
+   *        - in: path
+   *          name: endYear
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid year number. Last three years.
+   *          example: 2021
+   *        - in: path
+   *          name: endMonth
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid month number, from 1 to 12.
+   *          example: 9
    *      responses:
    *        200:
    *          description: Explorer stats successfully retrieved.
@@ -400,6 +423,67 @@ module.exports = function (app) {
    *                $ref: '#/components/schemas/ExplorersStats'
    *        404:
    *          description: Explorer not found.
+   *        422:
+   *          description: Validation error.
+   *        500:
+   *          description: Error trying to get the explorer stats.
+   */
+
+  //added a second swagger endpoint for the same actual endpoint to bypass swagger's limitations related to optional in path parameters 
+  /**
+   * @swagger
+   * /v1/explorerStats/{startYear}/{startMonth}/{endYear}/{endMonth}/{explorerId}:
+   *    get:
+   *      summary: Returns explorer stats.
+   *      tags: [ExplorerStats]
+   *      parameters:
+   *        - in: path
+   *          name: startYear
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid year number. Last three years.
+   *          example: 2021
+   *        - in: path
+   *          name: startMonth
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid month number, from 1 to 12.
+   *          example: 3
+   *        - in: path
+   *          name: endYear
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid year number. Last three years.
+   *          example: 2021
+   *        - in: path
+   *          name: endMonth
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid month number, from 1 to 12.
+   *          example: 9
+   *        - in: path
+   *          name: explorerId
+   *          schema:
+   *            type: string
+   *          required: true
+   *          description: An explorer's id.
+   *          example: '621d3bd5ff59d6edabe607e8'
+   *      responses:
+   *        200:
+   *          description: Explorer stats successfully retrieved.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/ExplorersStats'
+   *        404:
+   *          description: Explorer not found.
+   *        422:
+   *          description: Validation error.
    *        500:
    *          description: Error trying to get the explorer stats.
    */

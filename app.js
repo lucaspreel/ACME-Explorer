@@ -11,6 +11,7 @@ const Application = require('./api/models/applicationModel');
 const Finder = require('./api/models/finderModel');
 const DashboardInformation = require('./api/models/dashboardInformationModel');
 const DashboardInformationTools = require('./api/controllers/dashboardInformationController');
+const actorController = require('./api/controllers/actorController');
 
 const bodyParser = require('body-parser');
 
@@ -88,4 +89,6 @@ mongoose.connection.on('open', function () {
 mongoose.connection.on('error', function (err) {
   console.error('DB init error ' + err);
 });
+
 DashboardInformationTools.createDashboardInformationJob();
+actorController.createExplorerStatsJob();

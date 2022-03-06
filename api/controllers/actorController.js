@@ -1,6 +1,11 @@
 'use strict';
 /* ---------------ACTOR---------------------- */
 const mongoose = require('mongoose');
+const async = require('async');
+const CronJob = require('cron').CronJob;
+const CronTime = require('cron').CronTime;
+const ObjectId = mongoose.Types.ObjectId;
+
 const Actor = mongoose.model('Actors');
 const Application = mongoose.model('Application');
 const ExplorerStats = mongoose.model('ExplorerStats');
@@ -175,72 +180,156 @@ exports.unban_an_actor = function (req, res) {
 };
 
 exports.list_explorer_stats = function (req, res) {
-  /*
-  const a = new Actor({
-    name: 'John Charles',
-    surname: 'Road Grandson',
-    email: Date.now() + '@jcrg.com',
-    password: 1234567890,
-    language: 'SPANISH',
-    phone_number: 123456789,
-    address: 'The world is my playground',
-    role: 'EXPLORER',
-    isActive: true
-  });
-  const epm = new ExpensePeriod({
-    period: 'M01',
-    moneySpent: 100
-  });
-  const epy = new ExpensePeriod({
-    period: 'Y01',
-    moneySpent: 100
-  });
-  const es = new ExplorerStats({
-    explorerId: a,
-    yearExpense: [epy],
-    monthExpense: [epm]
-  });
-  es.save();
-  */
 
-  /*
-    var expectedDataSaved = [
-        {
-            explorer: "Actor A object",
-            yearExpense: [
-              {
-                  period: String,
-                  moneySpent: Number
-              },
-              {
-                  period: String,
-                  moneySpent: Number
-              },
-            ],
-            monthExpense: [
-              {
-                  period: String,
-                  moneySpent: Number
-              },
-              {
-                  period: String,
-                  moneySpent: Number
-              },
-            ]
+  let startYear = Number(req.params.startYear);
+  let startMonth = Number(req.params.startMonth);
+  let endYear = Number(req.params.endYear);
+  let endMonth = Number(req.params.endMonth);
+  let validYears = Array.from({length: 3}, (item, index) => (new Date().getFullYear()) - index);
+  let validMonths = Array.from({length: 12}, (item, index) => index + 1);
+
+  if(!validYears.includes(startYear))
+  {
+    res.status(422).send("Error: startYear is not a valid year.");
+  }
+  else if(!validMonths.includes(startMonth))
+  {
+    res.status(422).send("Error: startMonth is not a valid month.");
+  }
+  else if(!validYears.includes(endYear))
+  {
+    res.status(422).send("Error: endYear is not a valid year.");
+  }
+  else if(!validMonths.includes(endMonth))
+  {
+    res.status(422).send("Error: endMonth is not a valid month.");
+  }
+  else
+  {
+    
+    const explorerId = req.params.explorerId;
+
+    let aggregations = [
+      {
+        $project: {
+           explorerId: "$explorerId",
+           yearExpense: {
+              $filter: {
+                 input: "$yearExpense",
+                 as: "singleYearExpense",
+                 cond: {
+                     $and: [
+                         { $gte: [ "$$singleYearExpense.year", startYear ] },
+                         { $lte: [ "$$singleYearExpense.year", endYear ] }
+                     ]
+                 }
+              }
+           },
+           monthExpense: {
+              $filter: {
+                 input: "$monthExpense",
+                 as: "singleMonthExpense",
+                 cond: {
+                     $and: [
+                         { $gte: [ "$$singleMonthExpense.year", startYear ] },
+                         { $lte: [ "$$singleMonthExpense.year", endYear ] },
+                         { $gte: [ "$$singleMonthExpense.month", startMonth ] },
+                         { $lte: [ "$$singleMonthExpense.month", endMonth ] }
+                     ]
+                 }
+              }
+           }
         }
+     }
     ];
 
-    var expectedResult = [
-        {
-            explorer: "Actor A object",
-            moneySpent: "a number"
-        },
-        {
-            explorer: "Actor B object",
-            moneySpent: "a number"
-        }
-    ];
-    */
+    //it is used unshift instead of push because according to the documentation the match has to be at the beggining to leverage the indexes
+    if(typeof explorerId !== "undefined")aggregations.unshift({ $match : { explorerId: ObjectId(explorerId) } });
+    // console.log("aggregations");
+    // console.log(aggregations);
+
+    ExplorerStats.aggregate(aggregations)
+    .exec((err, results) => {
+
+      if (err) 
+      {
+        console.log(err);
+        res.status(500).send(err);
+      } 
+      else 
+      {
+        res.json(results);
+      }
+
+    });
+
+  }
+
+};
+
+function isIsoDate(str) {
+  if (!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(str)) return false;
+  var d = new Date(str); 
+  return d.toISOString()===str;
+}
+
+exports.createExplorerStatsJob = function () {
+
+  let rebuildPeriod = '*/600 * * * * *';
+  let explorerStatsJob = new CronJob(rebuildPeriod, function () {
+
+    console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod)
+
+    async.parallel([
+      computeExplorerStats,
+    ], 
+    function (err, results) {
+
+      if (err) 
+      {
+        console.log('Error computing datawarehouse: ' + err)
+      } 
+      else 
+      {
+
+        let explorerStats = results[0];
+
+        //preparing data to masive upsert
+        const bulkUpsert = explorerStats.map(function(singleExplorerStats) {
+
+          var upsertConfig =   {
+            updateOne: {
+              filter: { explorerId: singleExplorerStats.explorerId },
+              update: singleExplorerStats,
+              upsert: true
+            }
+          };
+
+          return upsertConfig;
+
+        });
+
+        // console.log("bulkUpsert");
+        // console.log(bulkUpsert);
+
+        ExplorerStats.bulkWrite(bulkUpsert)
+        .then(function () {
+          console.log('ExplorerStats successfully computed and saved at '+ new Date()); // Success
+        })
+        .catch(function (error) {
+          console.log('Error saving explorerStats: ' + error)
+        });
+        
+      }
+    })
+
+  }, null, true, 'Europe/Madrid');
+
+  explorerStatsJob.setTime(new CronTime(rebuildPeriod));
+  explorerStatsJob.start();
+}
+
+function computeExplorerStats(callback){
 
   Application.aggregate([
     // inner join with trips
@@ -300,7 +389,7 @@ exports.list_explorer_stats = function (req, res) {
       {
           $sort: { explorer_Id: 1, year: 1, month: 1}
       },
-      */
+    */
 
     // up to this point the data is separated by months correctly
 
@@ -308,7 +397,7 @@ exports.list_explorer_stats = function (req, res) {
       facet to execute two group data by months and year separately
       it works, the result is two arrays, one for months data and one for years data
       but I couldn't join the resulting pipelines to have a single object for every explorer
-      */
+    */
     /*
       {
           $facet: {
@@ -375,7 +464,7 @@ exports.list_explorer_stats = function (req, res) {
               ]
           }
       }
-      */
+    */
 
     // other way to do the job without using $facet
     // in this case every explorer has an object in the resulting collection
@@ -444,7 +533,7 @@ exports.list_explorer_stats = function (req, res) {
         months: { $push: '$months' },
         // years: {$push:"$years"},
 
-        // anothe array not unwinded has to be added via $addToSet
+        // another array not unwinded has to be added via $addToSet
         years: {
           $addToSet: '$years'
         }
@@ -484,7 +573,7 @@ exports.list_explorer_stats = function (req, res) {
     {
       $project: {
         _id: 0,
-        explorer_Id: '$_id.explorer_Id',
+        explorerId: '$_id.explorer_Id',
         monthExpense: { $first: '$months' },
         yearExpense: '$years',
         moneySpent: { $sum: '$years.moneySpent' }
@@ -493,41 +582,17 @@ exports.list_explorer_stats = function (req, res) {
 
   ])
     .exec((err, results) => {
-      if (err) {
+
+      if (err) 
+      {
         console.log(err);
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ message: 'Failure' }));
-        res.sendStatus(500);
-      } else {
-        /*
-          const es = new ExplorerStats({
-            explorerId: a,
-            yearExpense: [epy],
-            monthExpense: [epm]
-          });
-          es.save();
-          */
-
-        // console.log("results");
-        // console.log(results);
-
-        // const results2 = JSON.stringify(results);
-        // const results3 = JSON.parse(results2);
-
-        // console.log("results3");
-        // console.log(results3);
-
-        ExplorerStats.insertMany(results)
-          .then(function () {
-            console.log('Data inserted'); // Success
-            res.send(results);
-          }).catch(function (error) {
-            console.log(error); // Failure
-          });
-
-        // res.send(results);
+        callback(err, {})
+      } 
+      else 
+      {
+        callback(err, results)
       }
+
     });
 
-  // res.json(stats);
-};
+}
