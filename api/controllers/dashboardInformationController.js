@@ -100,7 +100,7 @@ function computeTripsPerManager (callback) {
         avg_trips: { $avg: '$nb_trips' },
         min_trips: { $min: '$nb_trips' },
         max_trips: { $max: '$nb_trips' },
-        std_trips: { $stdDevPop: '$nb_trips'}
+        std_trips: { $stdDevPop: '$nb_trips' }
       }
     }
   ], function (err, res) {
@@ -126,7 +126,7 @@ function computeApplicationsPerTrip (callback) {
         avg_applications: { $avg: '$nb_applications' },
         min_applications: { $min: '$nb_applications' },
         max_applications: { $max: '$nb_applications' },
-        std_applications: { $stdDevPop: '$nb_applications'}
+        std_applications: { $stdDevPop: '$nb_applications' }
       }
     }
   ], function (err, res) {
@@ -146,7 +146,7 @@ function computePriceOfTrips (callback) {
         avg_price: { $avg: '$price' },
         min_price: { $min: '$price' },
         max_price: { $max: '$price' },
-        std_price: { $stdDevPop: '$price'}
+        std_price: { $stdDevPop: '$price' }
       }
     }
   ], function (err, res) {
@@ -164,17 +164,17 @@ function computeApplicationsRatioPerStatus (callback) {
       $facet: {
         totalApplications: [
           {
-            $group:{
-              _id:null, 
-              total:{$sum:1}
+            $group: {
+              _id: null,
+              total: { $sum: 1 }
             }
           }
         ],
         applicationsPerStatus: [
           {
-            $group:{
-              _id:'$status',
-              nb_applications:{$sum:1}
+            $group: {
+              _id: '$status',
+              nb_applications: { $sum: 1 }
             }
           }
         ]
@@ -182,16 +182,16 @@ function computeApplicationsRatioPerStatus (callback) {
     },
     {
       $project: {
-        _id:0,
-       status: '$applicationsPerStatus._id',
-       ratioPerStatus: {
-         $map: {
-           input: '$applicationsPerStatus.nb_applications',
-           as: 'applications',
-           in: {
-             $divide: [
-               '$$applications',
-               {$arrayElemAt:['$totalApplications.total', 0]}
+        _id: 0,
+        status: '$applicationsPerStatus._id',
+        ratioPerStatus: {
+          $map: {
+            input: '$applicationsPerStatus.nb_applications',
+            as: 'applications',
+            in: {
+              $divide: [
+                '$$applications',
+                { $arrayElemAt: ['$totalApplications.total', 0] }
               ]
             }
           }
@@ -199,8 +199,8 @@ function computeApplicationsRatioPerStatus (callback) {
       }
     }
   ], function (err, res) {
-    let applicationsRatioPerStatus = [];
-    for (var i = 0; i < res[0].status.length; i++) {
+    const applicationsRatioPerStatus = [];
+    for (let i = 0; i < res[0].status.length; i++) {
       const status = res[0].status[i];
       const ratio = res[0].ratioPerStatus[i];
       applicationsRatioPerStatus.push(ApplicationsRatioConstuctor(status, ratio));
