@@ -429,7 +429,7 @@ module.exports = function (app) {
    *          description: Error trying to get the explorer stats.
    */
 
-  //added a second swagger endpoint for the same actual endpoint to bypass swagger's limitations related to optional in path parameters 
+  // added a second swagger endpoint for the same actual endpoint to bypass swagger's limitations related to optional in path parameters
   /**
    * @swagger
    * /v1/explorerStats/{startYear}/{startMonth}/{endYear}/{endMonth}/{explorerId}:

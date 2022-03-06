@@ -180,124 +180,98 @@ exports.unban_an_actor = function (req, res) {
 };
 
 exports.list_explorer_stats = function (req, res) {
+  const startYear = Number(req.params.startYear);
+  const startMonth = Number(req.params.startMonth);
+  const endYear = Number(req.params.endYear);
+  const endMonth = Number(req.params.endMonth);
+  const validYears = Array.from({ length: 3 }, (item, index) => (new Date().getFullYear()) - index);
+  const validMonths = Array.from({ length: 12 }, (item, index) => index + 1);
 
-  let startYear = Number(req.params.startYear);
-  let startMonth = Number(req.params.startMonth);
-  let endYear = Number(req.params.endYear);
-  let endMonth = Number(req.params.endMonth);
-  let validYears = Array.from({length: 3}, (item, index) => (new Date().getFullYear()) - index);
-  let validMonths = Array.from({length: 12}, (item, index) => index + 1);
-
-  if(!validYears.includes(startYear))
-  {
-    res.status(422).send("Error: startYear is not a valid year.");
-  }
-  else if(!validMonths.includes(startMonth))
-  {
-    res.status(422).send("Error: startMonth is not a valid month.");
-  }
-  else if(!validYears.includes(endYear))
-  {
-    res.status(422).send("Error: endYear is not a valid year.");
-  }
-  else if(!validMonths.includes(endMonth))
-  {
-    res.status(422).send("Error: endMonth is not a valid month.");
-  }
-  else
-  {
-    
+  if (!validYears.includes(startYear)) {
+    res.status(422).send('Error: startYear is not a valid year.');
+  } else if (!validMonths.includes(startMonth)) {
+    res.status(422).send('Error: startMonth is not a valid month.');
+  } else if (!validYears.includes(endYear)) {
+    res.status(422).send('Error: endYear is not a valid year.');
+  } else if (!validMonths.includes(endMonth)) {
+    res.status(422).send('Error: endMonth is not a valid month.');
+  } else {
     const explorerId = req.params.explorerId;
 
-    let aggregations = [
+    const aggregations = [
       {
         $project: {
-           explorerId: "$explorerId",
-           yearExpense: {
-              $filter: {
-                 input: "$yearExpense",
-                 as: "singleYearExpense",
-                 cond: {
-                     $and: [
-                         { $gte: [ "$$singleYearExpense.year", startYear ] },
-                         { $lte: [ "$$singleYearExpense.year", endYear ] }
-                     ]
-                 }
+          explorerId: '$explorerId',
+          yearExpense: {
+            $filter: {
+              input: '$yearExpense',
+              as: 'singleYearExpense',
+              cond: {
+                $and: [
+                  { $gte: ['$$singleYearExpense.year', startYear] },
+                  { $lte: ['$$singleYearExpense.year', endYear] }
+                ]
               }
-           },
-           monthExpense: {
-              $filter: {
-                 input: "$monthExpense",
-                 as: "singleMonthExpense",
-                 cond: {
-                     $and: [
-                         { $gte: [ "$$singleMonthExpense.year", startYear ] },
-                         { $lte: [ "$$singleMonthExpense.year", endYear ] },
-                         { $gte: [ "$$singleMonthExpense.month", startMonth ] },
-                         { $lte: [ "$$singleMonthExpense.month", endMonth ] }
-                     ]
-                 }
+            }
+          },
+          monthExpense: {
+            $filter: {
+              input: '$monthExpense',
+              as: 'singleMonthExpense',
+              cond: {
+                $and: [
+                  { $gte: ['$$singleMonthExpense.year', startYear] },
+                  { $lte: ['$$singleMonthExpense.year', endYear] },
+                  { $gte: ['$$singleMonthExpense.month', startMonth] },
+                  { $lte: ['$$singleMonthExpense.month', endMonth] }
+                ]
               }
-           }
+            }
+          }
         }
-     }
+      }
     ];
 
-    //it is used unshift instead of push because according to the documentation the match has to be at the beggining to leverage the indexes
-    if(typeof explorerId !== "undefined")aggregations.unshift({ $match : { explorerId: ObjectId(explorerId) } });
+    // it is used unshift instead of push because according to the documentation the match has to be at the beggining to leverage the indexes
+    if (typeof explorerId !== 'undefined')aggregations.unshift({ $match: { explorerId: ObjectId(explorerId) } });
     // console.log("aggregations");
     // console.log(aggregations);
 
     ExplorerStats.aggregate(aggregations)
-    .exec((err, results) => {
-
-      if (err) 
-      {
-        console.log(err);
-        res.status(500).send(err);
-      } 
-      else 
-      {
-        res.json(results);
-      }
-
-    });
-
+      .exec((err, results) => {
+        if (err) {
+          console.log(err);
+          res.status(500).send(err);
+        } else {
+          res.json(results);
+        }
+      });
   }
-
 };
 
-function isIsoDate(str) {
+function isIsoDate (str) {
   if (!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(str)) return false;
-  var d = new Date(str); 
-  return d.toISOString()===str;
+  const d = new Date(str);
+  return d.toISOString() === str;
 }
 
 exports.createExplorerStatsJob = function () {
-
-  let rebuildPeriod = '*/600 * * * * *';
-  let explorerStatsJob = new CronJob(rebuildPeriod, function () {
-
-    console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod)
+  const rebuildPeriod = '*/600 * * * * *';
+  const explorerStatsJob = new CronJob(rebuildPeriod, function () {
+    console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod);
 
     async.parallel([
-      computeExplorerStats,
-    ], 
+      computeExplorerStats
+    ],
     function (err, results) {
+      if (err) {
+        console.log('Error computing datawarehouse: ' + err);
+      } else {
+        const explorerStats = results[0];
 
-      if (err) 
-      {
-        console.log('Error computing datawarehouse: ' + err)
-      } 
-      else 
-      {
-
-        let explorerStats = results[0];
-
-        //preparing data to masive upsert
-        const bulkUpsert = explorerStats.map(function(singleExplorerStats) {
-
-          var upsertConfig =   {
+        // preparing data to masive upsert
+        const bulkUpsert = explorerStats.map(function (singleExplorerStats) {
+          const upsertConfig = {
             updateOne: {
               filter: { explorerId: singleExplorerStats.explorerId },
               update: singleExplorerStats,
@@ -306,31 +280,27 @@ exports.createExplorerStatsJob = function () {
           };
 
           return upsertConfig;
-
         });
 
         // console.log("bulkUpsert");
         // console.log(bulkUpsert);
 
         ExplorerStats.bulkWrite(bulkUpsert)
-        .then(function () {
-          console.log('ExplorerStats successfully computed and saved at '+ new Date()); // Success
-        })
-        .catch(function (error) {
-          console.log('Error saving explorerStats: ' + error)
-        });
-        
+          .then(function () {
+            console.log('ExplorerStats successfully computed and saved at ' + new Date()); // Success
+          })
+          .catch(function (error) {
+            console.log('Error saving explorerStats: ' + error);
+          });
       }
-    })
-
+    });
   }, null, true, 'Europe/Madrid');
 
   explorerStatsJob.setTime(new CronTime(rebuildPeriod));
   explorerStatsJob.start();
-}
+};
 
-function computeExplorerStats(callback){
-
+function computeExplorerStats (callback) {
   Application.aggregate([
     // inner join with trips
     {
@@ -582,17 +552,11 @@ function computeExplorerStats(callback){
 
   ])
     .exec((err, results) => {
-
-      if (err) 
-      {
+      if (err) {
         console.log(err);
-        callback(err, {})
-      } 
-      else 
-      {
-        callback(err, results)
+        callback(err, {});
+      } else {
+        callback(err, results);
       }
-
     });
-
 }

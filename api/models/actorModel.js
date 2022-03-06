@@ -146,7 +146,7 @@ const ExplorerStatsSchema = new Schema({
     type: Date,
     default: Date.now()
   }
-}, 
+},
 { timestamps: { updatedAt: 'computationMoment' } });
 
 ExplorerStatsSchema.index({ explorerId: 1 });
