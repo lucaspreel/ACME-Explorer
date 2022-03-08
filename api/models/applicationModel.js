@@ -35,7 +35,6 @@ const ApplicationSchema = new Schema({
   deleted: {
     type: Boolean
   }
-
 }, { strict: false });
 
 ApplicationSchema.index({ explorer_Id: 1, status: 1 });

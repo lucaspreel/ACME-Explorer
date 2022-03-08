@@ -111,9 +111,21 @@ ActorSchema.methods.verifyPassword = function (password, cb) {
   });
 };
 
-const ExpensePeriodSchema = new Schema({
-  period: {
-    type: String
+const MonthExpenseSchema = new Schema({
+  year: {
+    type: Number
+  },
+  month: {
+    type: Number
+  },
+  moneySpent: {
+    type: Number
+  }
+});
+
+const YearExpenseSchema = new Schema({
+  year: {
+    type: Number
   },
   moneySpent: {
     type: Number
@@ -125,18 +137,21 @@ const ExplorerStatsSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Actors'
   },
-  yearExpense: [{
-    type: Schema.Types.ObjectId,
-    ref: 'ExpensePeriod'
-  }],
-  monthExpense: [{
-    type: Schema.Types.ObjectId,
-    ref: 'ExpensePeriod'
-  }]
-});
+  monthExpense: [MonthExpenseSchema],
+  yearExpense: [YearExpenseSchema],
+  moneySpent: {
+    type: Number
+  },
+  computationMoment: {
+    type: Date,
+    default: Date.now()
+  }
+},
+{ timestamps: { updatedAt: 'computationMoment' } });
 
 ExplorerStatsSchema.index({ explorerId: 1 });
 
 module.exports = mongoose.model('Actors', ActorSchema);
-module.exports = mongoose.model('ExpensePeriod', ExpensePeriodSchema);
+module.exports = mongoose.model('MonthExpense', MonthExpenseSchema);
+module.exports = mongoose.model('YearExpense', YearExpenseSchema);
 module.exports = mongoose.model('ExplorerStats', ExplorerStatsSchema);

@@ -9,11 +9,16 @@ const SystemParameters = require('./api/models/systemParametersModel');
 const Trip = require('./api/models/tripModel');
 const Application = require('./api/models/applicationModel');
 const Finder = require('./api/models/finderModel');
+const DashboardInformation = require('./api/models/dashboardInformationModel');
+const DashboardInformationTools = require('./api/controllers/dashboardInformationController');
+const actorController = require('./api/controllers/actorController');
 
 const bodyParser = require('body-parser');
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
+express.urlencoded({ extended: true })
+app.use(bodyParser.json({limit: '300mb'}));
+app.use(express.urlencoded({limit: '300mb', extended: true}));
 
 // swagger documentation config - start
 const swaggerUI = require('swagger-ui-express');
@@ -35,6 +40,7 @@ const swaggerSpec = {
       `${path.join(__dirname, './api/routes/systemParametersRoutes.js')}`,
       `${path.join(__dirname, './api/routes/applicationRoutes.js')}`,
       `${path.join(__dirname, './api/routes/finderRoutes.js')}`
+      `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`
   ]
 };
 
@@ -44,12 +50,14 @@ const routesActors = require('./api/routes/actorRoutes');
 const routesSponsorships = require('./api/routes/sponsorshipRoutes');
 const routesSystemParameters = require('./api/routes/systemParametersRoutes');
 const routesApplication = require('./api/routes/applicationRoutes');
+const routesDashboardInformation = require('./api/routes/dashboardInformationRoutes');
 const routesFinder = require('./api/routes/finderRoutes');
 
 routesActors(app);
 routesSponsorships(app);
 routesSystemParameters(app);
 routesApplication(app);
+routesDashboardInformation(app);
 routesFinder(app);
 
 // MongoDB URI building
@@ -84,3 +92,6 @@ mongoose.connection.on('open', function () {
 mongoose.connection.on('error', function (err) {
   console.error('DB init error ' + err);
 });
+
+DashboardInformationTools.createDashboardInformationJob();
+actorController.createExplorerStatsJob();

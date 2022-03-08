@@ -26,4 +26,7 @@ const SponsorshipSchema = new Schema({
 
 }, { strict: false });
 
+SponsorshipSchema.index({ sponsor_Id: 1 });
+SponsorshipSchema.index({ tripTicker: 1 });
+
 module.exports = mongoose.model('Sponsorship', SponsorshipSchema);

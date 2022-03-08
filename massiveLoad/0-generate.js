@@ -1,85 +1,45 @@
-const { faker } = require("@faker-js/faker");
-const fs = require("fs");
+const { faker } = require('@faker-js/faker');
+var massiveLoadTools = require('./massiveLoadTools');
 
-var amountOfActors = 10000;
-var amountOfTrips = 10000;
-var amountOfStagesByTrip = 3;
-var amountOfApplications = 10000;
+const amountOfActors = 10000;
+const amountOfTrips = 10000;
+const amountOfStagesByTrip = 3;
+let amountOfApplications = 10000;
 
-var minumunStagePrice = 10;
-var maximunStagePrice = 50;
-var minimunFinderPriceLowerBound = 0;
-var maximunFinderPriceLowerBound = 50;
-var maximunFinderPriceUpperBound = 150;
+const minumunStagePrice = 10;
+const maximunStagePrice = 50;
+const minimunFinderPriceLowerBound = 0;
+const maximunFinderPriceLowerBound = 50;
+const maximunFinderPriceUpperBound = 150;
 
-var threeYearsAgo = new Date();
+const threeYearsAgo = new Date();
 threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
 // console.log(threeYearsAgo);
 
-//------------------------------------------------------------------------------
-//FUNCTIONS
-//------------------------------------------------------------------------------
-var generateMongoObjectId = function () {
-  var timestamp = ((new Date().getTime() / 1000) | 0).toString(16);
-  return (
-    timestamp +
-    "xxxxxxxxxxxxxxxx"
-      .replace(/[x]/g, function () {
-        return ((Math.random() * 16) | 0).toString(16);
-      })
-      .toLowerCase()
-  );
-};
+// ------------------------------------------------------------------------------
+// ACTORS' DATA
+// ------------------------------------------------------------------------------
+const languages = ['ENGLISH', 'SPANISH'];
+const statuses = [true, false];
+//more chances to occur MANAGER and EXPLORER
+const roles = ['ADMINISTRATOR', 'SPONSOR', 'MANAGER', 'MANAGER', 'EXPLORER', 'EXPLORER', 'EXPLORER', 'EXPLORER', 'EXPLORER'];
 
-var getRandomArrayValue = function (array) {
-  return array[Math.floor(Math.random() * array.length)];
-};
+const allActors = [];
+const managersIds = [];
+const explorersIds = [];
 
-var formatJsonToBeWrittenToAFile = function (jsonData) {
-  // convert JSON object to string
-  return JSON.stringify(jsonData, null, "\t");
-};
+for (let i = 0; i < amountOfActors; i++) {
+  const language = massiveLoadTools.getRandomArrayValue(languages);
+  const isActive = massiveLoadTools.getRandomArrayValue(statuses);
+  const role = massiveLoadTools.getRandomArrayValue(roles);
+  const actorId = massiveLoadTools.generateMongoObjectId();
 
-var saveJsonFile = function (jsonData, filePath) {
-  //truncate file
-  fs.truncate(filePath, 0, function () {
-    console.log("File " + filePath + " truncated");
-  });
+  if (role === 'MANAGER') managersIds.push(actorId);
+  if (role === 'EXPLORER') explorersIds.push(actorId);
 
-  // write JSON string to a file
-  fs.writeFile(filePath, jsonData, (err) => {
-    if (err) {
-      throw err;
-    }
-    console.log(
-      "JSON data has been successfully saved in file " + filePath + "."
-    );
-  });
-};
-
-//------------------------------------------------------------------------------
-//ACTORS' DATA
-//------------------------------------------------------------------------------
-var languages = ["ENGLISH", "SPANISH"];
-var statuses = [true, false];
-var roles = ["ADMINISTRATOR", "MANAGER", "EXPLORER", "SPONSOR"];
-
-var allActors = [];
-var managersIds = [];
-var explorersIds = [];
-
-for (i = 0; i < amountOfActors; i++) {
-  var language = getRandomArrayValue(languages);
-  var isActive = getRandomArrayValue(statuses);
-  var role = getRandomArrayValue(roles);
-  var actorId = generateMongoObjectId();
-
-  if (role == "MANAGER") managersIds.push(actorId);
-  if (role == "EXPLORER") explorersIds.push(actorId);
-
-  var newActor = {
+  const newActor = {
     _id: {
-      $oid: actorId,
+      $oid: actorId
     },
     name: faker.name.firstName(),
     surname: faker.name.lastName(),
@@ -90,180 +50,180 @@ for (i = 0; i < amountOfActors; i++) {
     address: faker.address.streetAddress(),
     isActive: isActive,
     role: role,
-    deleted: false,
+    deleted: false
   };
-  //console.log(newActor);
+  // console.log(newActor);
 
   allActors.push(newActor);
 }
 
-const actorsJsonData = formatJsonToBeWrittenToAFile(allActors);
-var actorsJsonDataFilePath = "./massiveLoad/1-actors.json";
-saveJsonFile(actorsJsonData, actorsJsonDataFilePath);
+const actorsJsonData = massiveLoadTools.formatJsonToBeWrittenToAFile(allActors);
+const actorsJsonDataFilePath = './massiveLoad/1-actors.json';
+massiveLoadTools.saveJsonFile(actorsJsonData, actorsJsonDataFilePath);
 
-//------------------------------------------------------------------------------
-//TRIPS' DATA
-//------------------------------------------------------------------------------
-var allTrips = [];
-var nonCanceledTrips = [];
-var canceledStatuses = [true, false, false, false, false]; //more false options so that the amount of canceled trips is minor
+// ------------------------------------------------------------------------------
+// TRIPS' DATA
+// ------------------------------------------------------------------------------
+const allTrips = [];
+const nonCanceledTrips = [];
+const canceledStatuses = [true, false, false, false, false]; // more false options so that the amount of canceled trips is minor
 
-for (i = 0; i < amountOfTrips; i++) {
-  var tripId = generateMongoObjectId();
-  var city = faker.address.city();
-  var manager_Id = getRandomArrayValue(managersIds);
-  var tripPrice = 0;
-  var canceled = getRandomArrayValue(canceledStatuses);
-  var cancelReason = canceled == true ? faker.lorem.sentence() : "";
-  var publication_date = faker.date.future(
-    (years = 3),
-    (refDate = threeYearsAgo)
-  );
-  var start_date = faker.date.future((years = 3), (refDate = publication_date));
-  var end_date = faker.date.future((years = 3), (refDate = start_date));
+for (let i = 0; i < amountOfTrips; i++) {
+  const tripId = massiveLoadTools.generateMongoObjectId();
+  const city = faker.address.city();
+  const managerId = massiveLoadTools.getRandomArrayValue(managersIds);
+  let tripPrice = 0;
+  const canceled = massiveLoadTools.getRandomArrayValue(canceledStatuses);
+  const cancelReason = (canceled === true) ? faker.lorem.sentence() : '';
+  const publicationDate = faker.date.future(/* years */ 3, /* refDate */ threeYearsAgo);
+  const startDate = faker.date.future((/* years */ 3), /* refDate */ publicationDate);
+  const endDate = faker.date.future((/* years */ 3), /* refDate */ startDate);
 
-  //stages start
-  var allTripStages = [];
-  for (j = 0; j < amountOfStagesByTrip; j++) {
-    var price = Number(
-      faker.commerce.price((min = minumunStagePrice), (max = maximunStagePrice))
-    );
+  // stages start
+  const allTripStages = [];
+  for (let j = 0; j < amountOfStagesByTrip; j++) {
+    const price = Number(faker.commerce.price((/* min */minumunStagePrice), (/* max */ maximunStagePrice)));
+
     tripPrice += price;
 
-    var newStage = {
-      title: "Zone " + (j + 1) + " of city " + city,
+    const newStage = {
+      title: 'Zone ' + (j + 1) + ' of city ' + city,
       description: faker.lorem.paragraph(),
-      price: price,
+      price: price
     };
     allTripStages.push(newStage);
   }
-  //stages end
+  // stages end
 
-  var newTrip = {
+  const newTrip = {
     _id: {
-      $oid: tripId,
+      $oid: tripId
     },
     ticker: faker.datatype.string(11),
-    title: "A trip to " + city,
+    title: 'A trip to ' + city,
     description: faker.lorem.paragraph(),
     price: tripPrice,
-    publication_date: publication_date,
-    start_date: start_date,
-    end_date: end_date,
-    manager_Id: manager_Id,
+    publication_date: publicationDate,
+    start_date: startDate,
+    end_date: endDate,
+    manager_Id: {
+      $oid: managerId
+    },
     stages: allTripStages,
     canceled: canceled,
-    cancelReason: cancelReason,
+    cancelReason: cancelReason
   };
-  //console.log(newTrip);
+  // console.log(newTrip);
 
-  if (canceled == false) nonCanceledTrips.push(newTrip);
+  if (canceled === false) nonCanceledTrips.push(newTrip);
   allTrips.push(newTrip);
 }
 
-const tripsJsonData = formatJsonToBeWrittenToAFile(allTrips);
-var tripsJsonDataFilePath = "./massiveLoad/2-trips.json";
-saveJsonFile(tripsJsonData, tripsJsonDataFilePath);
+const tripsJsonData = massiveLoadTools.formatJsonToBeWrittenToAFile(allTrips);
+const tripsJsonDataFilePath = './massiveLoad/2-trips.json';
+massiveLoadTools.saveJsonFile(tripsJsonData, tripsJsonDataFilePath);
 
-//------------------------------------------------------------------------------
-//APPLICATIONS' DATA
-//------------------------------------------------------------------------------
-var allApplications = [];
-var statuses = ["PENDING", "DUE", "ACCEPTED", "CANCELLED", "REJECTED"];
-var maximunPossibleApplications = nonCanceledTrips.length * explorersIds.length;
-var amountOfApplications = Math.min(
+// ------------------------------------------------------------------------------
+// APPLICATIONS' DATA
+// ------------------------------------------------------------------------------
+const allApplications = [];
+const applicationStatuses = ['PENDING', 'DUE', 'ACCEPTED', 'CANCELLED', 'REJECTED'];
+const maximunPossibleApplications = nonCanceledTrips.length * explorersIds.length;
+amountOfApplications = Math.min(
   amountOfApplications,
   maximunPossibleApplications
 );
-console.log("amountOfApplications");
+console.log('amountOfApplications');
 console.log(amountOfApplications);
 
-for (i = 0; i < amountOfApplications; i++) {
-  var trip = null;
-  var explorer_Id = null;
-  var passedVerificationExplorerHasNotYetApplied = false;
+for (let i = 0; i < amountOfApplications; i++) {
+  let trip = null;
+  let explorerId = null;
+  let passedVerificationExplorerHasNotYetApplied = false;
 
-  while (passedVerificationExplorerHasNotYetApplied == false) {
-    trip = getRandomArrayValue(nonCanceledTrips);
-    explorer_Id = getRandomArrayValue(explorersIds);
+  while (passedVerificationExplorerHasNotYetApplied === false) {
+    trip = massiveLoadTools.getRandomArrayValue(nonCanceledTrips);
+    explorerId = massiveLoadTools.getRandomArrayValue(explorersIds);
 
-    var explorerAlreadyApplied = allApplications.filter(function (application) {
+    const explorerAlreadyApplied = allApplications.filter(function (application) {
       return (
-        application.trip_Id == trip._id &&
-        application.explorer_Id == explorer_Id
+        application.trip_Id === trip._id &&
+        application.explorer_Id === explorerId
       );
     });
     // console.log("explorerAlreadyApplied");
     // console.log(explorerAlreadyApplied);
     // console.log(explorerAlreadyApplied.length);
-    if (explorerAlreadyApplied.length == 0) {
+    if (explorerAlreadyApplied.length === 0) {
       passedVerificationExplorerHasNotYetApplied = true;
     }
   }
 
-  var status = getRandomArrayValue(statuses);
-  var publication_date = trip.publication_date;
-  var start_date = trip.start_date;
-  var applicationMoment = faker.date.betweens(
-    (from = publication_date),
-    (to = start_date),
-    (num = 1)
+  const applicationStatus = massiveLoadTools.getRandomArrayValue(applicationStatuses);
+  const publicationDate = trip.publication_date;
+  const startDate = trip.start_date;
+  const applicationMoment = faker.date.betweens(
+    (/* from */ publicationDate),
+    (/* to */ startDate),
+    (/* num */ 1)
   )[0];
-  var rejected_reason = status == "REJECTED" ? faker.lorem.sentence() : "";
+  const rejectedReason = (applicationStatus === 'REJECTED') ? faker.lorem.sentence() : '';
 
-  var newApplication = {
+  const newApplication = {
     applicationMoment: applicationMoment,
     comments: faker.lorem.sentence(),
-    status: status,
-    explorer_Id: explorer_Id,
-    trip_Id: trip._id.$oid,
-    manager_Id: trip.manager_Id,
+    status: applicationStatus,
+    explorer_Id: {
+      $oid: explorerId
+    },
+    trip_Id: trip._id,
+    manager_Id: trip.manager_Id,//this is already object type
     deleted: false,
-    rejected_reason: rejected_reason,
-    tripPrice: trip.price,
+    rejected_reason: rejectedReason,
+    tripPrice: trip.price
   };
   // console.log(newApplication);
 
   allApplications.push(newApplication);
 }
 
-const applciationsJsonData = formatJsonToBeWrittenToAFile(allApplications);
-var applciationsJsonDataFilePath = "./massiveLoad/3-applications.json";
-saveJsonFile(applciationsJsonData, applciationsJsonDataFilePath);
+const applciationsJsonData = massiveLoadTools.formatJsonToBeWrittenToAFile(allApplications);
+const applciationsJsonDataFilePath = './massiveLoad/3-applications.json';
+massiveLoadTools.saveJsonFile(applciationsJsonData, applciationsJsonDataFilePath);
 
-//------------------------------------------------------------------------------
-//FINDERS' DATA
-//------------------------------------------------------------------------------
-var allFinders = [];
+// ------------------------------------------------------------------------------
+// FINDERS' DATA
+// ------------------------------------------------------------------------------
+const allFinders = [];
 
-for (i = 0; i < explorersIds.length; i++) {
-  var explorer_Id = explorersIds[i];
+for (let i = 0; i < explorersIds.length; i++) {
+  const explorerId = explorersIds[i];
 
-  var keyWord = faker.lorem.word();
-  var priceLowerBound = Number(
-    faker.commerce.price((min = minimunFinderPriceLowerBound)),
-    (max = maximunFinderPriceLowerBound)
+  const keyWord = faker.lorem.word();
+  const priceLowerBound = Number(
+    faker.commerce.price((/* min */ minimunFinderPriceLowerBound)),
+    (/* max */ maximunFinderPriceLowerBound)
   );
-  var priceUpperBound = Number(
-    faker.commerce.price((min = priceLowerBound + 1)),
-    (max = maximunFinderPriceUpperBound)
+  const priceUpperBound = Number(
+    faker.commerce.price((/* min */ priceLowerBound + 1)),
+    (/* max */ maximunFinderPriceUpperBound)
   );
-  var dateLowerBound = faker.date.future(
-    (years = 3),
-    (refDate = threeYearsAgo)
+  const dateLowerBound = faker.date.future(
+    (/* years */ 3),
+    (/* refDate */ threeYearsAgo)
   );
-  var dateUpperBound = faker.date.future(
-    (years = 3),
-    (refDate = dateLowerBound)
+  const dateUpperBound = faker.date.future(
+    (/* years */ 3),
+    (/* refDate */ dateLowerBound)
   );
 
-  var results = allTrips.filter(function (trip) {
-    var priceMatchs =
+  const results = allTrips.filter(function (trip) {
+    const priceMatchs =
       priceLowerBound <= trip.price && trip.price <= priceUpperBound;
-    var dateMatches =
+    const dateMatches =
       new Date(dateLowerBound) <= new Date(trip.start_date) &&
       new Date(trip.end_date) <= new Date(dateUpperBound);
-    var keyWordMatches =
+    const keyWordMatches =
       trip.ticker.includes(keyWord) ||
       trip.title.includes(keyWord) ||
       trip.description.includes(keyWord);
@@ -271,20 +231,22 @@ for (i = 0; i < explorersIds.length; i++) {
     return priceMatchs && dateMatches && keyWordMatches;
   });
 
-  var newFinder = {
+  const newFinder = {
     keyWord: keyWord,
     priceLowerBound: priceLowerBound,
     priceUpperBound: priceUpperBound,
     dateLowerBound: dateLowerBound,
     dateUpperBound: dateUpperBound,
     results: results,
-    explorer_Id: explorer_Id,
+    explorer_Id: {
+      $oid: explorerId
+    }
   };
-  //console.log(newFinder);
+  // console.log(newFinder);
 
   allFinders.push(newFinder);
 }
 
-const findersJsonData = formatJsonToBeWrittenToAFile(allFinders);
-var findersJsonDataFilePath = "./massiveLoad/4-finders.json";
-saveJsonFile(findersJsonData, findersJsonDataFilePath);
+const findersJsonData = massiveLoadTools.formatJsonToBeWrittenToAFile(allFinders);
+const findersJsonDataFilePath = './massiveLoad/4-finders.json';
+massiveLoadTools.saveJsonFile(findersJsonData, findersJsonDataFilePath);
