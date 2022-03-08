@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 8089;
+const port = process.env.PORT || 8080;
 const mongoose = require('mongoose');
 
 const Actor = require('./api/models/actorModel');
@@ -39,7 +39,7 @@ const swaggerSpec = {
       `${path.join(__dirname, './api/routes/sponsorshipRoutes.js')}`,
       `${path.join(__dirname, './api/routes/systemParametersRoutes.js')}`,
       `${path.join(__dirname, './api/routes/applicationRoutes.js')}`,
-      `${path.join(__dirname, './api/routes/finderRoutes.js')}`
+      `${path.join(__dirname, './api/routes/finderRoutes.js')}`,
       `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`
   ]
 };
