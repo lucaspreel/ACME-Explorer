@@ -1,5 +1,9 @@
 'use strict';
 module.exports = function (app) {
+
+  const actors = require('../controllers/actorController');
+  const authController = require('../controllers/authController')
+
   /**
    * @swagger
    * components:
@@ -51,8 +55,6 @@ module.exports = function (app) {
    *        isActive: true
    */
 
-  const actors = require('../controllers/actorController');
-
   app.route('/v1/actors')
 
   /**
@@ -73,7 +75,7 @@ module.exports = function (app) {
    *        500:
    *          description: Error trying to get all actors.
    */
-    .get(actors.list_all_actors)
+    .get(authController.verifyAuthenticadedActor(["ADMINISTRADOR"]), actors.list_all_actors)
 
   /**
    * @swagger
@@ -105,10 +107,40 @@ module.exports = function (app) {
     .post(actors.create_an_actor);
 
   app.route('/v1/actors2')
-
   /**
    * @swagger
    * /v1/actors2:
+   *    post:
+   *      summary: Create a new actor being authenticated.
+   *      tags: [Actor]
+   *      requestBody:
+   *        required: true
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              $ref: '#/components/schemas/Actor'
+   *      responses:
+   *        201:
+   *          description: Actor created.
+   *        400:
+   *          description: Error trying to create the actor. Bad Request.
+   *        403:
+   *          description: You don't have right role to carry out this operation.
+   *        409:
+   *          description: Email is already registered.
+   *        422:
+   *          description: Validation error.
+   *        500:
+   *          description: Error trying to create the actor.
+   */
+    .post(authController.verifyAuthenticadedActor(["ADMINISTRADOR"]), actors.create_an_actor_authenticated);
+
+  app.route('/v1/actors3')
+
+  /**
+   * @swagger
+   * /v1/actors3:
    *    post:
    *      summary: Create many new actors
    *      tags: [Actor]
@@ -137,7 +169,7 @@ module.exports = function (app) {
    *        500:
    *          description: Error trying to create the actor.
    */
-    .post(actors.create_many_actors);
+    .post(authController.verifyAuthenticadedActor(["ADMINISTRADOR"]), actors.create_many_actors);
 
   app.route('/v1/actors/:actorId')
 
@@ -167,7 +199,7 @@ module.exports = function (app) {
    *        500:
    *          description: Error trying to get the actor.
    */
-    .get(actors.read_an_actor)
+    .get(authController.verifyAuthenticadedActor(["ADMINISTRADOR", "EXPLORER", "MANAGER", "SPONSOR"]), actors.read_an_actor)
 
   /**
    * @swagger
@@ -208,7 +240,7 @@ module.exports = function (app) {
    *        500:
    *          description: Error trying to update the actor.
    */
-    .put(actors.update_an_actor)
+    .put(authController.verifyAuthenticadedActor(["ADMINISTRADOR", "EXPLORER", "MANAGER", "SPONSOR"]), actors.update_an_actor)
 
   /**
    * @swagger

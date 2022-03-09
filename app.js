@@ -20,6 +20,22 @@ express.urlencoded({ extended: true })
 app.use(bodyParser.json({limit: '300mb'}));
 app.use(express.urlencoded({limit: '300mb', extended: true}));
 
+//firebase config - start
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, idToken') // watch out, if a custom parameter, like idToken, is added in the header, it must to be declared here to avoid CORS error
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS')
+  next()
+})
+
+const admin = require('firebase-admin')
+const serviceAccount = require('./acme-explorer-firebase-project-firebase-adminsdk-x5hnj-9c0cdb87d8')
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://acme-explorer-firebase-project.firebaseio.com'
+})
+//firebase config - end
+
 // swagger documentation config - start
 const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
@@ -50,12 +66,14 @@ const routesSponsorships = require('./api/routes/sponsorshipRoutes');
 const routesSystemParameters = require('./api/routes/systemParametersRoutes');
 const routesApplication = require('./api/routes/applicationRoutes');
 const routesDashboardInformation = require('./api/routes/dashboardInformationRoutes');
+const routesLogin = require('./api/routes/loginRoutes');
 
 routesActors(app);
 routesSponsorships(app);
 routesSystemParameters(app);
 routesApplication(app);
 routesDashboardInformation(app);
+routesLogin(app)
 
 // MongoDB URI building
 const mongoDBUser = process.env.mongoDBUser || 'ACME_EXPLORER_ADMIN_USER';
@@ -90,5 +108,5 @@ mongoose.connection.on('error', function (err) {
   console.error('DB init error ' + err);
 });
 
-DashboardInformationTools.createDashboardInformationJob();
-actorController.createExplorerStatsJob();
+//DashboardInformationTools.createDashboardInformationJob();
+//actorController.createExplorerStatsJob();
