@@ -1,8 +1,7 @@
 'use strict';
 module.exports = function (app) {
-
   const actors = require('../controllers/actorController');
-  const authController = require('../controllers/authController')
+  const authController = require('../controllers/authController');
 
   /**
    * @swagger
@@ -77,10 +76,10 @@ module.exports = function (app) {
    *      security:
    *        - ApiKeyAuth: []
    */
-  .get(
-    authController.verifyAuthenticadedActor(["ADMINISTRATOR"]),
-    actors.list_all_actors
-  )
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.list_all_actors
+    )
 
   /**
    * @swagger
@@ -109,7 +108,7 @@ module.exports = function (app) {
    *        500:
    *          description: Error trying to create the actor.
    */
-  .post(actors.create_an_actor);
+    .post(actors.create_an_actor);
 
   app.route('/v1/actors2')
   /**
@@ -141,10 +140,10 @@ module.exports = function (app) {
    *      security:
    *        - ApiKeyAuth: []
    */
-  .post(
-    authController.verifyAuthenticadedActor(["ADMINISTRATOR"]), 
-    actors.create_an_actor_authenticated
-  );
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.create_an_actor_authenticated
+    );
 
   app.route('/v1/actors3')
 
@@ -181,10 +180,10 @@ module.exports = function (app) {
    *      security:
    *        - ApiKeyAuth: []
    */
-  .post(
-    authController.verifyAuthenticadedActor(["ADMINISTRATOR"]),
-    actors.create_many_actors
-  );
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.create_many_actors
+    );
 
   app.route('/v1/actors/:actorId')
 
@@ -217,8 +216,8 @@ module.exports = function (app) {
    *        - ApiKeyAuth: []
    */
     .get(
-      authController.verifyAuthenticadedActor(["ADMINISTRATOR", "EXPLORER", "MANAGER", "SPONSOR"]), 
-      authController.verifyAuthenticatedActorCanAccessParameterActor(), 
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'EXPLORER', 'MANAGER', 'SPONSOR']),
+      authController.verifyAuthenticatedActorCanAccessParameterActor(),
       actors.read_an_actor
     )
 
@@ -263,11 +262,11 @@ module.exports = function (app) {
    *      security:
    *        - ApiKeyAuth: []
    */
-  .put(
-    authController.verifyAuthenticadedActor(["ADMINISTRATOR", "EXPLORER", "MANAGER", "SPONSOR"]), 
-    authController.verifyAuthenticatedActorCanAccessParameterActor(),
-    actors.update_an_actor
-  )
+    .put(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'EXPLORER', 'MANAGER', 'SPONSOR']),
+      authController.verifyAuthenticatedActorCanAccessParameterActor(),
+      actors.update_an_actor
+    )
 
   /**
    * @swagger
@@ -299,10 +298,10 @@ module.exports = function (app) {
    *      security:
    *        - ApiKeyAuth: []
    */
-  .delete(
-    authController.verifyAuthenticadedActor(["ADMINISTRATOR"]),
-    actors.delete_an_actor
-  );
+    .delete(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.delete_an_actor
+    );
 
   /**
    * @swagger
@@ -335,10 +334,10 @@ module.exports = function (app) {
    *        - ApiKeyAuth: []
    */
   app.route('/v1/actors/:actorId/ban')
-  .patch(
-    authController.verifyAuthenticadedActor(["ADMINISTRATOR"]),
-    actors.ban_an_actor
-  );
+    .patch(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.ban_an_actor
+    );
 
   /**
    * @swagger
@@ -371,10 +370,10 @@ module.exports = function (app) {
    *        - ApiKeyAuth: []
    */
   app.route('/v1/actors/:actorId/unban')
-  .patch(
-    authController.verifyAuthenticadedActor(["ADMINISTRATOR"]),
-    actors.unban_an_actor
-  );
+    .patch(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.unban_an_actor
+    );
 
   /**
    * @swagger
@@ -505,7 +504,7 @@ module.exports = function (app) {
    *        - ApiKeyAuth: []
    */
 
-  //added a second swagger endpoint for the same actual endpoint to bypass swagger's limitations related to optional in path parameters 
+  // added a second swagger endpoint for the same actual endpoint to bypass swagger's limitations related to optional in path parameters
   /**
    * @swagger
    * /v1/explorerStats/{startYear}/{startMonth}/{endYear}/{endMonth}/{explorerId}:
@@ -565,8 +564,8 @@ module.exports = function (app) {
    *      security:
    *        - ApiKeyAuth: []
    */
-  .get(
-    authController.verifyAuthenticadedActor(["ADMINISTRATOR"]),
-    actors.list_explorer_stats
-  );
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.list_explorer_stats
+    );
 };

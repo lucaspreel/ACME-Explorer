@@ -9,8 +9,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const Actor = mongoose.model('Actors');
 const Application = mongoose.model('Application');
 const ExplorerStats = mongoose.model('ExplorerStats');
-const authController = require('./authController')
-const admin = require('firebase-admin')
+const admin = require('firebase-admin');
 
 exports.list_all_actors = function (req, res) {
   Actor.find({ deleted: false }, function (error, actors) {
@@ -23,58 +22,39 @@ exports.list_all_actors = function (req, res) {
 };
 
 exports.create_an_actor = function (req, res) {
-
   const newActor = new Actor(req.body);
 
-  if((newActor.role.length == 1 && newActor.role.includes('EXPLORER')))
-  {
+  if ((newActor.role.length === 1 && newActor.role.includes('EXPLORER'))) {
     newActor.save(function (error, actor) {
-      if (error) 
-      {
-        if (error.name === 'ValidationError') 
-        {
+      if (error) {
+        if (error.name === 'ValidationError') {
           res.status(422).send(error);
-        } 
-        else 
-        {
+        } else {
           res.status(500).send(error);
         }
-      } 
-      else 
-      {
+      } else {
         res.status(201).json(actor);
       }
     });
+  } else {
+    return res.status(403).send('Only explorers can create their own account.');
   }
-  else
-  {
-    return res.status(403).send("Only explorers can create their own account.");
-  }
-
 };
 
 exports.create_an_actor_authenticated = function (req, res) {
-
   const newActor = new Actor(req.body);
 
   newActor.save(function (error, actor) {
-    if (error) 
-    {
-      if (error.name === 'ValidationError') 
-      {
+    if (error) {
+      if (error.name === 'ValidationError') {
         res.status(422).send(error);
-      } 
-      else 
-      {
+      } else {
         res.status(500).send(error);
       }
-    } 
-    else 
-    {
+    } else {
       res.status(201).json(actor);
     }
   });
-
 };
 
 exports.create_many_actors = function (req, res) {
@@ -92,135 +72,90 @@ exports.create_many_actors = function (req, res) {
 };
 
 exports.read_an_actor = function (req, res) {
-
-  Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
-    if (!actor1) 
-    {
-      res.status(404).send();
-    } 
-    else 
-    {
-      Actor.findById(req.params.actorId, function (error, actor) {
-        if (error) 
-        {
-          res.status(500).send(error);
-        } 
-        else 
-        {
-          res.json(actor);
-        }
-      });
-    }
-  })
-  .catch((error) => {
-    res.status(500).send(error);
-  });
-
-};
-
-exports.update_an_actor = async function (req, res) {
-    
-  Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
-
-    if (!actor1) 
-    {
-      res.status(404).send("Actor not found");
-    } 
-    else 
-    {
-
-      Actor.findOneAndUpdate({ _id: req.params.actorId }, req.body, { new: true }, function (error, actor) {
-        if(error) 
-        {
-          if (error.name === 'ValidationError') 
-          {
-            res.status(422).send(error);
-          } 
-          else 
-          {
-            res.status(500).send(error);
-          }
-        } 
-        else 
-        {
-          res.json(actor);
-        }
-      });
-
-    }
-    
-  })
-  .catch((error) => {
-    res.status(500).send(error);
-  });
-
-};
-
-exports.delete_an_actor = function (req, res) {
-
   Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
     if (!actor1) {
       res.status(404).send();
-    } 
-    else 
-    {
-      Actor.delete({ _id: req.params.actorId }, function (error, actor) {
-        if(error) 
-        {
+    } else {
+      Actor.findById(req.params.actorId, function (error, actor) {
+        if (error) {
           res.status(500).send(error);
-        } 
-        else 
-        {
+        } else {
+          res.json(actor);
+        }
+      });
+    }
+  })
+    .catch((error) => {
+      res.status(500).send(error);
+    });
+};
+
+exports.update_an_actor = async function (req, res) {
+  Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
+    if (!actor1) {
+      res.status(404).send('Actor not found');
+    } else {
+      Actor.findOneAndUpdate({ _id: req.params.actorId }, req.body, { new: true }, function (error, actor) {
+        if (error) {
+          if (error.name === 'ValidationError') {
+            res.status(422).send(error);
+          } else {
+            res.status(500).send(error);
+          }
+        } else {
+          res.json(actor);
+        }
+      });
+    }
+  })
+    .catch((error) => {
+      res.status(500).send(error);
+    });
+};
+
+exports.delete_an_actor = function (req, res) {
+  Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
+    if (!actor1) {
+      res.status(404).send();
+    } else {
+      Actor.delete({ _id: req.params.actorId }, function (error, actor) {
+        if (error) {
+          res.status(500).send(error);
+        } else {
           res.json({ message: 'Actor successfully soft deleted' });
         }
       });
     }
   })
-  .catch((error) => {
-    res.status(500).send(error);
-  });
-
+    .catch((error) => {
+      res.status(500).send(error);
+    });
 };
 
 exports.ban_an_actor = function (req, res) {
-
   Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
-    if(!actor1) 
-    {
+    if (!actor1) {
       res.status(404).send();
-    } 
-    else 
-    {
-
+    } else {
       Actor.findOneAndUpdate({ _id: req.params.actorId }, { isActive: false }, { new: true }, function (error, actor) {
-        if (error) 
-        {
+        if (error) {
           res.send(error);
-        } 
-        else 
-        {
+        } else {
           res.json(actor);
         }
       });
-
     }
   })
-  .catch((error) => {
-    res.status(500).send(error);
-  });
-
+    .catch((error) => {
+      res.status(500).send(error);
+    });
 };
 
 exports.unban_an_actor = function (req, res) {
-
   Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
-    if(!actor1) 
-    {
+    if (!actor1) {
       res.status(404).send();
-    } 
-    else 
-    {
-
+    } else {
       Actor.findOneAndUpdate({ _id: req.params.actorId }, { isActive: true }, { new: true }, function (error, actor) {
         if (error) {
           res.send(error);
@@ -230,180 +165,136 @@ exports.unban_an_actor = function (req, res) {
       });
     }
   })
-  .catch((error) => {
-    res.status(500).send(error);
-  });
-
+    .catch((error) => {
+      res.status(500).send(error);
+    });
 };
 
 exports.login_an_actor = async function (req, res) {
-  //console.log('starting login an actor')
-  const emailParam = req.query.email
-  const password = req.query.password
-  let customToken = "";
+  // console.log('starting login an actor')
+  const emailParam = req.query.email;
+  const password = req.query.password;
+  let customToken = '';
 
   Actor.findOne({ email: emailParam }, function (error, actor) {
-    if (error) 
-    {
-      res.status(500).send({ message: 'Error trying to find actor.', error: error })
-    } 
-    else if (!actor) 
-    {
-      res.status(401).send({ message: 'No actor found.', error: error })
-    } 
-    else if (actor.isActive === false) 
-    {
-      res.status(403).json({ message: 'Actor is inactive.', error: error })
-    } 
-    else 
-    {
+    if (error) {
+      res.status(500).send({ message: 'Error trying to find actor.', error: error });
+    } else if (!actor) {
+      res.status(401).send({ message: 'No actor found.', error: error });
+    } else if (actor.isActive === false) {
+      res.status(403).json({ message: 'Actor is inactive.', error: error });
+    } else {
       // Make sure the password is correct
       actor.verifyPassword(password, async function (error, isMatch) {
-        if (error) 
-        {
-          res.status(500).send({ message: 'Error trying to find actor.', error: error })
-        } 
-        else if (!isMatch) 
-        { 
-          res.status(401).json({ message: 'Password did not match.', error: error })
-        } 
-        else 
-        {
-
-          try 
-          {
-            customToken = await admin.auth().createCustomToken(actor.email)
-          } 
-          catch (error) 
-          {
-            console.log('Error creating custom token:', error)
-            res.status(500).send({ message: 'Error creating custom token.'})
+        if (error) {
+          res.status(500).send({ message: 'Error trying to find actor.', error: error });
+        } else if (!isMatch) {
+          res.status(401).json({ message: 'Password did not match.', error: error });
+        } else {
+          try {
+            customToken = await admin.auth().createCustomToken(actor.email);
+          } catch (error) {
+            console.log('Error creating custom token:', error);
+            res.status(500).send({ message: 'Error creating custom token.' });
           }
 
           actor = actor.toJSON();
           actor.customToken = customToken;
 
           res.json(actor);
-
         }
-      })
+      });
     }
-  })
-}
+  });
+};
 
 exports.list_explorer_stats = function (req, res) {
+  const startYear = Number(req.params.startYear);
+  const startMonth = Number(req.params.startMonth);
+  const endYear = Number(req.params.endYear);
+  const endMonth = Number(req.params.endMonth);
+  const validYears = Array.from({ length: 3 }, (item, index) => (new Date().getFullYear()) - index);
+  const validMonths = Array.from({ length: 12 }, (item, index) => index + 1);
 
-  let startYear = Number(req.params.startYear);
-  let startMonth = Number(req.params.startMonth);
-  let endYear = Number(req.params.endYear);
-  let endMonth = Number(req.params.endMonth);
-  let validYears = Array.from({length: 3}, (item, index) => (new Date().getFullYear()) - index);
-  let validMonths = Array.from({length: 12}, (item, index) => index + 1);
-
-  if(!validYears.includes(startYear))
-  {
-    res.status(422).send("Error: startYear is not a valid year.");
-  }
-  else if(!validMonths.includes(startMonth))
-  {
-    res.status(422).send("Error: startMonth is not a valid month.");
-  }
-  else if(!validYears.includes(endYear))
-  {
-    res.status(422).send("Error: endYear is not a valid year.");
-  }
-  else if(!validMonths.includes(endMonth))
-  {
-    res.status(422).send("Error: endMonth is not a valid month.");
-  }
-  else
-  {
-    
+  if (!validYears.includes(startYear)) {
+    res.status(422).send('Error: startYear is not a valid year.');
+  } else if (!validMonths.includes(startMonth)) {
+    res.status(422).send('Error: startMonth is not a valid month.');
+  } else if (!validYears.includes(endYear)) {
+    res.status(422).send('Error: endYear is not a valid year.');
+  } else if (!validMonths.includes(endMonth)) {
+    res.status(422).send('Error: endMonth is not a valid month.');
+  } else {
     const explorerId = req.params.explorerId;
 
-    let aggregations = [
+    const aggregations = [
       {
         $project: {
-           explorerId: "$explorerId",
-           yearExpense: {
-              $filter: {
-                 input: "$yearExpense",
-                 as: "singleYearExpense",
-                 cond: {
-                     $and: [
-                         { $gte: [ "$$singleYearExpense.year", startYear ] },
-                         { $lte: [ "$$singleYearExpense.year", endYear ] }
-                     ]
-                 }
+          explorerId: '$explorerId',
+          yearExpense: {
+            $filter: {
+              input: '$yearExpense',
+              as: 'singleYearExpense',
+              cond: {
+                $and: [
+                  { $gte: ['$$singleYearExpense.year', startYear] },
+                  { $lte: ['$$singleYearExpense.year', endYear] }
+                ]
               }
-           },
-           monthExpense: {
-              $filter: {
-                 input: "$monthExpense",
-                 as: "singleMonthExpense",
-                 cond: {
-                     $and: [
-                         { $gte: [ "$$singleMonthExpense.year", startYear ] },
-                         { $lte: [ "$$singleMonthExpense.year", endYear ] },
-                         { $gte: [ "$$singleMonthExpense.month", startMonth ] },
-                         { $lte: [ "$$singleMonthExpense.month", endMonth ] }
-                     ]
-                 }
+            }
+          },
+          monthExpense: {
+            $filter: {
+              input: '$monthExpense',
+              as: 'singleMonthExpense',
+              cond: {
+                $and: [
+                  { $gte: ['$$singleMonthExpense.year', startYear] },
+                  { $lte: ['$$singleMonthExpense.year', endYear] },
+                  { $gte: ['$$singleMonthExpense.month', startMonth] },
+                  { $lte: ['$$singleMonthExpense.month', endMonth] }
+                ]
               }
-           }
+            }
+          }
         }
-     }
+      }
     ];
 
-    //it is used unshift instead of push because according to the documentation the match has to be at the beggining to leverage the indexes
-    if(typeof explorerId !== "undefined")aggregations.unshift({ $match : { explorerId: ObjectId(explorerId) } });
+    // it is used unshift instead of push because according to the documentation the match has to be at the beggining to leverage the indexes
+    if (typeof explorerId !== 'undefined')aggregations.unshift({ $match: { explorerId: ObjectId(explorerId) } });
     // console.log("aggregations");
     // console.log(aggregations);
 
     ExplorerStats.aggregate(aggregations)
-    .exec((error, results) => {
-
-      if (error) 
-      {
-        console.log(error);
-        res.status(500).send(error);
-      } 
-      else 
-      {
-        res.json(results);
-      }
-
-    });
-
+      .exec((error, results) => {
+        if (error) {
+          console.log(error);
+          res.status(500).send(error);
+        } else {
+          res.json(results);
+        }
+      });
   }
-
 };
 
 exports.createExplorerStatsJob = function () {
-
-  let rebuildPeriod = '*/600 * * * * *';
-  let explorerStatsJob = new CronJob(rebuildPeriod, function () {
-
-    console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod)
+  const rebuildPeriod = '*/600 * * * * *';
+  const explorerStatsJob = new CronJob(rebuildPeriod, function () {
+    console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod);
 
     async.parallel([
-      computeExplorerStats,
-    ], 
+      computeExplorerStats
+    ],
     function (error, results) {
+      if (error) {
+        console.log('Error computing datawarehouse: ' + error);
+      } else {
+        const explorerStats = results[0];
 
-      if (error) 
-      {
-        console.log('Error computing datawarehouse: ' + error)
-      } 
-      else 
-      {
-
-        let explorerStats = results[0];
-
-        //preparing data to masive upsert
-        const bulkUpsert = explorerStats.map(function(singleExplorerStats) {
-
-          var upsertConfig =   {
+        // preparing data to masive upsert
+        const bulkUpsert = explorerStats.map(function (singleExplorerStats) {
+          const upsertConfig = {
             updateOne: {
               filter: { explorerId: singleExplorerStats.explorerId },
               update: singleExplorerStats,
@@ -412,31 +303,27 @@ exports.createExplorerStatsJob = function () {
           };
 
           return upsertConfig;
-
         });
 
         // console.log("bulkUpsert");
         // console.log(bulkUpsert);
 
         ExplorerStats.bulkWrite(bulkUpsert)
-        .then(function () {
-          console.log('ExplorerStats successfully computed and saved at '+ new Date()); // Success
-        })
-        .catch(function (error) {
-          console.log('Error saving explorerStats: ' + error)
-        });
-        
+          .then(function () {
+            console.log('ExplorerStats successfully computed and saved at ' + new Date()); // Success
+          })
+          .catch(function (error) {
+            console.log('Error saving explorerStats: ' + error);
+          });
       }
-    })
-
+    });
   }, null, true, 'Europe/Madrid');
 
   explorerStatsJob.setTime(new CronTime(rebuildPeriod));
   explorerStatsJob.start();
-}
+};
 
-function computeExplorerStats(callback){
-
+function computeExplorerStats (callback) {
   Application.aggregate([
     // inner join with trips
     {
@@ -688,17 +575,11 @@ function computeExplorerStats(callback){
 
   ])
     .exec((error, results) => {
-
-      if (error) 
-      {
+      if (error) {
         console.log(error);
-        callback(error, {})
-      } 
-      else 
-      {
-        callback(error, results)
+        callback(error, {});
+      } else {
+        callback(error, results);
       }
-
     });
-
 }

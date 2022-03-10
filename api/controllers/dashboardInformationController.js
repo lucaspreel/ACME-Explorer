@@ -56,7 +56,7 @@ exports.read_last_dashboard = function (req, res) {
 
 function createDashboardInformationJob () {
   computeDashboardInformationJob = new CronJob(rebuildPeriod, function () {
-    console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod)
+    console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod);
     const newDashboardInformation = new DashboardInformation();
     async.parallel([
       computeTripsPerManager,
