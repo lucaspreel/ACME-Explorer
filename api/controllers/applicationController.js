@@ -152,33 +152,33 @@ exports.find_by_explorer_id = function (req, res) {
 
 exports.reject_application = function (req, res) {
   if (!req.body.rejected_reason) {
-    console.error("Missing rejected reason");
+    console.error('Missing rejected reason');
     res.sendStatus(400);
   } else {
     Application.findById(req.params.applicationId, function (err, application) {
       if (err) {
-        console.error("Error getting data from DB");
+        console.error('Error getting data from DB');
         res.sendStatus(500); // internal server error
       } else {
         if (!application) {
-          console.error("The application Id is wrong");
+          console.error('The application Id is wrong');
           res.sendStatus(400);
         } else {
-          if (application.status !== "PENDING") {
-            console.error("The status is not PENDING");
+          if (application.status !== 'PENDING') {
+            console.error('The status is not PENDING');
             res.sendStatus(400);
           } else {
             Application.findOneAndUpdate(
               { _id: req.params.applicationId },
-              { status: "REJECTED", rejected_reason: req.body.rejected_reason },
+              { status: 'REJECTED', rejected_reason: req.body.rejected_reason },
               {
                 runValidators: true,
-                returnDocument: "after",
-                returnOriginal: false,
+                returnDocument: 'after',
+                returnOriginal: false
               },
               function (err, application) {
                 if (err) {
-                  if (err.name === "ValidationError") {
+                  if (err.name === 'ValidationError') {
                     res.status(422).send(err);
                   } else {
                     res.status(500).send(err);
@@ -198,28 +198,28 @@ exports.reject_application = function (req, res) {
 exports.due_application = function (req, res) {
   Application.findById(req.params.applicationId, function (err, application) {
     if (err) {
-      console.error("Error getting data from DB");
+      console.error('Error getting data from DB');
       res.sendStatus(500); // internal server error
     } else {
       if (!application) {
-        console.error("The application Id is wrong");
+        console.error('The application Id is wrong');
         res.sendStatus(400);
       } else {
-        if (application.status !== "PENDING") {
-          console.error("The status is not PENDING");
+        if (application.status !== 'PENDING') {
+          console.error('The status is not PENDING');
           res.sendStatus(400);
         } else {
           Application.findOneAndUpdate(
             { _id: req.params.applicationId },
-            { status: "DUE" },
+            { status: 'DUE' },
             {
               runValidators: true,
-              returnDocument: "after",
-              returnOriginal: false,
+              returnDocument: 'after',
+              returnOriginal: false
             },
             function (err, application) {
               if (err) {
-                if (err.name === "ValidationError") {
+                if (err.name === 'ValidationError') {
                   res.status(422).send(err);
                 } else {
                   res.status(500).send(err);
@@ -238,28 +238,28 @@ exports.due_application = function (req, res) {
 exports.pay_application = function (req, res) {
   Application.findById(req.params.applicationId, function (err, application) {
     if (err) {
-      console.error("Error getting data from DB");
+      console.error('Error getting data from DB');
       res.sendStatus(500); // internal server error
     } else {
       if (!application) {
-        console.error("The application Id is wrong");
+        console.error('The application Id is wrong');
         res.sendStatus(400);
       } else {
-        if (application.status !== "DUE") {
-          console.error("The status is not DUE");
+        if (application.status !== 'DUE') {
+          console.error('The status is not DUE');
           res.sendStatus(400);
         } else {
           Application.findOneAndUpdate(
             { _id: req.params.applicationId },
-            { status: "ACCEPTED" },
+            { status: 'ACCEPTED' },
             {
               runValidators: true,
-              returnDocument: "after",
-              returnOriginal: false,
+              returnDocument: 'after',
+              returnOriginal: false
             },
             function (err, application) {
               if (err) {
-                if (err.name === "ValidationError") {
+                if (err.name === 'ValidationError') {
                   res.status(422).send(err);
                 } else {
                   res.status(500).send(err);
@@ -278,28 +278,28 @@ exports.pay_application = function (req, res) {
 exports.cancelled_application = function (req, res) {
   Application.findById(req.params.applicationId, function (err, application) {
     if (err) {
-      console.error("Error getting data from DB");
+      console.error('Error getting data from DB');
       res.sendStatus(500); // internal server error
     } else {
       if (!application) {
-        console.error("The application Id is wrong");
+        console.error('The application Id is wrong');
         res.sendStatus(400);
       } else {
-        if (application.status !== "ACCEPTED") {
-          console.error("The status is not ACCEPTED");
+        if (application.status !== 'ACCEPTED') {
+          console.error('The status is not ACCEPTED');
           res.sendStatus(400);
         } else {
           Application.findOneAndUpdate(
             { _id: req.params.applicationId },
-            { status: "CANCELLED" },
+            { status: 'CANCELLED' },
             {
               runValidators: true,
-              returnDocument: "after",
-              returnOriginal: false,
+              returnDocument: 'after',
+              returnOriginal: false
             },
             function (err, application) {
               if (err) {
-                if (err.name === "ValidationError") {
+                if (err.name === 'ValidationError') {
                   res.status(422).send(err);
                 } else {
                   res.status(500).send(err);

@@ -2,23 +2,39 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// const dateFormat = require('dateformat');
+const customAlphabet = require('nanoid').customAlphabet;
+const idGenerator = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4);
+
 const StageSchema = new Schema({
   title: {
     type: String,
     required: 'Kindly enter the title of the stage'
   },
   description: {
-    type: String
+    type: String,
+    required: 'Kindly enter the description of the stage'
   },
   price: {
-    type: Number
+    type: Number,
+    required: 'Kindly enter the price of the stage'
   }
 }, { strict: false });
 
 const TripSchema = new Schema({
+  managerId: {
+    type: Schema.Types.ObjectId,
+    required: 'manager id required'
+  },
   ticker: {
     type: String,
-    required: 'Kindly enter the ticker of the trip'
+    unique: true,
+    validate: {
+      validator: function (v) {
+        return /\d{6}-\w{4}/.test(v);
+      },
+      message: 'ticker is not valid!, Pattern("d(6)-w(4)")'
+    }
   },
   title: {
     type: String,
@@ -32,36 +48,55 @@ const TripSchema = new Schema({
     type: Number
   },
   requirements: {
-    type: [String]
+    type: [String],
+    default: []
   },
-  start_date: {
-    type: Date
+  startDate: {
+    type: Date,
+    required: 'Kindly enter the starting date of the trip'
   },
-  end_date: {
-    type: Date
-  },
-  publication_date: {
-    type: Date
+  endDate: {
+    type: Date,
+    required: 'Kindly enter the ending date of the trip'
   },
   pictures: {
     type: [{ data: Buffer, contentType: String }]
   },
+  publicationDate: {
+    type: Date
+  },
   canceled: {
-    type: Boolean
+    type: Boolean,
+    default: false
   },
   cancelReason: {
     type: String
   },
-  manager_Id: {
-    type: Schema.Types.ObjectId,
-    required: 'manager id required'
-  },
-  // application_id: {
-  //  type: Schema.Types.ObjectId,
-  //  required: 'application id required'
-  // },
   stages: [StageSchema]
 }, { strict: false });
+
+TripSchema.pre('save', function (callback) {
+  const newTrip = this;
+
+  newTrip.ticker = generateTicker();
+  newTrip.price = calculatePrice(newTrip);
+
+  callback();
+});
+
+function generateTicker () {
+  const currentDate = dateFormat(new Date(), 'yymmdd');
+  const ticker = [currentDate, idGenerator()].join('-');
+  return ticker;
+}
+
+function calculatePrice (trip) {
+  let price = 0;
+  for (const stage of trip.stages) {
+    price += stage.price;
+  }
+  return price;
+}
 
 module.exports = mongoose.model('Trips', TripSchema);
 module.exports = mongoose.model('Stage', StageSchema);

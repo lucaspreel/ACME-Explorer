@@ -29,7 +29,7 @@ const FinderSchema = new Schema({
   expiration_date: {
     type: Date
   }
-  
+
 }, { strict: false });
 FinderSchema.index({ explorer_Id: 1 });
 module.exports = mongoose.model('Finder', FinderSchema);
