@@ -20,13 +20,16 @@ const FinderSchema = new Schema({
     type: Date
   },
   results: {
-    type: [Schema.Types.ObjectId]
+    type: [Schema.Types.Map]
   },
   explorer_Id: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: 'consumer id required'
+  },
+  expiration_date: {
+    type: Date
   }
 
 }, { strict: false });
-
+FinderSchema.index({ explorer_Id: 1 });
 module.exports = mongoose.model('Finder', FinderSchema);

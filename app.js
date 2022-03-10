@@ -55,6 +55,7 @@ const swaggerSpec = {
       `${path.join(__dirname, './api/routes/sponsorshipRoutes.js')}`,
       `${path.join(__dirname, './api/routes/systemParametersRoutes.js')}`,
       `${path.join(__dirname, './api/routes/applicationRoutes.js')}`,
+      `${path.join(__dirname, './api/routes/finderRoutes.js')}`,
       `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`
   ]
 };
@@ -80,6 +81,7 @@ const routesSystemParameters = require('./api/routes/systemParametersRoutes');
 const routesApplication = require('./api/routes/applicationRoutes');
 const routesDashboardInformation = require('./api/routes/dashboardInformationRoutes');
 const routesLogin = require('./api/routes/loginRoutes');
+const routesFinder = require('./api/routes/finderRoutes');
 
 routesActors(app);
 routesSponsorships(app);
@@ -87,6 +89,7 @@ routesSystemParameters(app);
 routesApplication(app);
 routesDashboardInformation(app);
 routesLogin(app)
+routesFinder(app);
 
 // MongoDB URI building
 const mongoDBUser = process.env.mongoDBUser || 'ACME_EXPLORER_ADMIN_USER';

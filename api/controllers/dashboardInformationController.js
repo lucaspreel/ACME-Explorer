@@ -10,7 +10,7 @@ const ApplicationsRatio = mongoose.model('ApplicationsRatio');
 const Trip = mongoose.model('Trips');
 const Application = mongoose.model('Application');
 
-let rebuildPeriod = '*/10 * * * * *';
+let rebuildPeriod = '*/30 * * * * *';
 let computeDashboardInformationJob;
 
 exports.read_all_dashboards = function (req, res) {
@@ -72,7 +72,6 @@ function createDashboardInformationJob () {
         newDashboardInformation.priceOfTrips = results[2];
         newDashboardInformation.applicationsRatioPerStatus = results[3];
         newDashboardInformation.rebuildPeriod = rebuildPeriod;
-
         newDashboardInformation.save(function (err, dashboardInformation) {
           if (err) {
             console.log('Error saving dashboard informations: ' + err);
@@ -88,33 +87,140 @@ function createDashboardInformationJob () {
 module.exports.createDashboardInformationJob = createDashboardInformationJob;
 
 function computeTripsPerManager (callback) {
-  const tripsPerManager = new DispersionMeasures();
-  tripsPerManager.average = 10;
-  tripsPerManager.minimum = 5;
-  tripsPerManager.maximum = 15;
-  tripsPerManager.standardDeviation = 2;
-  callback(null, tripsPerManager);
+  Trip.aggregate([
+    {
+      $group: {
+        _id: '$manager_Id',
+        nb_trips: { $sum: 1 }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        avg_trips: { $avg: '$nb_trips' },
+        min_trips: { $min: '$nb_trips' },
+        max_trips: { $max: '$nb_trips' },
+        std_trips: { $stdDevPop: '$nb_trips' }
+      }
+    }
+  ], function (err, res) {
+    const avg = res[0].avg_trips;
+    const min = res[0].min_trips;
+    const max = res[0].max_trips;
+    const std = res[0].std_trips;
+    callback(err, DispersionMeasuresConstructor(avg, min, max, std));
+  });
 }
 
 function computeApplicationsPerTrip (callback) {
-  const applicationsPerTrip = new DispersionMeasures();
-  applicationsPerTrip.average = 10;
-  applicationsPerTrip.minimum = 5;
-  applicationsPerTrip.maximum = 15;
-  applicationsPerTrip.standardDeviation = 2;
-  callback(null, applicationsPerTrip);
+  Application.aggregate([
+    {
+      $group: {
+        _id: '$trip_Id',
+        nb_applications: { $sum: 1 }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        avg_applications: { $avg: '$nb_applications' },
+        min_applications: { $min: '$nb_applications' },
+        max_applications: { $max: '$nb_applications' },
+        std_applications: { $stdDevPop: '$nb_applications' }
+      }
+    }
+  ], function (err, res) {
+    const avg = res[0].avg_applications;
+    const min = res[0].min_applications;
+    const max = res[0].max_applications;
+    const std = res[0].std_applications;
+    callback(err, DispersionMeasuresConstructor(avg, min, max, std));
+  });
 }
 
 function computePriceOfTrips (callback) {
-  const priceOfTrips = new DispersionMeasures();
-  priceOfTrips.average = 10;
-  priceOfTrips.minimum = 5;
-  priceOfTrips.maximum = 15;
-  priceOfTrips.standardDeviation = 2;
-  callback(null, priceOfTrips);
+  Trip.aggregate([
+    {
+      $group: {
+        _id: null,
+        avg_price: { $avg: '$price' },
+        min_price: { $min: '$price' },
+        max_price: { $max: '$price' },
+        std_price: { $stdDevPop: '$price' }
+      }
+    }
+  ], function (err, res) {
+    const avg = res[0].avg_price;
+    const min = res[0].min_price;
+    const max = res[0].max_price;
+    const std = res[0].std_price;
+    callback(err, DispersionMeasuresConstructor(avg, min, max, std));
+  });
 }
 
 function computeApplicationsRatioPerStatus (callback) {
-  const applicationsRatioPerStatus = [];
-  callback(null, applicationsRatioPerStatus);
+  Application.aggregate([
+    {
+      $facet: {
+        totalApplications: [
+          {
+            $group: {
+              _id: null,
+              total: { $sum: 1 }
+            }
+          }
+        ],
+        applicationsPerStatus: [
+          {
+            $group: {
+              _id: '$status',
+              nb_applications: { $sum: 1 }
+            }
+          }
+        ]
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        status: '$applicationsPerStatus._id',
+        ratioPerStatus: {
+          $map: {
+            input: '$applicationsPerStatus.nb_applications',
+            as: 'applications',
+            in: {
+              $divide: [
+                '$$applications',
+                { $arrayElemAt: ['$totalApplications.total', 0] }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ], function (err, res) {
+    const applicationsRatioPerStatus = [];
+    for (let i = 0; i < res[0].status.length; i++) {
+      const status = res[0].status[i];
+      const ratio = res[0].ratioPerStatus[i];
+      applicationsRatioPerStatus.push(ApplicationsRatioConstuctor(status, ratio));
+    }
+    callback(err, applicationsRatioPerStatus);
+  });
+}
+
+function DispersionMeasuresConstructor (avg, min, max, std) {
+  const dispersionMeasures = new DispersionMeasures();
+  dispersionMeasures.average = avg;
+  dispersionMeasures.minimum = min;
+  dispersionMeasures.maximum = max;
+  dispersionMeasures.standardDeviation = std;
+  return dispersionMeasures;
+}
+
+function ApplicationsRatioConstuctor (status, ratio) {
+  const applicationsRatio = new ApplicationsRatio();
+  applicationsRatio.status = status;
+  applicationsRatio.ratio = ratio;
+  return applicationsRatio;
 }
