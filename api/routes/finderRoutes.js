@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 module.exports = function (app) {
   /**
    * @swagger
@@ -34,19 +34,19 @@ module.exports = function (app) {
    *      required:
    *        - keyWord
    *        - explorer_Id
-   *      example:  
-   *        keyWord: Quam eius voluptas.     
-   *        priceLowerBound: 12    
+   *      example:
+   *        keyWord: Quam eius voluptas.
+   *        priceLowerBound: 12
    *        priceUpperBound: 34
    *        dateLowerBound: 2022-01-09T04:22:38.500Z
    *        dateUpperBound: 2022-04-09T04:22:38.500Z
    *        results: []
    *        explorer_Id: 621a76739d66c9283edd4ba5
    *        _id: 621ce61f2dd1c65a2a286229
-   *        expiration_date: 2022-02-28T16:11:27.387Z  
+   *        expiration_date: 2022-02-28T16:11:27.387Z
    */
-    
-  const finder = require("../controllers/finderController");
+
+  const finder = require('../controllers/finderController');
 
   /**
    * @swagger
@@ -71,7 +71,7 @@ module.exports = function (app) {
    *        500:
    *          description: Error trying to create the finder.
    */
-  app.route("/v1/finder").post(finder.create_a_finder);
+  app.route('/v1/finder').post(finder.create_a_finder);
 
   /**
    * @swagger
@@ -99,5 +99,5 @@ module.exports = function (app) {
    *        500:
    *          description: Error trying to get the finder.
    */
-  app.route("/v1/finder/explorer/:explorerId").get(finder.find_by_explorer_id);
+  app.route('/v1/finder/explorer/:explorerId').get(finder.find_by_explorer_id);
 };

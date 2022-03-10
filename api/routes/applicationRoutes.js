@@ -1,6 +1,5 @@
-"use strict";
+'use strict';
 module.exports = function (app) {
-
 /**
  * @swagger
  * components:
@@ -45,17 +44,17 @@ module.exports = function (app) {
   *      status: PENDING
   *      explorer_Id: 621a7673d84d61951111e55d
   *      trip_Id: 621a7673b71cac0f344720d5
-  *      rejected_reason: 
+  *      rejected_reason:
   *      tripPrice: 84
   *      manager_Id: 961a7673b71fas0f344720d3
   *      deleted:false
-  * 
+  *
   *
   */
-  const application = require("../controllers/applicationController");
+  const application = require('../controllers/applicationController');
 
-  app.route("/v1/applications")
-   /**
+  app.route('/v1/applications')
+  /**
    * @swagger
    * /v1/applications:
    *    get:
@@ -74,7 +73,7 @@ module.exports = function (app) {
    *          description: Error trying to get all applications.
    */
     .get(application.list_all_application)
-   /**
+  /**
    * @swagger
    * /v1/applications:
    *    post:
@@ -91,7 +90,7 @@ module.exports = function (app) {
    *        201:
    *          description: Application  created.
    *        400:
-   *          description: Error trying to create the application . Bad Request.   *        
+   *          description: Error trying to create the application . Bad Request.   *
    *        422:
    *          description: Validation error.
    *        500:
@@ -99,7 +98,7 @@ module.exports = function (app) {
    */
     .post(application.create_an_application);
 
-  app.route("/v1/applications/:applicationId")
+  app.route('/v1/applications/:applicationId')
     /**
    * @swagger
    * /v1/applications/{applicationId}:
@@ -130,7 +129,7 @@ module.exports = function (app) {
    */
     .delete(application.delete_an_application);
 
-  app.route("/v1/applications/manager/:managerId")
+  app.route('/v1/applications/manager/:managerId')
   /**
    * @swagger
    * /v1/applications/manager/{managerId}:
@@ -159,7 +158,7 @@ module.exports = function (app) {
    */
     .get(application.find_by_manager_id);
 
-  app.route("/v1/applications/explorer/:explorerId")
+  app.route('/v1/applications/explorer/:explorerId')
     /**
    * @swagger
    * /v1/applications/explorer/{explorerId}
@@ -188,7 +187,7 @@ module.exports = function (app) {
    */
     .get(application.find_by_explorer_id);
 
-  app.route("/v1/applications/:applicationId/reject")
+  app.route('/v1/applications/:applicationId/reject')
     /**
    * @swagger
    * /v1/applications/{applicationId}/reject:
@@ -219,8 +218,8 @@ module.exports = function (app) {
    */
     .patch(application.reject_application);
 
-  app.route("/v1/applications/:applicationId/due")
-      /**
+  app.route('/v1/applications/:applicationId/due')
+  /**
    * @swagger
    * /v1/applications/{applicationId}/due:
    *    patch:
@@ -250,8 +249,8 @@ module.exports = function (app) {
    */
     .patch(application.due_application);
 
-  app.route("/v1/applications/:applicationId/pay")
-        /**
+  app.route('/v1/applications/:applicationId/pay')
+  /**
    * @swagger
    * /v1/applications/{applicationId}/pay:
    *    patch:
@@ -281,8 +280,8 @@ module.exports = function (app) {
    */
     .patch(application.pay_application);
 
-  app.route("/v1/applications/:applicationId/cancel")
-          /**
+  app.route('/v1/applications/:applicationId/cancel')
+  /**
    * @swagger
    * /v1/applications/{applicationId}/cancel:
    *    patch:
