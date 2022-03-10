@@ -48,41 +48,32 @@ exports.create_an_actor = function (req, res) {
   }
   else
   {
-    return res.status(403).send();
+    return res.status(403).send("Only explorers can create their own account.");
   }
 
 };
 
 exports.create_an_actor_authenticated = function (req, res) {
 
-  let authenticatedActor = req.authenticatedActor;
-
   const newActor = new Actor(req.body);
 
-  if(authenticatedActor.role.includes('ADMINISTRATOR'))
-  {
-    newActor.save(function (error, actor) {
-      if (error) 
+  newActor.save(function (error, actor) {
+    if (error) 
+    {
+      if (error.name === 'ValidationError') 
       {
-        if (error.name === 'ValidationError') 
-        {
-          res.status(422).send(error);
-        } 
-        else 
-        {
-          res.status(500).send(error);
-        }
+        res.status(422).send(error);
       } 
       else 
       {
-        res.status(201).json(actor);
+        res.status(500).send(error);
       }
-    });
-  }
-  else
-  {
-    return res.status(403).send();
-  }
+    } 
+    else 
+    {
+      res.status(201).json(actor);
+    }
+  });
 
 };
 
@@ -101,37 +92,33 @@ exports.create_many_actors = function (req, res) {
 };
 
 exports.read_an_actor = function (req, res) {
+
   Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
-    if (!actor1) {
+    if (!actor1) 
+    {
       res.status(404).send();
-    } else {
+    } 
+    else 
+    {
       Actor.findById(req.params.actorId, function (error, actor) {
-        if (error) {
+        if (error) 
+        {
           res.status(500).send(error);
-        } else {
+        } 
+        else 
+        {
           res.json(actor);
         }
       });
     }
   })
-    .catch((error) => {
-      res.status(500).send(error);
-    });
+  .catch((error) => {
+    res.status(500).send(error);
+  });
+
 };
 
 exports.update_an_actor = async function (req, res) {
-
-  let authenticatedActor = req.authenticatedActor;
-  // console.log('req.authenticatedActor: ', req.authenticatedActor);
-  let authenticatedActorIsAdministrator = authenticatedActor.role.includes('ADMINISTRATOR');
-
-  if(!authenticatedActorIsAdministrator)
-  {
-    if(authenticatedActor._id.toString() !== req.params.actorId)
-    {
-      return res.status(403).send("Authenticated actor can not update this actor");
-    }
-  }
     
   Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
 
@@ -143,7 +130,8 @@ exports.update_an_actor = async function (req, res) {
     {
 
       Actor.findOneAndUpdate({ _id: req.params.actorId }, req.body, { new: true }, function (error, actor) {
-        if (error) {
+        if(error) 
+        {
           if (error.name === 'ValidationError') 
           {
             res.status(422).send(error);
@@ -169,59 +157,69 @@ exports.update_an_actor = async function (req, res) {
 };
 
 exports.delete_an_actor = function (req, res) {
+
   Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
     if (!actor1) {
       res.status(404).send();
-    } else {
+    } 
+    else 
+    {
       Actor.delete({ _id: req.params.actorId }, function (error, actor) {
-        if (error) {
+        if(error) 
+        {
           res.status(500).send(error);
-        } else {
-          res.json({ message: 'Actor successfully deleted' });
+        } 
+        else 
+        {
+          res.json({ message: 'Actor successfully soft deleted' });
         }
       });
     }
   })
-    .catch((error) => {
-      res.status(500).send(error);
-    });
+  .catch((error) => {
+    res.status(500).send(error);
+  });
+
 };
 
 exports.ban_an_actor = function (req, res) {
-  const sessionActorRole = ['ADMINISTRATOR'];// fake variable value for testing purposes
 
   Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
-    if (!actor1) {
+    if(!actor1) 
+    {
       res.status(404).send();
-    } else {
-      if (!sessionActorRole.includes('ADMINISTRATOR')) {
-        return res.status(403).send();
-      }
+    } 
+    else 
+    {
 
       Actor.findOneAndUpdate({ _id: req.params.actorId }, { isActive: false }, { new: true }, function (error, actor) {
-        if (error) {
+        if (error) 
+        {
           res.send(error);
-        } else {
+        } 
+        else 
+        {
           res.json(actor);
         }
       });
+
     }
   })
-    .catch((error) => {
-      res.status(500).send(error);
-    });
+  .catch((error) => {
+    res.status(500).send(error);
+  });
+
 };
 
 exports.unban_an_actor = function (req, res) {
-  const sessionActorRole = ['ADMINISTRATOR'];// fake variable value for testing purposes
 
   Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
-    if (!actor1) {
+    if(!actor1) 
+    {
       res.status(404).send();
-    } else {
-      if (!sessionActorRole.includes('ADMINISTRATOR')) {
-        return res.status(403).send();
-      }
+    } 
+    else 
+    {
 
       Actor.findOneAndUpdate({ _id: req.params.actorId }, { isActive: true }, { new: true }, function (error, actor) {
         if (error) {
@@ -232,9 +230,10 @@ exports.unban_an_actor = function (req, res) {
       });
     }
   })
-    .catch((error) => {
-      res.status(500).send(error);
-    });
+  .catch((error) => {
+    res.status(500).send(error);
+  });
+
 };
 
 exports.login_an_actor = async function (req, res) {

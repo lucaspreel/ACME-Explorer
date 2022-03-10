@@ -61,6 +61,19 @@ const swaggerSpec = {
 
 app.use('/api-doc', swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)));
 
+/**
+ * @swagger
+ * components:
+ *  securitySchemes:
+ *    ApiKeyAuth:       # arbitrary name for the security scheme
+ *      type: apiKey
+ *      in: header       # can be "header", "query" or "cookie"
+ *      name: idToken    # name of the header, query parameter or cookie
+ */
+
+// swagger documentation config - end
+
+
 const routesActors = require('./api/routes/actorRoutes');
 const routesSponsorships = require('./api/routes/sponsorshipRoutes');
 const routesSystemParameters = require('./api/routes/systemParametersRoutes');

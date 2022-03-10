@@ -51,7 +51,6 @@ let getAuthenticadedActor = async function (idToken) {
     else 
     {
       console.log('The actor exists in our DB')
-      // console.log('actor: ' + mongoActor)
       return mongoActor;
     }
 
@@ -64,6 +63,8 @@ exports.getAuthenticadedActor = getAuthenticadedActor;
 exports.verifyAuthenticadedActor = function (requiredRoles) {
 
   return async function (req, res, callback) {
+
+    console.log("verifyAuthenticadedActor");
 
     if(!req.headers.hasOwnProperty("idtoken"))
     {
@@ -100,7 +101,7 @@ exports.verifyAuthenticadedActor = function (requiredRoles) {
               if (authenticatedActor.isActive === true) 
               {
                 isAuth = true;
-                //this force a break, but for both for loops at once
+                //this forces a break, but for both for loops at once
                 i = requiredRoles.length;
                 j = actorRoles.length;
               }
@@ -117,12 +118,36 @@ exports.verifyAuthenticadedActor = function (requiredRoles) {
         else 
         {
           // an access token is valid, but requires more privileges
-          res.status(403).send('The actor has not the required roles')
+          res.status(403).send('The actor has not the required roles.')
         } 
 
       }
       
     }
+
+  }
+
+}
+
+exports.verifyAuthenticatedActorCanAccessParameterActor = function () {
+
+  return async function (req, res, callback) {
+
+    console.log("verifyAuthenticatedActorCanAccessParameterActor");
+
+    let authenticatedActor = req.authenticatedActor;
+    let authenticatedActorIsAdministrator = authenticatedActor.role.includes('ADMINISTRATOR');
+  
+    if(!authenticatedActorIsAdministrator)
+    {
+      if(authenticatedActor._id.toString() !== req.params.actorId)
+      {
+        return res.status(403).send("Authenticated actor can not access this actor.");
+      }
+    }
+
+    return callback();
+  
   }
 
 }
