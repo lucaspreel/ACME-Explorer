@@ -1,5 +1,8 @@
 'use strict';
 module.exports = function (app) {
+  const actors = require('../controllers/actorController');
+  const authController = require('../controllers/authController');
+
   /**
    * @swagger
    * components:
@@ -51,8 +54,6 @@ module.exports = function (app) {
    *        isActive: true
    */
 
-  const actors = require('../controllers/actorController');
-
   app.route('/v1/actors')
 
   /**
@@ -72,14 +73,19 @@ module.exports = function (app) {
    *                  $ref: '#/components/schemas/Actor'
    *        500:
    *          description: Error trying to get all actors.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .get(actors.list_all_actors)
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.list_all_actors
+    )
 
   /**
    * @swagger
    * /v1/actors:
    *    post:
-   *      summary: Create a new actor
+   *      summary: Create a new actor with role explorer.
    *      tags: [Actor]
    *      requestBody:
    *        required: true
@@ -105,10 +111,45 @@ module.exports = function (app) {
     .post(actors.create_an_actor);
 
   app.route('/v1/actors2')
-
   /**
    * @swagger
    * /v1/actors2:
+   *    post:
+   *      summary: Create a new actor with any role being authenticated as an administrator.
+   *      tags: [Actor]
+   *      requestBody:
+   *        required: true
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              $ref: '#/components/schemas/Actor'
+   *      responses:
+   *        201:
+   *          description: Actor created.
+   *        400:
+   *          description: Error trying to create the actor. Bad Request.
+   *        403:
+   *          description: You don't have right role to carry out this operation.
+   *        409:
+   *          description: Email is already registered.
+   *        422:
+   *          description: Validation error.
+   *        500:
+   *          description: Error trying to create the actor.
+   *      security:
+   *        - ApiKeyAuth: []
+   */
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.create_an_actor_authenticated
+    );
+
+  app.route('/v1/actors3')
+
+  /**
+   * @swagger
+   * /v1/actors3:
    *    post:
    *      summary: Create many new actors
    *      tags: [Actor]
@@ -136,8 +177,13 @@ module.exports = function (app) {
    *          description: Validation error.
    *        500:
    *          description: Error trying to create the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .post(actors.create_many_actors);
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.create_many_actors
+    );
 
   app.route('/v1/actors/:actorId')
 
@@ -166,8 +212,14 @@ module.exports = function (app) {
    *          description: Actor not found.
    *        500:
    *          description: Error trying to get the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .get(actors.read_an_actor)
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'EXPLORER', 'MANAGER', 'SPONSOR']),
+      authController.verifyAuthenticatedActorCanAccessParameterActor(),
+      actors.read_an_actor
+    )
 
   /**
    * @swagger
@@ -207,8 +259,14 @@ module.exports = function (app) {
    *          description: Validation error.
    *        500:
    *          description: Error trying to update the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .put(actors.update_an_actor)
+    .put(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'EXPLORER', 'MANAGER', 'SPONSOR']),
+      authController.verifyAuthenticatedActorCanAccessParameterActor(),
+      actors.update_an_actor
+    )
 
   /**
    * @swagger
@@ -237,8 +295,13 @@ module.exports = function (app) {
    *          description: Actor not found.
    *        500:
    *          description: Error trying to delete the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .delete(actors.delete_an_actor);
+    .delete(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.delete_an_actor
+    );
 
   /**
    * @swagger
@@ -267,9 +330,14 @@ module.exports = function (app) {
    *          description: Actor not found.
    *        500:
    *          description: Error trying to ban the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
   app.route('/v1/actors/:actorId/ban')
-    .patch(actors.ban_an_actor);
+    .patch(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.ban_an_actor
+    );
 
   /**
    * @swagger
@@ -298,9 +366,14 @@ module.exports = function (app) {
    *          description: Actor not found.
    *        500:
    *          description: Error trying to unban the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
   app.route('/v1/actors/:actorId/unban')
-    .patch(actors.unban_an_actor);
+    .patch(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.unban_an_actor
+    );
 
   /**
    * @swagger
@@ -382,7 +455,7 @@ module.exports = function (app) {
    * @swagger
    * /v1/explorerStats/{startYear}/{startMonth}/{endYear}/{endMonth}:
    *    get:
-   *      summary: Returns explorer stats.
+   *      summary: Returns explorers stats.
    *      tags: [ExplorerStats]
    *      parameters:
    *        - in: path
@@ -427,6 +500,8 @@ module.exports = function (app) {
    *          description: Validation error.
    *        500:
    *          description: Error trying to get the explorer stats.
+   *      security:
+   *        - ApiKeyAuth: []
    */
 
   // added a second swagger endpoint for the same actual endpoint to bypass swagger's limitations related to optional in path parameters
@@ -486,6 +561,11 @@ module.exports = function (app) {
    *          description: Validation error.
    *        500:
    *          description: Error trying to get the explorer stats.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .get(actors.list_explorer_stats);
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.list_explorer_stats
+    );
 };
