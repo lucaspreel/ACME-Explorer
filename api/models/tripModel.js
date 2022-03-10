@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// const dateFormat = require('dateformat');
+const dateFormat = require('date-format');
 const customAlphabet = require('nanoid').customAlphabet;
 const idGenerator = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 4);
 
@@ -28,13 +28,7 @@ const TripSchema = new Schema({
   },
   ticker: {
     type: String,
-    unique: true,
-    validate: {
-      validator: function (v) {
-        return /\d{6}-\w{4}/.test(v);
-      },
-      message: 'ticker is not valid!, Pattern("d(6)-w(4)")'
-    }
+    unique: true
   },
   title: {
     type: String,
@@ -48,8 +42,7 @@ const TripSchema = new Schema({
     type: Number
   },
   requirements: {
-    type: [String],
-    default: []
+    type: [String]
   },
   startDate: {
     type: Date,
@@ -85,7 +78,7 @@ TripSchema.pre('save', function (callback) {
 });
 
 function generateTicker () {
-  const currentDate = dateFormat(new Date(), 'yymmdd');
+  const currentDate = dateFormat('yymmdd', new Date());
   const ticker = [currentDate, idGenerator()].join('-');
   return ticker;
 }
@@ -97,6 +90,11 @@ function calculatePrice (trip) {
   }
   return price;
 }
+
+TripSchema.index({ ticker: 'text', title: 'text', description: 'text' });
+TripSchema.index({ managerId: 1 });
+TripSchema.index({ price: 1 });
+TripSchema.index({ startDate: 1, endDate: 1 });
 
 module.exports = mongoose.model('Trips', TripSchema);
 module.exports = mongoose.model('Stage', StageSchema);
