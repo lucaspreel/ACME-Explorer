@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 8080;
 const mongoose = require('mongoose');
+var mongoConfig = require('./mongoConfig');
 
 const Actor = require('./api/models/actorModel');
 const Sponsorship = require('./api/models/sponsorShipModel');
@@ -91,16 +92,7 @@ routesDashboardInformation(app);
 routesLogin(app)
 routesFinder(app);
 
-// MongoDB URI building
-const mongoDBUser = process.env.mongoDBUser || 'ACME_EXPLORER_ADMIN_USER';
-const mongoDBPass = process.env.mongoDBPass || '$3CUR3p455W0RDZOZZ';
-const mongoDBCredentials = (mongoDBUser && mongoDBPass) ? mongoDBUser + ':' + mongoDBPass + '@' : '';
-
-const mongoDBHostname = process.env.mongoDBHostname || 'localhost';
-const mongoDBPort = process.env.mongoDBPort || '27017';
-const mongoDBName = process.env.mongoDBName || 'ACME-Explorer';
-
-const mongoDBURI = 'mongodb://' + mongoDBCredentials + mongoDBHostname + ':' + mongoDBPort + '/' + mongoDBName;
+const mongoDBURI = mongoConfig.getMongoDbUri();
 
 mongoose.set('debug', true); // util para ver detalle de las operaciones que se realizan contra mongodb
 

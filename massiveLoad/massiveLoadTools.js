@@ -1,6 +1,10 @@
 const fs = require('fs');
+const BSON = require('bson');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 exports.generateMongoObjectId = function () {
+  /*
     const timestamp = ((new Date().getTime() / 1000) | 0).toString(16);
     return (
       timestamp +
@@ -10,7 +14,24 @@ exports.generateMongoObjectId = function () {
         })
         .toLowerCase()
     );
+    */
+
+    const objectId = new BSON.ObjectId();
+    return objectId;
 };
+
+exports.wrapObjectId = function(objectId) {
+
+  // let objectId = massiveLoadTools.generateMongoObjectId();
+
+  let wrappedObjectId = {
+    $oid: objectId
+  };
+  // wrappedObjectId = ObjectId(objectId);
+
+  return wrappedObjectId;
+
+}
 
 exports.getRandomArrayValue = function (array) {
   return array[Math.floor(Math.random() * array.length)];

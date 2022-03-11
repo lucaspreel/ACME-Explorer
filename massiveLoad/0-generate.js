@@ -1,10 +1,10 @@
 const { faker } = require('@faker-js/faker');
 var massiveLoadTools = require('./massiveLoadTools');
 
-const amountOfActors = 10000;
-const amountOfTrips = 10000;
+const amountOfActors = 10;
+const amountOfTrips = 10;
 const amountOfStagesByTrip = 3;
-let amountOfApplications = 10000;
+let amountOfApplications = 10;
 
 const minumunStagePrice = 10;
 const maximunStagePrice = 50;
@@ -38,9 +38,7 @@ for (let i = 0; i < amountOfActors; i++) {
   if (role === 'EXPLORER') explorersIds.push(actorId);
 
   const newActor = {
-    _id: {
-      $oid: actorId
-    },
+    _id: massiveLoadTools.wrapObjectId(actorId),
     name: faker.name.firstName(),
     surname: faker.name.lastName(),
     email: faker.internet.email(),
@@ -49,7 +47,7 @@ for (let i = 0; i < amountOfActors; i++) {
     phone_number: faker.phone.phoneNumber(),
     address: faker.address.streetAddress(),
     isActive: isActive,
-    role: role,
+    role: [role],
     deleted: false
   };
   // console.log(newActor);
@@ -96,9 +94,7 @@ for (let i = 0; i < amountOfTrips; i++) {
   // stages end
 
   const newTrip = {
-    _id: {
-      $oid: tripId
-    },
+    _id: massiveLoadTools.wrapObjectId(tripId),
     ticker: faker.datatype.string(11),
     title: 'A trip to ' + city,
     description: faker.lorem.paragraph(),
@@ -106,9 +102,7 @@ for (let i = 0; i < amountOfTrips; i++) {
     publication_date: publicationDate,
     start_date: startDate,
     end_date: endDate,
-    manager_Id: {
-      $oid: managerId
-    },
+    manager_Id: massiveLoadTools.wrapObjectId(managerId),
     stages: allTripStages,
     canceled: canceled,
     cancelReason: cancelReason
@@ -173,9 +167,7 @@ for (let i = 0; i < amountOfApplications; i++) {
     applicationMoment: applicationMoment,
     comments: faker.lorem.sentence(),
     status: applicationStatus,
-    explorer_Id: {
-      $oid: explorerId
-    },
+    explorer_Id: massiveLoadTools.wrapObjectId(explorerId),
     trip_Id: trip._id,
     manager_Id: trip.manager_Id,//this is already object type
     deleted: false,
@@ -238,9 +230,7 @@ for (let i = 0; i < explorersIds.length; i++) {
     dateLowerBound: dateLowerBound,
     dateUpperBound: dateUpperBound,
     results: results,
-    explorer_Id: {
-      $oid: explorerId
-    }
+    explorer_Id: massiveLoadTools.wrapObjectId(explorerId)
   };
   // console.log(newFinder);
 
