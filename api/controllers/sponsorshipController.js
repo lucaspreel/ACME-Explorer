@@ -8,8 +8,6 @@ exports.create_a_sponsorship = function (req, res) {
     if (sponsorship) {
       res.status(409).json({ error: true, message: 'There is already a sponsorship between this sponsor and this trip.' });
     } else {
-      // if the sponsorship does not have the role  "SPONSOR"
-      // then send error 403
       const newSponsorship = new Sponsorship(req.body);
       newSponsorship.save(function (err, sponsorship) {
         if (err) {
@@ -47,8 +45,6 @@ exports.read_a_sponsorship = function (req, res) {
 };
 
 exports.update_a_sponsorship = function (req, res) {
-  // if the sponsorship who try to update a sponsorship is not the one who created it
-  // then return error 403
   Sponsorship.findOneAndUpdate({ _id: req.params.sponsorshipId }, req.body, { new: true }, function (err, sponsorship) {
     if (!sponsorship) {
       res.status(404).send({ error: true, message: 'Sponsorship not found.' });
@@ -63,8 +59,6 @@ exports.update_a_sponsorship = function (req, res) {
 };
 
 exports.delete_a_sponsorship = function (req, res) {
-  // if the sponsorship who try to delete a sponsorship is not the one who created it
-  // then return error 403
   Sponsorship.deleteOne({ _id: req.params.sponsorshipId }, function (err, sponsorship) {
     if (!sponsorship) {
       res.status(404).send({ error: true, message: 'Sponsorship not found.' });
@@ -99,8 +93,6 @@ exports.list_sponsorships_of_a_trip = function (req, res) {
 };
 
 exports.pay_a_sponsorship = function (req, res) {
-  // if the sponsorship who try to pay a sponsorship is not the one who created it
-  // then return error 403
   Sponsorship.findOneAndUpdate({ _id: req.params.sponsorshipId }, { isPayed: true }, { new: true }, function (err, sponsorship) {
     if (!sponsorship) {
       res.status(404).send({ error: true, message: 'Sponsorship not found.' });

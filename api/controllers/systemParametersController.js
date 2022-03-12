@@ -8,8 +8,6 @@ exports.create_system_parameters = function (req, res) {
     if (systemParameters.length !== 0) {
       res.status(409).json({ error: true, message: 'System parameters already exist.' });
     } else {
-      // if the actor does not have the role  "ADMINISTRATOR"
-      // then send error 403
       const newSystemParameters = new SystemParameters(req.body);
       newSystemParameters.save(function (err, systemParameters) {
         if (err) {
@@ -38,8 +36,6 @@ exports.update_system_parameters = function (req, res) {
     if (systemParameters.length === 0) {
       res.status(404).send({ error: true, message: 'System parameters not found.' });
     } else {
-      // if the actor does not have the role  "ADMINISTRATOR"
-      // then send error 403
       SystemParameters.findOneAndUpdate({ _id: systemParameters[0]._id }, req.body, { new: true }, function (err, systemParameters) {
         if (err) {
           res.status(500).json({ error: true, message: 'Error trying to update the system parameters.' });

@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 8080;
 const mongoose = require('mongoose');
+var mongoConfig = require('./mongoConfig');
 
+//register schemas
 const Actor = require('./api/models/actorModel');
 const Sponsorship = require('./api/models/sponsorShipModel');
 const SystemParameters = require('./api/models/systemParametersModel');
@@ -11,12 +13,32 @@ const Application = require('./api/models/applicationModel');
 const Finder = require('./api/models/finderModel');
 const DashboardInformation = require('./api/models/dashboardInformationModel');
 
+//are used to start jobs
+const DashboardInformationTools = require('./api/controllers/dashboardInformationController');
+const actorController = require('./api/controllers/actorController');
+
 const bodyParser = require('body-parser');
 
 // app.use(bodyParser.urlencoded({ extended: true }));
 express.urlencoded({ extended: true })
 app.use(bodyParser.json({limit: '300mb'}));
 app.use(express.urlencoded({limit: '300mb', extended: true}));
+
+//firebase config - start
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, idToken') // watch out, if a custom parameter, like idToken, is added in the header, it must to be declared here to avoid CORS error
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS')
+  next()
+})
+
+const admin = require('firebase-admin')
+const serviceAccount = require('./acme-explorer-firebase-project-firebase-adminsdk-z1hv0-c02bda0917')
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://acme-explorer-firebase-project.firebaseio.com'
+})
+//firebase config - end
 
 // swagger documentation config - start
 const swaggerUI = require('swagger-ui-express');
@@ -37,34 +59,46 @@ const swaggerSpec = {
       `${path.join(__dirname, './api/routes/sponsorshipRoutes.js')}`,
       `${path.join(__dirname, './api/routes/systemParametersRoutes.js')}`,
       `${path.join(__dirname, './api/routes/applicationRoutes.js')}`,
-      `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`
+      `${path.join(__dirname, './api/routes/finderRoutes.js')}`,
+      `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`,
+      `${path.join(__dirname, './api/routes/storageRoutes.js')}`
   ]
 };
 
 app.use('/api-doc', swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)));
+
+/**
+ * @swagger
+ * components:
+ *  securitySchemes:
+ *    ApiKeyAuth:       # arbitrary name for the security scheme
+ *      type: apiKey
+ *      in: header       # can be "header", "query" or "cookie"
+ *      name: idToken    # name of the header, query parameter or cookie
+ */
+
+// swagger documentation config - end
+
 
 const routesActors = require('./api/routes/actorRoutes');
 const routesSponsorships = require('./api/routes/sponsorshipRoutes');
 const routesSystemParameters = require('./api/routes/systemParametersRoutes');
 const routesApplication = require('./api/routes/applicationRoutes');
 const routesDashboardInformation = require('./api/routes/dashboardInformationRoutes');
+const routesLogin = require('./api/routes/loginRoutes');
+const routesFinder = require('./api/routes/finderRoutes');
+const routesStorage = require('./api/routes/storageRoutes');
 
 routesActors(app);
 routesSponsorships(app);
 routesSystemParameters(app);
 routesApplication(app);
 routesDashboardInformation(app);
+routesLogin(app)
+routesFinder(app);
+routesStorage(app);
 
-// MongoDB URI building
-const mongoDBUser = process.env.mongoDBUser || 'ACME_EXPLORER_ADMIN_USER';
-const mongoDBPass = process.env.mongoDBPass || '$3CUR3p455W0RDZOZZ';
-const mongoDBCredentials = (mongoDBUser && mongoDBPass) ? mongoDBUser + ':' + mongoDBPass + '@' : '';
-
-const mongoDBHostname = process.env.mongoDBHostname || 'localhost';
-const mongoDBPort = process.env.mongoDBPort || '27017';
-const mongoDBName = process.env.mongoDBName || 'ACME-Explorer';
-
-const mongoDBURI = 'mongodb://' + mongoDBCredentials + mongoDBHostname + ':' + mongoDBPort + '/' + mongoDBName;
+const mongoDBURI = mongoConfig.getMongoDbUri();
 
 mongoose.set('debug', true); // util para ver detalle de las operaciones que se realizan contra mongodb
 
@@ -87,3 +121,6 @@ mongoose.connection.on('open', function () {
 mongoose.connection.on('error', function (err) {
   console.error('DB init error ' + err);
 });
+
+DashboardInformationTools.createDashboardInformationJob();
+actorController.createExplorerStatsJob();

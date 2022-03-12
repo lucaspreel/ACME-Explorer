@@ -21,10 +21,16 @@
     "eslint-plugin-react": "^7.28.0"
   },
   "dependencies": {
+    "async": "^3.2.3",
     "bcrypt": "^5.0.1",
+    "cron": "^1.8.2",
+    "date-format": "^4.0.4",
     "express": "^4.17.2",
+    "firebase-admin": "^10.0.2",
     "mongoose": "^6.2.1",
     "mongoose-delete": "^0.5.4",
+    "nanoid": "^3.3.1",
+    "stream-to-mongo-db": "^1.6.0",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0"
   }

@@ -1,11 +1,10 @@
 const { faker } = require('@faker-js/faker');
-const fs = require('fs');
-var functions = require('./functions');
+const massiveLoadTools = require('./massiveLoadTools');
 
-const amountOfActors = 10;
-const amountOfTrips = 10;
+const amountOfActors = 1000;
+const amountOfTrips = 1000;
 const amountOfStagesByTrip = 3;
-let amountOfApplications = 10;
+let amountOfApplications = 1000;
 
 const minumunStagePrice = 10;
 const maximunStagePrice = 50;
@@ -18,40 +17,11 @@ threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
 // console.log(threeYearsAgo);
 
 // ------------------------------------------------------------------------------
-// FUNCTIONS
-// ------------------------------------------------------------------------------
-const getRandomArrayValue = function (array) {
-  return array[Math.floor(Math.random() * array.length)];
-};
-
-const formatJsonToBeWrittenToAFile = function (jsonData) {
-  // convert JSON object to string
-  return JSON.stringify(jsonData, null, '\t');
-};
-
-const saveJsonFile = function (jsonData, filePath) {
-  // truncate file
-  fs.truncate(filePath, 0, function () {
-    console.log('File ' + filePath + ' truncated');
-  });
-
-  // write JSON string to a file
-  fs.writeFile(filePath, jsonData, (err) => {
-    if (err) {
-      throw err;
-    }
-    console.log(
-      'JSON data has been successfully saved in file ' + filePath + '.'
-    );
-  });
-};
-
-// ------------------------------------------------------------------------------
 // ACTORS' DATA
 // ------------------------------------------------------------------------------
 const languages = ['ENGLISH', 'SPANISH'];
 const statuses = [true, false];
-//more chances to occur MANAGER and EXPLORER
+// more chances to occur MANAGER and EXPLORER
 const roles = ['ADMINISTRATOR', 'SPONSOR', 'MANAGER', 'MANAGER', 'EXPLORER', 'EXPLORER', 'EXPLORER', 'EXPLORER', 'EXPLORER'];
 
 const allActors = [];
@@ -59,18 +29,16 @@ const managersIds = [];
 const explorersIds = [];
 
 for (let i = 0; i < amountOfActors; i++) {
-  const language = getRandomArrayValue(languages);
-  const isActive = getRandomArrayValue(statuses);
-  const role = getRandomArrayValue(roles);
-  const actorId = functions.generateMongoObjectId();
+  const language = massiveLoadTools.getRandomArrayValue(languages);
+  const isActive = massiveLoadTools.getRandomArrayValue(statuses);
+  const role = massiveLoadTools.getRandomArrayValue(roles);
+  const actorId = massiveLoadTools.generateMongoObjectId();
 
   if (role === 'MANAGER') managersIds.push(actorId);
   if (role === 'EXPLORER') explorersIds.push(actorId);
 
   const newActor = {
-    _id: {
-      $oid: actorId
-    },
+    _id: massiveLoadTools.wrapObjectId(actorId),
     name: faker.name.firstName(),
     surname: faker.name.lastName(),
     email: faker.internet.email(),
@@ -79,7 +47,7 @@ for (let i = 0; i < amountOfActors; i++) {
     phone_number: faker.phone.phoneNumber(),
     address: faker.address.streetAddress(),
     isActive: isActive,
-    role: role,
+    role: [role],
     deleted: false
   };
   // console.log(newActor);
@@ -87,9 +55,9 @@ for (let i = 0; i < amountOfActors; i++) {
   allActors.push(newActor);
 }
 
-const actorsJsonData = formatJsonToBeWrittenToAFile(allActors);
+const actorsJsonData = massiveLoadTools.formatJsonToBeWrittenToAFile(allActors);
 const actorsJsonDataFilePath = './massiveLoad/1-actors.json';
-saveJsonFile(actorsJsonData, actorsJsonDataFilePath);
+massiveLoadTools.saveJsonFile(actorsJsonData, actorsJsonDataFilePath);
 
 // ------------------------------------------------------------------------------
 // TRIPS' DATA
@@ -99,11 +67,11 @@ const nonCanceledTrips = [];
 const canceledStatuses = [true, false, false, false, false]; // more false options so that the amount of canceled trips is minor
 
 for (let i = 0; i < amountOfTrips; i++) {
-  const tripId = functions.generateMongoObjectId();
+  const tripId = massiveLoadTools.generateMongoObjectId();
   const city = faker.address.city();
-  const managerId = getRandomArrayValue(managersIds);
+  const managerId = massiveLoadTools.getRandomArrayValue(managersIds);
   let tripPrice = 0;
-  const canceled = getRandomArrayValue(canceledStatuses);
+  const canceled = massiveLoadTools.getRandomArrayValue(canceledStatuses);
   const cancelReason = (canceled === true) ? faker.lorem.sentence() : '';
   const publicationDate = faker.date.future(/* years */ 3, /* refDate */ threeYearsAgo);
   const startDate = faker.date.future((/* years */ 3), /* refDate */ publicationDate);
@@ -126,9 +94,7 @@ for (let i = 0; i < amountOfTrips; i++) {
   // stages end
 
   const newTrip = {
-    _id: {
-      $oid: tripId
-    },
+    _id: massiveLoadTools.wrapObjectId(tripId),
     ticker: faker.datatype.string(11),
     title: 'A trip to ' + city,
     description: faker.lorem.paragraph(),
@@ -136,9 +102,7 @@ for (let i = 0; i < amountOfTrips; i++) {
     publication_date: publicationDate,
     start_date: startDate,
     end_date: endDate,
-    manager_Id: {
-      $oid: managerId
-    },
+    manager_Id: massiveLoadTools.wrapObjectId(managerId),
     stages: allTripStages,
     canceled: canceled,
     cancelReason: cancelReason
@@ -149,9 +113,9 @@ for (let i = 0; i < amountOfTrips; i++) {
   allTrips.push(newTrip);
 }
 
-const tripsJsonData = formatJsonToBeWrittenToAFile(allTrips);
+const tripsJsonData = massiveLoadTools.formatJsonToBeWrittenToAFile(allTrips);
 const tripsJsonDataFilePath = './massiveLoad/2-trips.json';
-saveJsonFile(tripsJsonData, tripsJsonDataFilePath);
+massiveLoadTools.saveJsonFile(tripsJsonData, tripsJsonDataFilePath);
 
 // ------------------------------------------------------------------------------
 // APPLICATIONS' DATA
@@ -172,8 +136,8 @@ for (let i = 0; i < amountOfApplications; i++) {
   let passedVerificationExplorerHasNotYetApplied = false;
 
   while (passedVerificationExplorerHasNotYetApplied === false) {
-    trip = getRandomArrayValue(nonCanceledTrips);
-    explorerId = getRandomArrayValue(explorersIds);
+    trip = massiveLoadTools.getRandomArrayValue(nonCanceledTrips);
+    explorerId = massiveLoadTools.getRandomArrayValue(explorersIds);
 
     const explorerAlreadyApplied = allApplications.filter(function (application) {
       return (
@@ -189,7 +153,7 @@ for (let i = 0; i < amountOfApplications; i++) {
     }
   }
 
-  const applicationStatus = getRandomArrayValue(applicationStatuses);
+  const applicationStatus = massiveLoadTools.getRandomArrayValue(applicationStatuses);
   const publicationDate = trip.publication_date;
   const startDate = trip.start_date;
   const applicationMoment = faker.date.betweens(
@@ -203,11 +167,9 @@ for (let i = 0; i < amountOfApplications; i++) {
     applicationMoment: applicationMoment,
     comments: faker.lorem.sentence(),
     status: applicationStatus,
-    explorer_Id: {
-      $oid: explorerId
-    },
+    explorer_Id: massiveLoadTools.wrapObjectId(explorerId),
     trip_Id: trip._id,
-    manager_Id: trip.manager_Id,//this is already object type
+    manager_Id: trip.manager_Id, // this is already object type
     deleted: false,
     rejected_reason: rejectedReason,
     tripPrice: trip.price
@@ -217,9 +179,9 @@ for (let i = 0; i < amountOfApplications; i++) {
   allApplications.push(newApplication);
 }
 
-const applciationsJsonData = formatJsonToBeWrittenToAFile(allApplications);
+const applciationsJsonData = massiveLoadTools.formatJsonToBeWrittenToAFile(allApplications);
 const applciationsJsonDataFilePath = './massiveLoad/3-applications.json';
-saveJsonFile(applciationsJsonData, applciationsJsonDataFilePath);
+massiveLoadTools.saveJsonFile(applciationsJsonData, applciationsJsonDataFilePath);
 
 // ------------------------------------------------------------------------------
 // FINDERS' DATA
@@ -268,15 +230,13 @@ for (let i = 0; i < explorersIds.length; i++) {
     dateLowerBound: dateLowerBound,
     dateUpperBound: dateUpperBound,
     results: results,
-    explorer_Id: {
-      $oid: explorerId
-    }
+    explorer_Id: massiveLoadTools.wrapObjectId(explorerId)
   };
   // console.log(newFinder);
 
   allFinders.push(newFinder);
 }
 
-const findersJsonData = formatJsonToBeWrittenToAFile(allFinders);
+const findersJsonData = massiveLoadTools.formatJsonToBeWrittenToAFile(allFinders);
 const findersJsonDataFilePath = './massiveLoad/4-finders.json';
-saveJsonFile(findersJsonData, findersJsonDataFilePath);
+massiveLoadTools.saveJsonFile(findersJsonData, findersJsonDataFilePath);

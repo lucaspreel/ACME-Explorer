@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 
 const mongooseDelete = require('mongoose-delete');
-var functions = require('../../massiveLoad/functions');
 
 const emailInUse = async function (email) {
   const user = await this.constructor.findOne({ email });
@@ -92,15 +91,21 @@ ActorSchema.pre('save', function (callback) {
 ActorSchema.pre('findOneAndUpdate', function (callback) {
   const actor = this._update;
 
-  bcrypt.genSalt(5, function (err, salt) {
-    if (err) return callback(err);
+  // console.log("actor ", actor);
 
-    bcrypt.hash(actor.password, salt, function (err, hash) {
+  if (Object.prototype.hasOwnProperty.call(actor, 'password')) {
+    bcrypt.genSalt(5, function (err, salt) {
       if (err) return callback(err);
-      actor.password = hash;
-      callback();
+
+      bcrypt.hash(actor.password, salt, function (err, hash) {
+        if (err) return callback(err);
+        actor.password = hash;
+        callback();
+      });
     });
-  });
+  } else {
+    callback();
+  }
 });
 
 ActorSchema.methods.verifyPassword = function (password, cb) {
@@ -142,40 +147,15 @@ const ExplorerStatsSchema = new Schema({
   yearExpense: [YearExpenseSchema],
   moneySpent: {
     type: Number
+  },
+  computationMoment: {
+    type: Date,
+    default: Date.now()
   }
-}); 
+},
+{ timestamps: { updatedAt: 'computationMoment' } });
 
 ExplorerStatsSchema.index({ explorerId: 1 });
-/*
-ExplorerStatsSchema.pre('insertMany', function (next, docs) {
-  const allExplorerStats = docs;
-
-  allExplorerStats.map(function(singleExplorerStats){
-
-    
-    //console.log("mongoId");
-    //console.log(mongoId);
-    let allMonthsExpense = singleExplorerStats.monthExpense;
-    allMonthsExpense.map(function(singleMonth){
-      let mongoId = functions.generateMongoObjectId();
-      singleMonth._id = {
-        $oid: mongoId
-      };
-      return singleMonth;
-    });
-
-    let allYearsExpense = singleExplorerStats.yearExpense;
-    //singleExplorerStats.monthExpense = JSON.parse(JSON.stringify(singleExplorerStats.monthExpense)); 
-    // singleExplorerStats.yearExpense = JSON.parse(JSON.stringify(singleExplorerStats.yearExpense)); 
-    console.log("singleExplorerStats");
-    console.log(singleExplorerStats);
-    return singleExplorerStats;
-  });
-
-  // explorerStats.years = null;
-  next();
-});
-*/
 
 module.exports = mongoose.model('Actors', ActorSchema);
 module.exports = mongoose.model('MonthExpense', MonthExpenseSchema);

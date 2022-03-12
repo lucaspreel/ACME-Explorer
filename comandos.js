@@ -19,3 +19,6 @@ npx semistandard api/ --fix
 
 //generar datos de prueba
 node .\massiveLoad\0-generate.js
+
+//comandos para autenticación con firebase
+npm install --save firebase-admin

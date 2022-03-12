@@ -1,5 +1,8 @@
 'use strict';
 module.exports = function (app) {
+  const actors = require('../controllers/actorController');
+  const authController = require('../controllers/authController');
+
   /**
    * @swagger
    * components:
@@ -51,8 +54,6 @@ module.exports = function (app) {
    *        isActive: true
    */
 
-  const actors = require('../controllers/actorController');
-
   app.route('/v1/actors')
 
   /**
@@ -72,14 +73,19 @@ module.exports = function (app) {
    *                  $ref: '#/components/schemas/Actor'
    *        500:
    *          description: Error trying to get all actors.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .get(actors.list_all_actors)
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.list_all_actors
+    )
 
   /**
    * @swagger
    * /v1/actors:
    *    post:
-   *      summary: Create a new actor
+   *      summary: Create a new actor with role explorer.
    *      tags: [Actor]
    *      requestBody:
    *        required: true
@@ -105,12 +111,11 @@ module.exports = function (app) {
     .post(actors.create_an_actor);
 
   app.route('/v1/actors2')
-
   /**
    * @swagger
    * /v1/actors2:
    *    post:
-   *      summary: Create many new actors
+   *      summary: Create a new actor with any role being authenticated as an administrator.
    *      tags: [Actor]
    *      requestBody:
    *        required: true
@@ -118,11 +123,7 @@ module.exports = function (app) {
    *          application/json:
    *            schema:
    *              type: object
-   *              properties:
-   *                manyActors:
-   *                  type: array
-   *                  items:
-   *                    $ref: "#/components/schemas/Actor"
+   *              $ref: '#/components/schemas/Actor'
    *      responses:
    *        201:
    *          description: Actor created.
@@ -136,8 +137,13 @@ module.exports = function (app) {
    *          description: Validation error.
    *        500:
    *          description: Error trying to create the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .post(actors.create_many_actors);
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.create_an_actor_authenticated
+    );
 
   app.route('/v1/actors/:actorId')
 
@@ -166,8 +172,14 @@ module.exports = function (app) {
    *          description: Actor not found.
    *        500:
    *          description: Error trying to get the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .get(actors.read_an_actor)
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'EXPLORER', 'MANAGER', 'SPONSOR']),
+      authController.verifyAuthenticatedActorCanAccessParameterActor(),
+      actors.read_an_actor
+    )
 
   /**
    * @swagger
@@ -207,8 +219,14 @@ module.exports = function (app) {
    *          description: Validation error.
    *        500:
    *          description: Error trying to update the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .put(actors.update_an_actor)
+    .put(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'EXPLORER', 'MANAGER', 'SPONSOR']),
+      authController.verifyAuthenticatedActorCanAccessParameterActor(),
+      actors.update_an_actor
+    )
 
   /**
    * @swagger
@@ -237,8 +255,13 @@ module.exports = function (app) {
    *          description: Actor not found.
    *        500:
    *          description: Error trying to delete the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .delete(actors.delete_an_actor);
+    .delete(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.delete_an_actor
+    );
 
   /**
    * @swagger
@@ -267,9 +290,14 @@ module.exports = function (app) {
    *          description: Actor not found.
    *        500:
    *          description: Error trying to ban the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
   app.route('/v1/actors/:actorId/ban')
-    .patch(actors.ban_an_actor);
+    .patch(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.ban_an_actor
+    );
 
   /**
    * @swagger
@@ -298,9 +326,14 @@ module.exports = function (app) {
    *          description: Actor not found.
    *        500:
    *          description: Error trying to unban the actor.
+   *      security:
+   *        - ApiKeyAuth: []
    */
   app.route('/v1/actors/:actorId/unban')
-    .patch(actors.unban_an_actor);
+    .patch(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.unban_an_actor
+    );
 
   /**
    * @swagger
@@ -322,7 +355,7 @@ module.exports = function (app) {
    *        year: 2021
    *        month: 8
    *        moneySpent: 73
-   * 
+   *
    *    YearExpense:
    *      type: object
    *      properties:
@@ -335,7 +368,7 @@ module.exports = function (app) {
    *      example:
    *        year: 2021
    *        moneySpent: 146
-   * 
+   *
    *    ExplorerStats:
    *      type: object
    *      properties:
@@ -364,7 +397,7 @@ module.exports = function (app) {
    *        monthExpense:  [{"year":2021,"month":8,"moneySpent":73},{"year":2021,"month":12,"moneySpent":73},{"year":2022,"month":2,"moneySpent":104}]
    *        yearExpense: [{"year":2021,"moneySpent":146},{"year":2022,"moneySpent":104}]
    *        moneySpent: 250
-   * 
+   *
    *    ExplorersStats:
    *      type: object
    *      properties:
@@ -374,22 +407,45 @@ module.exports = function (app) {
    *            $ref: '#/components/schemas/ExplorerStats'
    *          description: All explorers stats.
    *
+   *
    */
 
-  app.route('/v1/explorerStats/:period')
+  app.route('/v1/explorerStats/:startYear/:startMonth/:endYear/:endMonth/:explorerId?')
   /**
    * @swagger
-   * /v1/explorerStats/{period}:
+   * /v1/explorerStats/{startYear}/{startMonth}/{endYear}/{endMonth}:
    *    get:
-   *      summary: Returns explorer stats.
+   *      summary: Returns explorers stats.
    *      tags: [ExplorerStats]
    *      parameters:
    *        - in: path
-   *          name: period
+   *          name: startYear
    *          schema:
-   *            type: string
+   *            type: number
    *          required: true
-   *          description: A period M01-M36 or Y01-Y03.
+   *          description: A valid year number. Last three years.
+   *          example: 2021
+   *        - in: path
+   *          name: startMonth
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid month number, from 1 to 12.
+   *          example: 3
+   *        - in: path
+   *          name: endYear
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid year number. Last three years.
+   *          example: 2021
+   *        - in: path
+   *          name: endMonth
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid month number, from 1 to 12.
+   *          example: 9
    *      responses:
    *        200:
    *          description: Explorer stats successfully retrieved.
@@ -400,8 +456,105 @@ module.exports = function (app) {
    *                $ref: '#/components/schemas/ExplorersStats'
    *        404:
    *          description: Explorer not found.
+   *        422:
+   *          description: Validation error.
    *        500:
    *          description: Error trying to get the explorer stats.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .get(actors.list_explorer_stats);
+
+  // added a second swagger endpoint for the same actual endpoint to bypass swagger's limitations related to optional in path parameters
+  /**
+   * @swagger
+   * /v1/explorerStats/{startYear}/{startMonth}/{endYear}/{endMonth}/{explorerId}:
+   *    get:
+   *      summary: Returns explorer stats.
+   *      tags: [ExplorerStats]
+   *      parameters:
+   *        - in: path
+   *          name: startYear
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid year number. Last three years.
+   *          example: 2021
+   *        - in: path
+   *          name: startMonth
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid month number, from 1 to 12.
+   *          example: 3
+   *        - in: path
+   *          name: endYear
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid year number. Last three years.
+   *          example: 2021
+   *        - in: path
+   *          name: endMonth
+   *          schema:
+   *            type: number
+   *          required: true
+   *          description: A valid month number, from 1 to 12.
+   *          example: 9
+   *        - in: path
+   *          name: explorerId
+   *          schema:
+   *            type: string
+   *          required: true
+   *          description: An explorer's id.
+   *          example: '621d3bd5ff59d6edabe607e8'
+   *      responses:
+   *        200:
+   *          description: Explorer stats successfully retrieved.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/ExplorersStats'
+   *        404:
+   *          description: Explorer not found.
+   *        422:
+   *          description: Validation error.
+   *        500:
+   *          description: Error trying to get the explorer stats.
+   *      security:
+   *        - ApiKeyAuth: []
+   */
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.list_explorer_stats
+    );
+
+    app.route('/v1/explorerStats')
+    /**
+     * @swagger
+     * /v1/explorerStats:
+     *    post:
+     *      summary: Define how often will the explorer stats be computed
+     *      tags: [ExplorerStats]
+     *      parameters:
+     *        - in: query
+     *          name: rebuildPeriod
+     *          schema:
+     *            type: string
+     *          required: true
+     *          description: Valid unix cron expression.
+     *      responses:
+     *        201:
+     *          description: Rebuild period successfully defined.
+     *        401:
+     *          description: Unauthorized.
+     *        403:
+     *          description: You don't have right role to carry out this operation.
+     *        500:
+     *          description: Error trying to define the rebuild period.
+     */
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.rebuild_period
+    );
 };

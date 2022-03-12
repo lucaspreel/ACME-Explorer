@@ -1,5 +1,6 @@
 'use strict';
 module.exports = function (app) {
+  const authController = require('../controllers/authController');
   /**
    * @swagger
    * components:
@@ -16,10 +17,6 @@ module.exports = function (app) {
    *        cacheHour:
    *          type: number
    *          description: The number of hours the system keep data in cache.
-   *      required:
-   *        - maxFinderResults
-   *        - flatRateSponsorships
-   *        - cacheHour
    *      example:
    *        maxFinderResults: 25
    *        flatRateSponsorships: 0
@@ -55,8 +52,13 @@ module.exports = function (app) {
    *          description: System parameters already exist.
    *        500:
    *          description: Error trying to create the system parameters.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .post(systemParameters.create_system_parameters)
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      systemParameters.create_system_parameters
+    )
 
   /**
    * @swagger
@@ -105,6 +107,11 @@ module.exports = function (app) {
    *          description: System parameters not found.
    *        500:
    *          description: Error trying to update the system parameters.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .put(systemParameters.update_system_parameters);
+    .put(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      systemParameters.update_system_parameters
+    );
 };
