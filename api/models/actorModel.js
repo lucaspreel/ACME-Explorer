@@ -91,15 +91,21 @@ ActorSchema.pre('save', function (callback) {
 ActorSchema.pre('findOneAndUpdate', function (callback) {
   const actor = this._update;
 
-  bcrypt.genSalt(5, function (err, salt) {
-    if (err) return callback(err);
+  // console.log("actor ", actor);
 
-    bcrypt.hash(actor.password, salt, function (err, hash) {
+  if (Object.prototype.hasOwnProperty.call(actor, 'password')) {
+    bcrypt.genSalt(5, function (err, salt) {
       if (err) return callback(err);
-      actor.password = hash;
-      callback();
+
+      bcrypt.hash(actor.password, salt, function (err, hash) {
+        if (err) return callback(err);
+        actor.password = hash;
+        callback();
+      });
     });
-  });
+  } else {
+    callback();
+  }
 });
 
 ActorSchema.methods.verifyPassword = function (password, cb) {

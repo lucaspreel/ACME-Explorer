@@ -5,7 +5,6 @@ const async = require('async');
 const CronJob = require('cron').CronJob;
 const CronTime = require('cron').CronTime;
 const ObjectId = mongoose.Types.ObjectId;
-var mongoConfig = require('../../mongoConfig');
 
 const Actor = mongoose.model('Actors');
 const Application = mongoose.model('Application');
@@ -56,81 +55,6 @@ exports.create_an_actor_authenticated = function (req, res) {
       res.status(201).json(actor);
     }
   });
-};
-
-exports.create_many_actors = function (req, res) {
-
-  const streamToMongoDB = require('stream-to-mongo-db').streamToMongoDB
-  const JSONStream = require('JSONStream')
-  const fs = require('fs')
-
-  let dbURL = '';
-  let collection = null
-  let sourceFile = null
-  let batchSize = null
-  let parseString = null
-  let response = ''
-
-  if (req.query.collection && req.query.sourceFile) {
-    dbURL= mongoConfig.getMongoDbUri();
-
-    collection = req.query.collection
-    sourceFile = req.query.sourceFile
-    if (req.query.batchSize) batchSize = req.query.batchSize; else batchSize = 1000
-    if (req.query.parseString) parseString = req.query.parseString; else parseString = '*.*'
-
-    // where the data will end up
-    const outputDBConfig = { dbURL: dbURL, collection: collection, batchSize: batchSize }
-
-    // create the writable stream
-    const writableStream = streamToMongoDB(outputDBConfig)
-
-    // create readable stream and consume it
-    console.log('starting streaming the json from file: ' + sourceFile + ', to dbURL: ' + dbURL + ', into the collection: ' + collection)
-    fs.createReadStream(sourceFile)
-      .pipe(JSONStream.parse(parseString))
-      .on('data', (doc) => {
-        
-        // let newDoc = doc;
-        //console.log(newDoc._id['$oid']);
-        // newDoc._id = ObjectId(newDoc._id['$oid']);
-        // console.log("newDoc");
-        // console.log(newDoc);
-
-        const keys = Object.keys(doc);
-        for (let i = 0; i < keys.length; i++) {
-          const key = keys[i];
-          console.log(key, doc[key]);
-
-          if(Object.prototype.hasOwnProperty.call(doc[key], '$oid'))
-          {
-            console.log("tiene oid");
-            let originalKeyValue = doc[key];
-            doc[key] = ObjectId(originalKeyValue['$oid']);
-            console.log("doc", doc);
-          }
-        }
-
-        return doc;
-
-      })
-      .pipe(writableStream)
-      .on('finish', function () {
-        response += 'All documents stored in the collection!'
-        console.log(response)
-        res.send(response)
-      })
-      .on('error', function (err) {
-        console.log(err)
-        res.send(err)
-      })
-  } else {
-    if (req.query.collection == null) response += 'A mandatory collection parameter is missed.\n'
-    if (req.query.sourceFile == null) response += 'A mandatory sourceFile parameter is missed.\n'
-    console.log(response)
-    res.send(response)
-  }
-
 };
 
 exports.read_an_actor = function (req, res) {
@@ -201,6 +125,7 @@ exports.ban_an_actor = function (req, res) {
     } else {
       Actor.findOneAndUpdate({ _id: req.params.actorId }, { isActive: false }, { new: true }, function (error, actor) {
         if (error) {
+          console.log('error ', error);
           res.send(error);
         } else {
           res.json(actor);
@@ -220,6 +145,7 @@ exports.unban_an_actor = function (req, res) {
     } else {
       Actor.findOneAndUpdate({ _id: req.params.actorId }, { isActive: true }, { new: true }, function (error, actor) {
         if (error) {
+          console.log('error ', error);
           res.send(error);
         } else {
           res.json(actor);

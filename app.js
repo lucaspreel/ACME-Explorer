@@ -4,6 +4,7 @@ const port = process.env.PORT || 8080;
 const mongoose = require('mongoose');
 var mongoConfig = require('./mongoConfig');
 
+//register schemas
 const Actor = require('./api/models/actorModel');
 const Sponsorship = require('./api/models/sponsorShipModel');
 const SystemParameters = require('./api/models/systemParametersModel');
@@ -11,6 +12,8 @@ const Trip = require('./api/models/tripModel');
 const Application = require('./api/models/applicationModel');
 const Finder = require('./api/models/finderModel');
 const DashboardInformation = require('./api/models/dashboardInformationModel');
+
+//are used to start jobs
 const DashboardInformationTools = require('./api/controllers/dashboardInformationController');
 const actorController = require('./api/controllers/actorController');
 
@@ -30,7 +33,7 @@ app.use(function (req, res, next) {
 })
 
 const admin = require('firebase-admin')
-const serviceAccount = require('./acme-explorer-firebase-project-firebase-adminsdk-x5hnj-9c0cdb87d8')
+const serviceAccount = require('./acme-explorer-firebase-project-firebase-adminsdk-z1hv0-c02bda0917')
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: 'https://acme-explorer-firebase-project.firebaseio.com'
@@ -57,7 +60,8 @@ const swaggerSpec = {
       `${path.join(__dirname, './api/routes/systemParametersRoutes.js')}`,
       `${path.join(__dirname, './api/routes/applicationRoutes.js')}`,
       `${path.join(__dirname, './api/routes/finderRoutes.js')}`,
-      `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`
+      `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`,
+      `${path.join(__dirname, './api/routes/storageRoutes.js')}`
   ]
 };
 
@@ -83,6 +87,7 @@ const routesApplication = require('./api/routes/applicationRoutes');
 const routesDashboardInformation = require('./api/routes/dashboardInformationRoutes');
 const routesLogin = require('./api/routes/loginRoutes');
 const routesFinder = require('./api/routes/finderRoutes');
+const routesStorage = require('./api/routes/storageRoutes');
 
 routesActors(app);
 routesSponsorships(app);
@@ -91,6 +96,7 @@ routesApplication(app);
 routesDashboardInformation(app);
 routesLogin(app)
 routesFinder(app);
+routesStorage(app);
 
 const mongoDBURI = mongoConfig.getMongoDbUri();
 

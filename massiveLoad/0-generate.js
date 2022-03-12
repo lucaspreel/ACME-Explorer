@@ -1,10 +1,10 @@
 const { faker } = require('@faker-js/faker');
-var massiveLoadTools = require('./massiveLoadTools');
+const massiveLoadTools = require('./massiveLoadTools');
 
-const amountOfActors = 10;
-const amountOfTrips = 10;
+const amountOfActors = 10000;
+const amountOfTrips = 10000;
 const amountOfStagesByTrip = 3;
-let amountOfApplications = 10;
+let amountOfApplications = 10000;
 
 const minumunStagePrice = 10;
 const maximunStagePrice = 50;
@@ -21,7 +21,7 @@ threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
 // ------------------------------------------------------------------------------
 const languages = ['ENGLISH', 'SPANISH'];
 const statuses = [true, false];
-//more chances to occur MANAGER and EXPLORER
+// more chances to occur MANAGER and EXPLORER
 const roles = ['ADMINISTRATOR', 'SPONSOR', 'MANAGER', 'MANAGER', 'EXPLORER', 'EXPLORER', 'EXPLORER', 'EXPLORER', 'EXPLORER'];
 
 const allActors = [];
@@ -169,7 +169,7 @@ for (let i = 0; i < amountOfApplications; i++) {
     status: applicationStatus,
     explorer_Id: massiveLoadTools.wrapObjectId(explorerId),
     trip_Id: trip._id,
-    manager_Id: trip.manager_Id,//this is already object type
+    manager_Id: trip.manager_Id, // this is already object type
     deleted: false,
     rejected_reason: rejectedReason,
     tripPrice: trip.price

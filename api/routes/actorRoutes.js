@@ -145,46 +145,6 @@ module.exports = function (app) {
       actors.create_an_actor_authenticated
     );
 
-  app.route('/v1/actors3')
-
-  /**
-   * @swagger
-   * /v1/actors3:
-   *    post:
-   *      summary: Create many new actors
-   *      tags: [Actor]
-   *      requestBody:
-   *        required: true
-   *        content:
-   *          application/json:
-   *            schema:
-   *              type: object
-   *              properties:
-   *                manyActors:
-   *                  type: array
-   *                  items:
-   *                    $ref: "#/components/schemas/Actor"
-   *      responses:
-   *        201:
-   *          description: Actor created.
-   *        400:
-   *          description: Error trying to create the actor. Bad Request.
-   *        403:
-   *          description: You don't have right role to carry out this operation.
-   *        409:
-   *          description: Email is already registered.
-   *        422:
-   *          description: Validation error.
-   *        500:
-   *          description: Error trying to create the actor.
-   *      security:
-   *        - ApiKeyAuth: []
-   */
-    .post(
-      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
-      actors.create_many_actors
-    );
-
   app.route('/v1/actors/:actorId')
 
   /**
