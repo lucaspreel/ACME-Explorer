@@ -4,8 +4,6 @@ const mongoose = require('mongoose');
 const SystemParameters = mongoose.model('SystemParameters');
 
 exports.create_system_parameters = function (req, res) {
-  // if the actor does not have the role  "ADMINISTRATOR"
-  // then send error 403
   SystemParameters.find({}).then((systemParameters) => {
     if (systemParameters.length !== 0) {
       res.status(409).json({ error: true, message: 'System parameters already exist.' });
@@ -34,8 +32,6 @@ exports.read_system_parameters = function (req, res) {
 };
 
 exports.update_system_parameters = function (req, res) {
-  // if the actor does not have the role  "ADMINISTRATOR"
-  // then send error 403
   SystemParameters.find({}).then((systemParameters) => {
     if (systemParameters.length === 0) {
       res.status(404).send({ error: true, message: 'System parameters not found.' });
