@@ -110,3 +110,26 @@ exports.verifyAuthenticatedActorCanAccessParameterActor = function () {
     return callback();
   };
 };
+
+exports.verifyAuthenticatedActorCanAccessParameterSponsorship = function () {
+  return async function (req, res, callback) {
+    console.log('verifyAuthenticatedActorCanAccessParameterSponsorship');
+
+    const authenticatedActor = req.authenticatedActor;
+    const authenticatedActorIsAdministrator = authenticatedActor.role.includes('ADMINISTRATOR');
+    
+    if (!authenticatedActorIsAdministrator) {
+      Sponsorship.findById(req.params.sponsorshipId, function (err, sponsorship) {
+        if (err) {
+          return res.status(500).json({ error: true, message: 'Error trying to get the sponsorship.' });
+        } else {
+          if (authenticatedActor._id.toString() !== sponsorship.sponsor_Id) {
+            return res.status(403).send('Authenticated actor can not access this sponsorship.');
+          }
+        }
+      });
+    }
+
+    return callback();
+  };
+}
