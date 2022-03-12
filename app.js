@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 8080;
 const mongoose = require('mongoose');
+var mongoConfig = require('./mongoConfig');
 
+//register schemas
 const Actor = require('./api/models/actorModel');
 const Sponsorship = require('./api/models/sponsorShipModel');
 const SystemParameters = require('./api/models/systemParametersModel');
@@ -10,6 +12,8 @@ const Trip = require('./api/models/tripModel');
 const Application = require('./api/models/applicationModel');
 const Finder = require('./api/models/finderModel');
 const DashboardInformation = require('./api/models/dashboardInformationModel');
+
+//are used to start jobs
 const DashboardInformationTools = require('./api/controllers/dashboardInformationController');
 const actorController = require('./api/controllers/actorController');
 
@@ -56,7 +60,8 @@ const swaggerSpec = {
       `${path.join(__dirname, './api/routes/systemParametersRoutes.js')}`,
       `${path.join(__dirname, './api/routes/applicationRoutes.js')}`,
       `${path.join(__dirname, './api/routes/finderRoutes.js')}`,
-      `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`
+      `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`,
+      `${path.join(__dirname, './api/routes/storageRoutes.js')}`
   ]
 };
 
@@ -82,6 +87,7 @@ const routesApplication = require('./api/routes/applicationRoutes');
 const routesDashboardInformation = require('./api/routes/dashboardInformationRoutes');
 const routesLogin = require('./api/routes/loginRoutes');
 const routesFinder = require('./api/routes/finderRoutes');
+const routesStorage = require('./api/routes/storageRoutes');
 
 routesActors(app);
 routesSponsorships(app);
@@ -90,17 +96,9 @@ routesApplication(app);
 routesDashboardInformation(app);
 routesLogin(app)
 routesFinder(app);
+routesStorage(app);
 
-// MongoDB URI building
-const mongoDBUser = process.env.mongoDBUser || 'ACME_EXPLORER_ADMIN_USER';
-const mongoDBPass = process.env.mongoDBPass || '$3CUR3p455W0RDZOZZ';
-const mongoDBCredentials = (mongoDBUser && mongoDBPass) ? mongoDBUser + ':' + mongoDBPass + '@' : '';
-
-const mongoDBHostname = process.env.mongoDBHostname || 'localhost';
-const mongoDBPort = process.env.mongoDBPort || '27017';
-const mongoDBName = process.env.mongoDBName || 'ACME-Explorer';
-
-const mongoDBURI = 'mongodb://' + mongoDBCredentials + mongoDBHostname + ':' + mongoDBPort + '/' + mongoDBName;
+const mongoDBURI = mongoConfig.getMongoDbUri();
 
 mongoose.set('debug', true); // util para ver detalle de las operaciones que se realizan contra mongodb
 
@@ -124,5 +122,5 @@ mongoose.connection.on('error', function (err) {
   console.error('DB init error ' + err);
 });
 
-//DashboardInformationTools.createDashboardInformationJob();
-//actorController.createExplorerStatsJob();
+DashboardInformationTools.createDashboardInformationJob();
+actorController.createExplorerStatsJob();

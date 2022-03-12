@@ -11,6 +11,9 @@ const Application = mongoose.model('Application');
 const ExplorerStats = mongoose.model('ExplorerStats');
 const admin = require('firebase-admin');
 
+let rebuildPeriod = '*/10 * * * * *';
+let explorerStatsJob;
+
 exports.list_all_actors = function (req, res) {
   Actor.find({ deleted: false }, function (error, actors) {
     if (error) {
@@ -55,20 +58,6 @@ exports.create_an_actor_authenticated = function (req, res) {
       res.status(201).json(actor);
     }
   });
-};
-
-exports.create_many_actors = function (req, res) {
-  // console.log(req.body);
-  const allActors = req.body;
-  console.log(allActors);
-
-  Actor.insertMany(allActors)
-    .then(function (docs) {
-      res.json(docs);
-    })
-    .catch(function (error) {
-      res.status(500).send(error);
-    });
 };
 
 exports.read_an_actor = function (req, res) {
@@ -139,6 +128,7 @@ exports.ban_an_actor = function (req, res) {
     } else {
       Actor.findOneAndUpdate({ _id: req.params.actorId }, { isActive: false }, { new: true }, function (error, actor) {
         if (error) {
+          console.log('error ', error);
           res.send(error);
         } else {
           res.json(actor);
@@ -158,6 +148,7 @@ exports.unban_an_actor = function (req, res) {
     } else {
       Actor.findOneAndUpdate({ _id: req.params.actorId }, { isActive: true }, { new: true }, function (error, actor) {
         if (error) {
+          console.log('error ', error);
           res.send(error);
         } else {
           res.json(actor);
@@ -226,6 +217,7 @@ exports.list_explorer_stats = function (req, res) {
     res.status(422).send('Error: endMonth is not a valid month.');
   } else {
     const explorerId = req.params.explorerId;
+    // console.log("req.params", req.params);
 
     const aggregations = [
       {
@@ -278,9 +270,19 @@ exports.list_explorer_stats = function (req, res) {
   }
 };
 
+exports.rebuild_period = function (req, res) {
+  try {
+    rebuildPeriod = req.query.rebuildPeriod;
+    explorerStatsJob.setTime(new CronTime(rebuildPeriod));
+    explorerStatsJob.start();
+    res.status(201).json({ error: false, message: 'Rebuild period successfully defined.', rebuildPeriod });
+  } catch (err) {
+    res.status(500).json({ error: true, message: 'Error trying to define the rebuild period.' });
+  }
+};
+
 exports.createExplorerStatsJob = function () {
-  const rebuildPeriod = '*/600 * * * * *';
-  const explorerStatsJob = new CronJob(rebuildPeriod, function () {
+  explorerStatsJob = new CronJob(rebuildPeriod, function () {
     console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod);
 
     async.parallel([
@@ -317,10 +319,10 @@ exports.createExplorerStatsJob = function () {
           });
       }
     });
-  }, null, true, 'Europe/Madrid');
+  }, null, false, 'Europe/Madrid');
 
-  explorerStatsJob.setTime(new CronTime(rebuildPeriod));
-  explorerStatsJob.start();
+  // explorerStatsJob.setTime(new CronTime(rebuildPeriod));
+  // explorerStatsJob.start();
 };
 
 function computeExplorerStats (callback) {

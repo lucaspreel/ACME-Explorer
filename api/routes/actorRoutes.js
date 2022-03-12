@@ -145,46 +145,6 @@ module.exports = function (app) {
       actors.create_an_actor_authenticated
     );
 
-  app.route('/v1/actors3')
-
-  /**
-   * @swagger
-   * /v1/actors3:
-   *    post:
-   *      summary: Create many new actors
-   *      tags: [Actor]
-   *      requestBody:
-   *        required: true
-   *        content:
-   *          application/json:
-   *            schema:
-   *              type: object
-   *              properties:
-   *                manyActors:
-   *                  type: array
-   *                  items:
-   *                    $ref: "#/components/schemas/Actor"
-   *      responses:
-   *        201:
-   *          description: Actor created.
-   *        400:
-   *          description: Error trying to create the actor. Bad Request.
-   *        403:
-   *          description: You don't have right role to carry out this operation.
-   *        409:
-   *          description: Email is already registered.
-   *        422:
-   *          description: Validation error.
-   *        500:
-   *          description: Error trying to create the actor.
-   *      security:
-   *        - ApiKeyAuth: []
-   */
-    .post(
-      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
-      actors.create_many_actors
-    );
-
   app.route('/v1/actors/:actorId')
 
   /**
@@ -567,5 +527,34 @@ module.exports = function (app) {
     .get(
       authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
       actors.list_explorer_stats
+    );
+
+    app.route('/v1/explorerStats')
+    /**
+     * @swagger
+     * /v1/explorerStats:
+     *    post:
+     *      summary: Define how often will the explorer stats be computed
+     *      tags: [ExplorerStats]
+     *      parameters:
+     *        - in: query
+     *          name: rebuildPeriod
+     *          schema:
+     *            type: string
+     *          required: true
+     *          description: Valid unix cron expression.
+     *      responses:
+     *        201:
+     *          description: Rebuild period successfully defined.
+     *        401:
+     *          description: Unauthorized.
+     *        403:
+     *          description: You don't have right role to carry out this operation.
+     *        500:
+     *          description: Error trying to define the rebuild period.
+     */
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.rebuild_period
     );
 };
