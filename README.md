@@ -8,7 +8,7 @@
 
     node .\massiveLoad\0-generate.js
 
-This will create files:
+This will create these files, please check they are not empty:
 
     ./massiveLoad/1-actors.json
     ./massiveLoad/2-trips.json
