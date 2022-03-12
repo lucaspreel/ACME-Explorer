@@ -528,4 +528,33 @@ module.exports = function (app) {
       authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
       actors.list_explorer_stats
     );
+
+    app.route('/v1/explorerStats')
+    /**
+     * @swagger
+     * /v1/explorerStats:
+     *    post:
+     *      summary: Define how often will the explorer stats be computed
+     *      tags: [ExplorerStats]
+     *      parameters:
+     *        - in: query
+     *          name: rebuildPeriod
+     *          schema:
+     *            type: string
+     *          required: true
+     *          description: Valid unix cron expression.
+     *      responses:
+     *        201:
+     *          description: Rebuild period successfully defined.
+     *        401:
+     *          description: Unauthorized.
+     *        403:
+     *          description: You don't have right role to carry out this operation.
+     *        500:
+     *          description: Error trying to define the rebuild period.
+     */
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      actors.rebuild_period
+    );
 };

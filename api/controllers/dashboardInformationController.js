@@ -81,7 +81,7 @@ function createDashboardInformationJob () {
         });
       }
     });
-  }, null, true, 'Europe/Madrid');
+  }, null, false, 'Europe/Madrid');
 }
 
 module.exports.createDashboardInformationJob = createDashboardInformationJob;
