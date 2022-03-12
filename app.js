@@ -29,7 +29,7 @@ app.use(function (req, res, next) {
 })
 
 const admin = require('firebase-admin')
-const serviceAccount = require('./acme-explorer-firebase-project-firebase-adminsdk-x5hnj-9c0cdb87d8')
+const serviceAccount = require('./acme-explorer-firebase-project-firebase-adminsdk-z1hv0-c02bda0917')
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: 'https://acme-explorer-firebase-project.firebaseio.com'

@@ -1,5 +1,6 @@
 'use strict';
 module.exports = function (app) {
+  const authController = require('../controllers/authController');
   /**
    * @swagger
    * components:
@@ -80,8 +81,13 @@ module.exports = function (app) {
    *          description: You don't have right role to carry out this operation. Only administrators can do that.
    *        500:
    *          description: Error trying to get all dashboards.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .get(dashboardInformation.read_all_dashboards)
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      dashboardInformation.read_all_dashboards
+      )
   /**
    * @swagger
    * /v1/dashboardInformation:
@@ -104,8 +110,13 @@ module.exports = function (app) {
    *          description: You don't have right role to carry out this operation. Only administrators can do that.
    *        500:
    *          description: Error trying to define the rebuild period.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .post(dashboardInformation.rebuild_period);
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      dashboardInformation.rebuild_period
+      );
 
   app.route('/v1/dashboardInformation/latest')
   /**
@@ -128,6 +139,11 @@ module.exports = function (app) {
    *          description: Dashboard not found.
    *        500:
    *          description: Error trying to get the latest dashboard.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .get(dashboardInformation.read_last_dashboard);
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      dashboardInformation.read_last_dashboard
+      );
 };

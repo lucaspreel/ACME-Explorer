@@ -1,5 +1,7 @@
 'use strict';
 module.exports = function (app) {
+  const authController = require('../controllers/authController');
+
   /**
    * @swagger
    * components:
@@ -61,8 +63,13 @@ module.exports = function (app) {
    *          description: There is already a sponsorship between this sponsor and this trip.
    *        500:
    *          description: Error trying to create the sponsorship.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .post(sponsorships.create_a_sponsorship)
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'SPONSOR']),
+      sponsorships.create_a_sponsorship
+      )
 
   /**
    * @swagger
@@ -148,8 +155,14 @@ module.exports = function (app) {
    *          description: Sponsorship not found.
    *        500:
    *          description: Error trying to update the sponsorship.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .put(sponsorships.update_a_sponsorship)
+    .put(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'SPONSOR']),
+      authController.verifyAuthenticatedActorCanAccessParameterSponsorship(),
+      sponsorships.update_a_sponsorship
+      )
 
   /**
    * @swagger
@@ -178,8 +191,14 @@ module.exports = function (app) {
    *          description: Sponsorship not found.
    *        500:
    *          description: Error trying to delete the sponsorship.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .delete(sponsorships.delete_a_sponsorship);
+    .delete(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'SPONSOR']),
+      authController.verifyAuthenticatedActorCanAccessParameterSponsorship(),
+      sponsorships.delete_a_sponsorship
+      );
 
   app.route('/v1/sponsorships/sponsors/:sponsorID')
 
@@ -270,6 +289,12 @@ module.exports = function (app) {
    *          description: Sponsorship already payed.
    *        500:
    *          description: Error trying to pay the sponsorship.
+   *      security:
+   *        - ApiKeyAuth: []
    */
-    .patch(sponsorships.pay_a_sponsorship);
+    .patch(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'SPONSOR']),
+      authController.verifyAuthenticatedActorCanAccessParameterSponsorship(),
+      sponsorships.pay_a_sponsorship
+      );
 };

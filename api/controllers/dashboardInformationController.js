@@ -14,8 +14,6 @@ let rebuildPeriod = '*/30 * * * * *';
 let computeDashboardInformationJob;
 
 exports.read_all_dashboards = function (req, res) {
-  // if the actor does not have the role  "ADMINISTRATOR"
-  // then send error 403
   DashboardInformation.find().sort('-computationMoment').exec(function (err, dashboards) {
     if (err) {
       res.status(500).json({ error: true, message: 'Error trying to get all dashboards.' });
@@ -26,8 +24,6 @@ exports.read_all_dashboards = function (req, res) {
 };
 
 exports.rebuild_period = function (req, res) {
-  // if the actor does not have the role  "ADMINISTRATOR"
-  // then send error 403
   try {
     rebuildPeriod = req.query.rebuildPeriod;
     computeDashboardInformationJob.setTime(new CronTime(rebuildPeriod));
@@ -39,8 +35,6 @@ exports.rebuild_period = function (req, res) {
 };
 
 exports.read_last_dashboard = function (req, res) {
-  // if the actor does not have the role  "ADMINISTRATOR"
-  // then send error 403
   DashboardInformation.find().sort('-computationMoment').limit(1).exec(function (err, dashboard) {
     if (dashboard.length === 0) {
       res.status(404).send({ error: true, message: 'Dashboard not found.' });
