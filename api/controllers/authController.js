@@ -1,8 +1,9 @@
 'use strict';
 /* ---------------ACTOR Auth---------------------- */
 const mongoose = require('mongoose');
-const Actor = mongoose.model('Actors');
 const admin = require('firebase-admin');
+const Actor = mongoose.model('Actors');
+const Trip = mongoose.model('Trips');
 
 const getAuthenticadedActor = async function (idToken) {
   console.log('idToken: ' + idToken);
@@ -117,7 +118,7 @@ exports.verifyAuthenticatedActorCanAccessParameterSponsorship = function () {
 
     const authenticatedActor = req.authenticatedActor;
     const authenticatedActorIsAdministrator = authenticatedActor.role.includes('ADMINISTRATOR');
-    
+
     if (!authenticatedActorIsAdministrator) {
       Sponsorship.findById(req.params.sponsorshipId, function (err, sponsorship) {
         if (err) {
@@ -132,4 +133,54 @@ exports.verifyAuthenticatedActorCanAccessParameterSponsorship = function () {
 
     return callback();
   };
-}
+};
+
+exports.verifyAuthenticatedActorCanAccessParameterTrip = function () {
+  return async function (req, res, callback) {
+    console.log('verifyAuthenticatedActorCanAccessParameterTrip');
+
+    const authenticatedActor = req.authenticatedActor;
+    const authenticatedActorIsAdministrator = authenticatedActor.role.includes('ADMINISTRATOR');
+
+    if (!authenticatedActorIsAdministrator) {
+      Trip.findById(req.params.tripId, function (err, trip) {
+        if (err) {
+          return res.status(500).json({ message: 'Error trying to get the trip.' });
+        } else {
+          // console.log("authenticatedActor._id.toString() !== trip.managerId.toString()")
+          // console.log("'"+authenticatedActor._id.toString()+"' !== '"+trip.managerId.toString()+"'")
+          // console.log(authenticatedActor._id.toString() !== trip.managerId.toString())
+          if (authenticatedActor._id.toString() !== trip.managerId.toString()) {
+            return res.status(403).send('Authenticated actor can not access this trip.');
+          } else {
+            return callback();
+          }
+        }
+      });
+    } else {
+      return callback();
+    }
+  };
+};
+
+exports.verifyTripCanBeModifiedOrDeleted = function () {
+  return async function (req, res, callback) {
+    console.log('verifyTripCanBeModifiedOrDeleted');
+
+    Trip.findById(req.params.tripId, function (err, trip) {
+      if (err) {
+        return res.status(500).json({ message: 'Error trying to get the trip.' });
+      } else {
+        const tripObject = trip.toObject();
+
+        const tripIsNotPublished = (trip.publicationDate === null || typeof trip.publicationDate === 'undefined' || !Object.prototype.hasOwnProperty.call(tripObject, 'publicationDate'));
+        const tripIsAlreadyPublished = !tripIsNotPublished;
+        if (tripIsAlreadyPublished) {
+          return res.status(403).send('Trip can not be modified or deleted because it is already published.');
+        } else {
+          return callback();
+        }
+      }
+    });
+  };
+};

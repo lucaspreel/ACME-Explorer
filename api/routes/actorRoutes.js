@@ -129,6 +129,8 @@ module.exports = function (app) {
    *          description: Actor created.
    *        400:
    *          description: Error trying to create the actor. Bad Request.
+   *        401:
+   *          description: Unauthorized.
    *        403:
    *          description: You don't have right role to carry out this operation.
    *        409:
@@ -529,7 +531,7 @@ module.exports = function (app) {
       actors.list_explorer_stats
     );
 
-    app.route('/v1/explorerStats')
+  app.route('/v1/explorerStats')
     /**
      * @swagger
      * /v1/explorerStats:

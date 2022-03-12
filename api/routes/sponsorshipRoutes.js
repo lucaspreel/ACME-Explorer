@@ -69,7 +69,7 @@ module.exports = function (app) {
     .post(
       authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'SPONSOR']),
       sponsorships.create_a_sponsorship
-      )
+    )
 
   /**
    * @swagger
@@ -162,7 +162,7 @@ module.exports = function (app) {
       authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'SPONSOR']),
       authController.verifyAuthenticatedActorCanAccessParameterSponsorship(),
       sponsorships.update_a_sponsorship
-      )
+    )
 
   /**
    * @swagger
@@ -198,7 +198,7 @@ module.exports = function (app) {
       authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'SPONSOR']),
       authController.verifyAuthenticatedActorCanAccessParameterSponsorship(),
       sponsorships.delete_a_sponsorship
-      );
+    );
 
   app.route('/v1/sponsorships/sponsors/:sponsorID')
 
@@ -296,5 +296,5 @@ module.exports = function (app) {
       authController.verifyAuthenticadedActor(['ADMINISTRATOR', 'SPONSOR']),
       authController.verifyAuthenticatedActorCanAccessParameterSponsorship(),
       sponsorships.pay_a_sponsorship
-      );
+    );
 };

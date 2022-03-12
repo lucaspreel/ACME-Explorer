@@ -1,10 +1,10 @@
 const { faker } = require('@faker-js/faker');
 const massiveLoadTools = require('./massiveLoadTools');
 
-const amountOfActors = 1000;
-const amountOfTrips = 1000;
+const amountOfActors = 100;
+const amountOfTrips = 100;
 const amountOfStagesByTrip = 3;
-let amountOfApplications = 1000;
+let amountOfApplications = 100;
 
 const minumunStagePrice = 10;
 const maximunStagePrice = 50;
@@ -100,9 +100,9 @@ for (let i = 0; i < amountOfTrips; i++) {
     description: faker.lorem.paragraph(),
     price: tripPrice,
     publication_date: publicationDate,
-    start_date: startDate,
-    end_date: endDate,
-    manager_Id: massiveLoadTools.wrapObjectId(managerId),
+    startDate: startDate,
+    endDate: endDate,
+    managerId: massiveLoadTools.wrapObjectId(managerId),
     stages: allTripStages,
     canceled: canceled,
     cancelReason: cancelReason
@@ -155,7 +155,7 @@ for (let i = 0; i < amountOfApplications; i++) {
 
   const applicationStatus = massiveLoadTools.getRandomArrayValue(applicationStatuses);
   const publicationDate = trip.publication_date;
-  const startDate = trip.start_date;
+  const startDate = trip.startDate;
   const applicationMoment = faker.date.betweens(
     (/* from */ publicationDate),
     (/* to */ startDate),
@@ -213,8 +213,8 @@ for (let i = 0; i < explorersIds.length; i++) {
     const priceMatchs =
       priceLowerBound <= trip.price && trip.price <= priceUpperBound;
     const dateMatches =
-      new Date(dateLowerBound) <= new Date(trip.start_date) &&
-      new Date(trip.end_date) <= new Date(dateUpperBound);
+      new Date(dateLowerBound) <= new Date(trip.startDate) &&
+      new Date(trip.endDate) <= new Date(dateUpperBound);
     const keyWordMatches =
       trip.ticker.includes(keyWord) ||
       trip.title.includes(keyWord) ||

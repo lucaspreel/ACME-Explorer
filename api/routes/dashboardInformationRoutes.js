@@ -87,7 +87,7 @@ module.exports = function (app) {
     .get(
       authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
       dashboardInformation.read_all_dashboards
-      )
+    )
   /**
    * @swagger
    * /v1/dashboardInformation:
@@ -116,7 +116,7 @@ module.exports = function (app) {
     .post(
       authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
       dashboardInformation.rebuild_period
-      );
+    );
 
   app.route('/v1/dashboardInformation/latest')
   /**
@@ -145,5 +145,5 @@ module.exports = function (app) {
     .get(
       authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
       dashboardInformation.read_last_dashboard
-      );
+    );
 };

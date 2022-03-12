@@ -34,7 +34,6 @@ exports.store_json_fs = function (req, res) {
     fs.createReadStream(sourceFile)
       .pipe(JSONStream.parse(parseString))
       .on('data', (doc) => {
-        
         const keys = Object.keys(doc);
 
         const fixedDoc = fixDocsOidsRecursively(doc);

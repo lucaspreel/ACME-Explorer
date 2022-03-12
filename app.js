@@ -61,7 +61,8 @@ const swaggerSpec = {
       `${path.join(__dirname, './api/routes/applicationRoutes.js')}`,
       `${path.join(__dirname, './api/routes/finderRoutes.js')}`,
       `${path.join(__dirname, './api/routes/dashboardInformationRoutes.js')}`,
-      `${path.join(__dirname, './api/routes/storageRoutes.js')}`
+      `${path.join(__dirname, './api/routes/storageRoutes.js')}`,
+      `${path.join(__dirname, './api/routes/tripRoutes.js')}`
   ]
 };
 
@@ -88,6 +89,7 @@ const routesDashboardInformation = require('./api/routes/dashboardInformationRou
 const routesLogin = require('./api/routes/loginRoutes');
 const routesFinder = require('./api/routes/finderRoutes');
 const routesStorage = require('./api/routes/storageRoutes');
+const routesTrip = require('./api/routes/tripRoutes');
 
 routesActors(app);
 routesSponsorships(app);
@@ -97,6 +99,7 @@ routesDashboardInformation(app);
 routesLogin(app)
 routesFinder(app);
 routesStorage(app);
+routesTrip(app);
 
 const mongoDBURI = mongoConfig.getMongoDbUri();
 

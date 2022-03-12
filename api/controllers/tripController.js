@@ -4,9 +4,35 @@ const mongoose = require('mongoose');
 const Trip = mongoose.model('Trips');
 const Stage = mongoose.model('Stage');
 
-// -----PARTE DE TRIPS------------------------
-exports.list_all_trip = function (req, res) {
-  Trip.find({}, function (err, trips) {
+// ------------------------------------------------------------------------------
+// TRIP'S SECTION
+// ------------------------------------------------------------------------------
+
+exports.list_all_trips = function (req, res) {
+  const keyword = req.query.keyword;
+  console.log('keyword', keyword);
+
+  let filter = {};
+
+  if (typeof keyword !== 'undefined') {
+    const amountOfWords = keyword.split(' ').length;
+
+    if (amountOfWords > 1) {
+      return res.status(422).send('Error: keyword must be a single word.');
+    }
+
+    const reg = new RegExp(keyword);
+
+    filter = {
+      $or: [
+        { ticker: reg },
+        { title: reg },
+        { description: reg }
+      ]
+    };
+  }
+
+  Trip.find(filter, function (err, trips) {
     if (err) {
       res.send(err);
     } else {
@@ -22,7 +48,7 @@ exports.create_a_trip = function (req, res) {
     if (err) {
       res.send(err);
     } else {
-      res.json(trip);
+      res.status(201).json(trip);
     }
   });
 };
@@ -46,6 +72,7 @@ exports.update_a_trip = function (req, res) {
     }
   });
 };
+
 exports.delete_a_trip = function (req, res) {
   Trip.deleteOne({ _id: req.params.tripId }, function (err, trip) {
     if (err) {
@@ -56,8 +83,31 @@ exports.delete_a_trip = function (req, res) {
   });
 };
 
-// -----------PARTE DE STAGES-----------
-exports.list_all_stage = function (req, res) {
+exports.cancel_a_trip = function (req, res) {
+  Trip.findOneAndUpdate({ _id: req.params.tripId }, req.body, { new: true }, function (err, trip) {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(trip);
+    }
+  });
+};
+
+exports.publish_a_trip = function (req, res) {
+  Trip.findOneAndUpdate({ _id: req.params.tripId }, req.body, { new: true }, function (err, trip) {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(trip);
+    }
+  });
+};
+
+// ------------------------------------------------------------------------------
+// STAGES' SECTION
+// ------------------------------------------------------------------------------
+
+exports.list_all_stages = function (req, res) {
   Stage.find({}, function (err, stages) {
     if (err) {
       res.send(err);
