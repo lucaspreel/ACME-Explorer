@@ -76,10 +76,34 @@ app.use('/api-doc', swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerSpec)))
  *      type: apiKey
  *      in: header       # can be "header", "query" or "cookie"
  *      name: idToken    # name of the header, query parameter or cookie
+ * 
+ *  parameters:
+ *    PreferredLanguage:
+ *      name: Accept-Language
+ *      in: header
+ *      description: The preferred language.
+ *      required: false
+ *      schema:
+ *        type: string
+ *        default: 'en'
  */
-
 // swagger documentation config - end
 
+// i18next config - start
+const i18next = require("i18next");
+const Backend = require("i18next-fs-backend");
+const middleware = require("i18next-http-middleware");
+
+i18next.use(Backend).use(middleware.LanguageDetector)
+.init({
+  fallbackLng: 'en',
+  backend: {
+    loadPath: './locales/{{lng}}/translation.json'
+  }
+})
+
+app.use(middleware.handle(i18next));
+// i18next config - end
 
 const routesActors = require('./api/routes/actorRoutes');
 const routesSponsorships = require('./api/routes/sponsorshipRoutes');

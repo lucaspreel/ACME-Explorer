@@ -16,7 +16,7 @@ exports.list_all_trips = function (req, res) {
     const amountOfWords = keyword.split(' ').length;
 
     if (amountOfWords > 1) {
-      return res.status(422).send('Error: keyword must be a single word.');
+      return res.status(422).send(req.t('Keyword must be a single word.'));
     }
 
     const reg = new RegExp(keyword);
@@ -82,6 +82,9 @@ exports.read_a_trip = function (req, res) {
     if (err) {
       res.send(err);
     } else {
+      if (!trip) {
+        return res.status(404).send(req.t('Trip not found.'));
+      }
       res.json(trip);
     }
   });
@@ -102,7 +105,7 @@ exports.delete_a_trip = function (req, res) {
     if (err) {
       res.send(err);
     } else {
-      res.json({ message: 'Trip successfully deleted' });
+      res.json({ message: req.t('Trip successfully deleted.') });
     }
   });
 };
@@ -111,7 +114,7 @@ exports.cancel_a_trip = function (req, res) {
   const fieldsToUpdate = req.body;
 
   if (!Object.prototype.hasOwnProperty.call(fieldsToUpdate, 'cancelReason')) {
-    return res.status(422).send('Error: cancelReason is mandatory for this operation.');
+    return res.status(422).send(req.t('Cancel reason is mandatory for this operation.'));
   }
 
   fieldsToUpdate.canceled = true;

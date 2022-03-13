@@ -40,7 +40,7 @@ exports.create_an_actor = function (req, res) {
       }
     });
   } else {
-    return res.status(403).send('Only explorers can create their own account.');
+    return res.status(403).send(req.t('Only explorers can create their own account.'));
   }
 };
 
@@ -82,7 +82,7 @@ exports.read_an_actor = function (req, res) {
 exports.update_an_actor = async function (req, res) {
   Actor.findOne({ _id: req.params.actorId }).then((actor1) => {
     if (!actor1) {
-      res.status(404).send('Actor not found');
+      res.status(404).send(req.t('Actor not found.'));
     } else {
       Actor.findOneAndUpdate({ _id: req.params.actorId }, req.body, { new: true }, function (error, actor) {
         if (error) {
@@ -111,7 +111,7 @@ exports.delete_an_actor = function (req, res) {
         if (error) {
           res.status(500).send(error);
         } else {
-          res.json({ message: 'Actor successfully soft deleted' });
+          res.status(200).json(req.t('Actor successfully soft deleted.'));
         }
       });
     }
@@ -169,24 +169,24 @@ exports.login_an_actor = async function (req, res) {
 
   Actor.findOne({ email: emailParam }, function (error, actor) {
     if (error) {
-      res.status(500).send({ message: 'Error trying to find actor.', error: error });
+      res.status(500).send({ message: req.t('Error trying to find actor.'), error: error });
     } else if (!actor) {
-      res.status(401).send({ message: 'No actor found.', error: error });
+      res.status(401).send({ message: req.t('Actor not found.'), error: error });
     } else if (actor.isActive === false) {
-      res.status(403).json({ message: 'Actor is inactive.', error: error });
+      res.status(403).json({ message: req.t('Actor is inactive.'), error: error });
     } else {
       // Make sure the password is correct
       actor.verifyPassword(password, async function (error, isMatch) {
         if (error) {
-          res.status(500).send({ message: 'Error trying to find actor.', error: error });
+          res.status(500).send({ message: req.t('Error trying to find actor.'), error: error });
         } else if (!isMatch) {
-          res.status(401).json({ message: 'Password did not match.', error: error });
+          res.status(401).json({ message: req.t('Password did not match.'), error: error });
         } else {
           try {
             customToken = await admin.auth().createCustomToken(actor.email);
           } catch (error) {
-            console.log('Error creating custom token:', error);
-            res.status(500).send({ message: 'Error creating custom token.' });
+            console.log('Error creating custom token.', error);
+            res.status(500).send({ message: req.t('Error creating custom token.') });
           }
 
           actor = actor.toJSON();
@@ -208,13 +208,13 @@ exports.list_explorer_stats = function (req, res) {
   const validMonths = Array.from({ length: 12 }, (item, index) => index + 1);
 
   if (!validYears.includes(startYear)) {
-    res.status(422).send('Error: startYear is not a valid year.');
+    res.status(422).send(req.t('Start year is not a valid year.'));
   } else if (!validMonths.includes(startMonth)) {
-    res.status(422).send('Error: startMonth is not a valid month.');
+    res.status(422).send(req.t('Start month is not a valid month.'));
   } else if (!validYears.includes(endYear)) {
-    res.status(422).send('Error: endYear is not a valid year.');
+    res.status(422).send(req.t('End year is not a valid year.'));
   } else if (!validMonths.includes(endMonth)) {
-    res.status(422).send('Error: endMonth is not a valid month.');
+    res.status(422).send(req.t('End month is not a valid month.'));
   } else {
     const explorerId = req.params.explorerId;
     // console.log("req.params", req.params);
@@ -275,15 +275,15 @@ exports.rebuild_period = function (req, res) {
     rebuildPeriod = req.query.rebuildPeriod;
     explorerStatsJob.setTime(new CronTime(rebuildPeriod));
     explorerStatsJob.start();
-    res.status(201).json({ error: false, message: 'Rebuild period successfully defined.', rebuildPeriod });
+    res.status(201).json({ error: false, message: req.t('Rebuild period successfully defined.'), rebuildPeriod });
   } catch (err) {
-    res.status(500).json({ error: true, message: 'Error trying to define the rebuild period.' });
+    res.status(500).json({ error: true, message: req.t('Error trying to define the rebuild period.') });
   }
 };
 
 exports.createExplorerStatsJob = function () {
   explorerStatsJob = new CronJob(rebuildPeriod, function () {
-    console.log('Cron job submitted. Rebuild period: ' + rebuildPeriod);
+    console.log('Cron job submitted. Rebuild period: ', rebuildPeriod);
 
     async.parallel([
       computeExplorerStats
