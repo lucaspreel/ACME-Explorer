@@ -125,6 +125,8 @@ module.exports = function (app) {
   *      summary: Returns all trips.
   *      tags: [Trip]
   *      parameters:
+  *        - in: header
+  *          $ref: '#/components/parameters/PreferredLanguage'
   *        - in: query
   *          name: keyword
   *          schema:
@@ -165,6 +167,9 @@ module.exports = function (app) {
    *    post:
    *      summary: Create a new trip
    *      tags: [Trip]
+   *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *      requestBody:
    *        required: true
    *        content:
@@ -200,6 +205,8 @@ module.exports = function (app) {
    *      summary: Return a trip.
    *      tags: [Trip]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: tripId
    *          schema:
@@ -228,6 +235,8 @@ module.exports = function (app) {
    *      summary: Update a trip.
    *      tags: [Trip]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: tripId
    *          schema:
@@ -274,6 +283,8 @@ module.exports = function (app) {
    *      summary: Delete a trip.
    *      tags: [Trip]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: tripId
    *          schema:
@@ -315,6 +326,8 @@ module.exports = function (app) {
    *      summary: Cancel a trip.
    *      tags: [Trip]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: tripId
    *          schema:
@@ -365,6 +378,8 @@ module.exports = function (app) {
    *      summary: Publish a trip.
    *      tags: [Trip]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: trip Id
    *          schema:

@@ -62,6 +62,9 @@ module.exports = function (app) {
    *    get:
    *      summary: Returns all actors.
    *      tags: [Actor]
+   *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *      responses:
    *        200:
    *          description: Actors successfully retrieved.
@@ -91,6 +94,9 @@ module.exports = function (app) {
    *    post:
    *      summary: Create a new actor with role explorer.
    *      tags: [Actor]
+   *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *      requestBody:
    *        required: true
    *        content:
@@ -121,6 +127,9 @@ module.exports = function (app) {
    *    post:
    *      summary: Create a new actor with any role being authenticated as an administrator.
    *      tags: [Actor]
+   *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *      requestBody:
    *        required: true
    *        content:
@@ -160,6 +169,8 @@ module.exports = function (app) {
    *      summary: Returns an actor.
    *      tags: [Actor]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: actorId
    *          schema:
@@ -198,6 +209,8 @@ module.exports = function (app) {
    *      summary: Updates an actor.
    *      tags: [Actor]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: actorId
    *          schema:
@@ -247,6 +260,8 @@ module.exports = function (app) {
    *      summary: Deletes an actor.
    *      tags: [Actor]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: actorId
    *          schema:
@@ -284,6 +299,8 @@ module.exports = function (app) {
    *      summary: Ban an actor.
    *      tags: [Actor]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: actorId
    *          schema:
@@ -322,6 +339,8 @@ module.exports = function (app) {
    *      summary: Unban an actor.
    *      tags: [Actor]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: actorId
    *          schema:
@@ -436,6 +455,8 @@ module.exports = function (app) {
    *      summary: Returns explorers stats.
    *      tags: [ExplorerStats]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: startYear
    *          schema:
@@ -492,6 +513,8 @@ module.exports = function (app) {
    *      summary: Returns explorer stats.
    *      tags: [ExplorerStats]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: path
    *          name: startYear
    *          schema:
@@ -561,6 +584,8 @@ module.exports = function (app) {
    *      summary: Define how often will the explorer stats be computed
    *      tags: [ExplorerStats]
    *      parameters:
+   *        - in: header
+   *          $ref: '#/components/parameters/PreferredLanguage'
    *        - in: query
    *          name: rebuildPeriod
    *          schema:

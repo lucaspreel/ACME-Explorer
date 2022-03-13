@@ -54,7 +54,7 @@ exports.verifyAuthenticadedActor = function (requiredRoles) {
     console.log('verifyAuthenticadedActor');
 
     if (!Object.prototype.hasOwnProperty.call(req.headers, 'idtoken')) {
-      res.status(401).send('Token must be present in request header.');
+      res.status(401).send(req.t('Token must be present in request header.'));
     } else {
       const idToken = req.headers.idtoken;
       console.log('idToken: ', idToken);
@@ -63,7 +63,7 @@ exports.verifyAuthenticadedActor = function (requiredRoles) {
       console.log('authenticatedActor: ', authenticatedActor);
 
       if (authenticatedActor === null) {
-        res.status(401).send('No actor was found with the given idToken.');
+        res.status(401).send(req.t('No actor was found with the given idToken.'));
       } else {
         const actorRoles = authenticatedActor.role;
 
@@ -90,7 +90,7 @@ exports.verifyAuthenticadedActor = function (requiredRoles) {
           return callback();
         } else {
           // an access token is valid, but requires more privileges
-          res.status(403).send('The actor has not the required roles.');
+          res.status(403).send(req.t('The actor has not the required roles.'));
         }
       }
     }
@@ -106,7 +106,7 @@ exports.verifyAuthenticatedActorCanAccessParameterActor = function () {
 
     if (!authenticatedActorIsAdministrator) {
       if (authenticatedActor._id.toString() !== req.params.actorId) {
-        return res.status(403).send('Authenticated actor can not access this actor.');
+        return res.status(403).send(req.t('Authenticated actor can not access this actor.'));
       }
     }
 
@@ -124,10 +124,10 @@ exports.verifyAuthenticatedActorCanAccessParameterSponsorship = function () {
     if (!authenticatedActorIsAdministrator) {
       Sponsorship.findById(req.params.sponsorshipId, function (err, sponsorship) {
         if (err) {
-          return res.status(500).json({ error: true, message: 'Error trying to get the sponsorship.' });
+          return res.status(500).json({ error: true, message: req.t('Error trying to get the sponsorship.') });
         } else {
           if (authenticatedActor._id.toString() !== sponsorship.sponsor_Id) {
-            return res.status(403).send('Authenticated actor can not access this sponsorship.');
+            return res.status(403).send(req.t('Authenticated actor can not access this sponsorship.'));
           }
         }
       });
@@ -147,12 +147,12 @@ exports.verifyAuthenticatedActorCanAccessParameterTrip = function () {
     if (!authenticatedActorIsAdministrator) {
       Trip.findById(req.params.tripId, function (err, trip) {
         if (err) {
-          return res.status(500).json({ message: 'Error trying to get the trip.' });
+          return res.status(500).json({ message: req.t('Error trying to get the trip.') });
         } else if (!trip) {
-          res.status(404).send('Trip not found');
+          res.status(404).send('Trip not found.');
         } else {
           if (authenticatedActor._id.toString() !== trip.managerId.toString()) {
-            return res.status(403).send('Authenticated actor can not access this trip.');
+            return res.status(403).send(req.t('Authenticated actor can not access this trip.'));
           } else {
             return callback();
           }
@@ -170,14 +170,14 @@ exports.verifyTripIsNotPublished = function () {
 
     Trip.findById(req.params.tripId, function (err, trip) {
       if (err) {
-        return res.status(500).json({ message: 'Error trying to get the trip.' });
+        return res.status(500).json({ message: req.t('Error trying to get the trip.') });
       } else {
         const tripObject = trip.toObject();
 
         const tripNotPublished = (trip.publicationDate === null || typeof trip.publicationDate === 'undefined' || !Object.prototype.hasOwnProperty.call(tripObject, 'publicationDate'));
         const tripAlreadyPublished = !tripNotPublished;
         if (tripAlreadyPublished) {
-          return res.status(403).send('Trip can not be published, modified or deleted because it is already published.');
+          return res.status(403).send(req.t('Trip can not be published, modified or deleted because it is already published.'));
         } else {
           return callback();
         }
@@ -192,7 +192,7 @@ exports.verifyTripCanBeCancelled = function () {
 
     Trip.findById(req.params.tripId, function (err, trip) {
       if (err) {
-        return res.status(500).json({ message: 'Error trying to get the trip.' });
+        return res.status(500).json({ message: req.t('Error trying to get the trip.') });
       } else {
         const tripObject = trip.toObject();
         console.log('tripObject');
@@ -205,7 +205,7 @@ exports.verifyTripCanBeCancelled = function () {
         const tripAlreadyPublished = !tripNotPublished;
 
         if (tripNotPublished) {
-          reason.push('A trip that has not been published can not be cancelled.');
+          reason.push(req.t('A trip that has not been published can not be cancelled.'));
         }
 
         // 2 - but has not yet started
@@ -213,7 +213,7 @@ exports.verifyTripCanBeCancelled = function () {
         const startDate = trip.startDate;
         const tripAlreadyStarted = startDate <= today;
         if (tripAlreadyStarted) {
-          reason.push('A trip that has already started can not be cancelled.');
+          reason.push(req.t('A trip that has already started can not be cancelled.'));
         }
 
         // 3 - and does not have any accepted applications.
@@ -226,12 +226,12 @@ exports.verifyTripCanBeCancelled = function () {
 
         Application.count(filter, function (err, count) {
           if (err) {
-            return res.status(500).json({ message: 'Error trying to get the applications of the trip.' });
+            return res.status(500).json({ message: req.t('Error trying to get the applications of the trip.') });
           } else {
             console.log('Number of ACCEPTED applications:', count);
 
             if (count > 0) {
-              reason.push('A trip that already has accepted applications can not be cancelled.');
+              reason.push(req.t('A trip that already has accepted applications can not be cancelled.'));
             }
 
             const tripHasAcceptedAplications = (count > 0);
