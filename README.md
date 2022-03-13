@@ -25,4 +25,8 @@ This will create these files, please check they are not empty:
 
 ## 6 - In Thunder Client run "POPULATE COLLECTIONS" tests.
 
-## 7 - In Thunder Client run "APP TESTS" tests.
+## 7 - In Thunder Client run "ACTORS TESTS" tests.
+
+## 8 - In Thunder Client run "SPONSORS TESTS" tests.
+
+## 9 - In Thunder Client run "TRIPS TESTS" tests.
