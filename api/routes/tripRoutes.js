@@ -131,6 +131,18 @@ module.exports = function (app) {
   *            type: string
   *          required: false
   *          description: Single key word to filter trips by ticker, title, or description.
+  *        - in: query
+  *          name: managerId
+  *          schema:
+  *            type: string
+  *          required: false
+  *          description: Manager id to filter trips by manager actor.
+  *        - in: query
+  *          name: published
+  *          schema:
+  *            type: boolean
+  *          required: false
+  *          description: Boolean parameter to filter or not published trips.
   *      responses:
   *        200:
   *          description: trips successfully retrieved.
@@ -383,5 +395,4 @@ module.exports = function (app) {
       authController.verifyTripIsNotPublished(),
       trips.publish_a_trip
     );
-
 };

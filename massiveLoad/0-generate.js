@@ -1,10 +1,10 @@
 const { faker } = require('@faker-js/faker');
 const massiveLoadTools = require('./massiveLoadTools');
 
-const amountOfActors = 100;
-const amountOfTrips = 100;
+const amountOfActors = 1000;
+const amountOfTrips = 1000;
 const amountOfStagesByTrip = 3;
-let amountOfApplications = 100;
+let amountOfApplications = 1000;
 
 const minumunStagePrice = 10;
 const maximunStagePrice = 50;
@@ -99,7 +99,7 @@ for (let i = 0; i < amountOfTrips; i++) {
     title: 'A trip to ' + city,
     description: faker.lorem.paragraph(),
     price: tripPrice,
-    publication_date: publicationDate,
+    publicationDate: publicationDate,
     startDate: startDate,
     endDate: endDate,
     managerId: massiveLoadTools.wrapObjectId(managerId),
@@ -154,7 +154,7 @@ for (let i = 0; i < amountOfApplications; i++) {
   }
 
   const applicationStatus = massiveLoadTools.getRandomArrayValue(applicationStatuses);
-  const publicationDate = trip.publication_date;
+  const publicationDate = trip.publicationDate;
   const startDate = trip.startDate;
   const applicationMoment = faker.date.betweens(
     (/* from */ publicationDate),

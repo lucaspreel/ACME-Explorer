@@ -69,7 +69,7 @@ const TripSchema = new Schema({
 }, { strict: false });
 
 TripSchema.pre('save', function (callback) {
-  let newTrip = this;
+  const newTrip = this;
 
   newTrip.ticker = generateTicker();
   newTrip.price = calculatePrice(newTrip);
@@ -78,11 +78,23 @@ TripSchema.pre('save', function (callback) {
 });
 
 TripSchema.pre('findOneAndUpdate', async function (callback) {
-  console.log("findOneAndUpdate")
-  //let tripInDb = await this.model.findOne(this.getQuery());
-  let newTrip = this._update;
-  this._update.price = calculatePrice(newTrip);
-  // console.log("this._update", this._update)
+  console.log('findOneAndUpdate');
+
+  /*
+  let fieldsModifiedOrAdded = this._update;
+  console.log("fieldsModifiedOrAdded", fieldsModifiedOrAdded)
+  let objectInDb = await this.model.findOne(this.getQuery());
+  console.log("objectInDb", objectInDb);
+  const newObject = Object.assign({}, objectInDb, fieldsModifiedOrAdded);
+  console.log("newObject", newObject);
+  */
+
+  const newTrip = this._update;
+
+  if (Object.prototype.hasOwnProperty.call(newTrip, 'stages')) {
+    this._update.price = calculatePrice(newTrip);
+  }
+
   callback();
 });
 

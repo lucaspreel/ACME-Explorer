@@ -6,7 +6,6 @@ const Actor = mongoose.model('Actors');
 const Trip = mongoose.model('Trips');
 const Sponsorship = mongoose.model('Sponsorship');
 const Application = mongoose.model('Application');
-const ObjectId = mongoose.Types.ObjectId;
 
 const getAuthenticadedActor = async function (idToken) {
   console.log('idToken: ' + idToken);
@@ -149,6 +148,8 @@ exports.verifyAuthenticatedActorCanAccessParameterTrip = function () {
       Trip.findById(req.params.tripId, function (err, trip) {
         if (err) {
           return res.status(500).json({ message: 'Error trying to get the trip.' });
+        } else if (!trip) {
+          res.status(404).send('Trip not found');
         } else {
           if (authenticatedActor._id.toString() !== trip.managerId.toString()) {
             return res.status(403).send('Authenticated actor can not access this trip.');
@@ -224,19 +225,23 @@ exports.verifyTripCanBeCancelled = function () {
         };
 
         Application.count(filter, function (err, count) {
-          console.log('Number of ACCEPTED applications:', count);
-
-          if (count > 0) {
-            reason.push('A trip that already has accepted applications can not be cancelled.');
-          }
-
-          const tripHasAcceptedAplications = (count > 0);
-          const tripCanBeCancelled = tripAlreadyPublished && !tripAlreadyStarted && !tripHasAcceptedAplications;
-
-          if (!tripCanBeCancelled) {
-            return res.status(403).send(reason);
+          if (err) {
+            return res.status(500).json({ message: 'Error trying to get the applications of the trip.' });
           } else {
-            return callback();
+            console.log('Number of ACCEPTED applications:', count);
+
+            if (count > 0) {
+              reason.push('A trip that already has accepted applications can not be cancelled.');
+            }
+
+            const tripHasAcceptedAplications = (count > 0);
+            const tripCanBeCancelled = tripAlreadyPublished && !tripAlreadyStarted && !tripHasAcceptedAplications;
+
+            if (!tripCanBeCancelled) {
+              return res.status(403).send(reason);
+            } else {
+              return callback();
+            }
           }
         });
       }

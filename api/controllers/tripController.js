@@ -2,7 +2,6 @@
 /* ---------------TRIP---------------------- */
 const mongoose = require('mongoose');
 const Trip = mongoose.model('Trips');
-const Stage = mongoose.model('Stage');
 
 // ------------------------------------------------------------------------------
 // TRIP'S SECTION
@@ -10,9 +9,8 @@ const Stage = mongoose.model('Stage');
 
 exports.list_all_trips = function (req, res) {
   const keyword = req.query.keyword;
-  console.log('keyword', keyword);
 
-  let filter = {};
+  let query = Trip.find();
 
   if (typeof keyword !== 'undefined') {
     const amountOfWords = keyword.split(' ').length;
@@ -23,22 +21,48 @@ exports.list_all_trips = function (req, res) {
 
     const reg = new RegExp(keyword);
 
-    filter = {
+    query = query.and([{
       $or: [
         { ticker: reg },
         { title: reg },
         { description: reg }
       ]
-    };
+    }]);
   }
 
-  Trip.find(filter, function (err, trips) {
+  const managerId = req.query.managerId;
+  if (typeof managerId !== 'undefined') {
+    query = query.and([{ managerId: managerId }]);
+  }
+
+  const publishedParameter = req.query.published;
+  // console.log('publishedParameter', publishedParameter);
+  // console.log('typeof publishedParameter', typeof publishedParameter);
+  if (typeof publishedParameter !== 'undefined') {
+    const published = (publishedParameter === 'true');
+
+    if (published) {
+      query = query.and([{ publicationDate: { $exists: true, $ne: null } }]);
+    } else {
+      query = query.and([{ publicationDate: { $exists: false } }]);
+    }
+  }
+
+  query.exec(function (err, trips) {
     if (err) {
       res.send(err);
     } else {
       res.json(trips);
     }
   });
+
+  // Trip.find(filter, function (err, trips) {
+  //   if (err) {
+  //     res.send(err);
+  //   } else {
+  //     res.json(trips);
+  //   }
+  // });
 };
 
 exports.create_a_trip = function (req, res) {
@@ -102,7 +126,6 @@ exports.cancel_a_trip = function (req, res) {
 };
 
 exports.publish_a_trip = function (req, res) {
-
   const fieldsToUpdate = {
     publicationDate: Date.now()
   };
