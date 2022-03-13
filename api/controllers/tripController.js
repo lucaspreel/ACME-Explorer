@@ -84,7 +84,15 @@ exports.delete_a_trip = function (req, res) {
 };
 
 exports.cancel_a_trip = function (req, res) {
-  Trip.findOneAndUpdate({ _id: req.params.tripId }, req.body, { new: true }, function (err, trip) {
+  const fieldsToUpdate = req.body;
+
+  if (!Object.prototype.hasOwnProperty.call(fieldsToUpdate, 'cancelReason')) {
+    return res.status(422).send('Error: cancelReason is mandatory for this operation.');
+  }
+
+  fieldsToUpdate.canceled = true;
+
+  Trip.findOneAndUpdate({ _id: req.params.tripId }, fieldsToUpdate, { new: true }, function (err, trip) {
     if (err) {
       res.send(err);
     } else {
@@ -94,66 +102,16 @@ exports.cancel_a_trip = function (req, res) {
 };
 
 exports.publish_a_trip = function (req, res) {
-  Trip.findOneAndUpdate({ _id: req.params.tripId }, req.body, { new: true }, function (err, trip) {
+
+  const fieldsToUpdate = {
+    publicationDate: Date.now()
+  };
+
+  Trip.findOneAndUpdate({ _id: req.params.tripId }, fieldsToUpdate, { new: true }, function (err, trip) {
     if (err) {
       res.send(err);
     } else {
       res.json(trip);
-    }
-  });
-};
-
-// ------------------------------------------------------------------------------
-// STAGES' SECTION
-// ------------------------------------------------------------------------------
-
-exports.list_all_stages = function (req, res) {
-  Stage.find({}, function (err, stages) {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(stages);
-    }
-  });
-};
-
-exports.create_a_stage = function (req, res) {
-  const newStage = new Stage(req.body);
-
-  newStage.save(function (err, stage) {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(stage);
-    }
-  });
-};
-
-exports.read_a_stage = function (req, res) {
-  Stage.findById(req.params.stageId, function (err, stage) {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(stage);
-    }
-  });
-};
-
-exports.update_a_stage = function (req, res) {
-  Stage.findOneAndUpdate({ _id: req.params.stageId }, req.body, { new: true }, function (err, stage) {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(stage);
-    }
-  });
-};
-exports.delete_a_stage = function (req, res) {
-  Stage.deleteOne({ _id: req.params.tripId }, function (err, stage) {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json({ message: 'Stage successfully deleted' });
     }
   });
 };

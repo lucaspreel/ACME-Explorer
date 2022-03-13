@@ -71,6 +71,10 @@ module.exports = function (app) {
    *                type: array
    *                items:
    *                  $ref: '#/components/schemas/Actor'
+   *        401:
+   *          description: Unauthorized.
+   *        403:
+   *          description: You don't have right role to carry out this operation.
    *        500:
    *          description: Error trying to get all actors.
    *      security:
@@ -170,6 +174,10 @@ module.exports = function (app) {
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
+   *        401:
+   *          description: Unauthorized.
+   *        403:
+   *          description: You don't have right role to carry out this operation.
    *        404:
    *          description: Actor not found.
    *        500:
@@ -211,6 +219,8 @@ module.exports = function (app) {
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
+   *        401:
+   *          description: Unauthorized.
    *        403:
    *          description: You don't have right role to carry out this operation.
    *        404:
@@ -251,6 +261,8 @@ module.exports = function (app) {
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
+   *        401:
+   *          description: Unauthorized.
    *        403:
    *          description: You don't have right role to carry out this operation.
    *        404:
@@ -286,6 +298,8 @@ module.exports = function (app) {
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
+   *        401:
+   *          description: Unauthorized.
    *        403:
    *          description: You don't have right role to carry out this operation.
    *        404:
@@ -322,6 +336,8 @@ module.exports = function (app) {
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/Actor'
+   *        401:
+   *          description: Unauthorized.
    *        403:
    *          description: You don't have right role to carry out this operation.
    *        404:
@@ -456,8 +472,10 @@ module.exports = function (app) {
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/ExplorersStats'
-   *        404:
-   *          description: Explorer not found.
+   *        401:
+   *          description: Unauthorized.
+   *        403:
+   *          description: You don't have right role to carry out this operation.
    *        422:
    *          description: Validation error.
    *        500:
@@ -517,6 +535,10 @@ module.exports = function (app) {
    *              schema:
    *                type: object
    *                $ref: '#/components/schemas/ExplorersStats'
+   *        401:
+   *          description: Unauthorized.
+   *        403:
+   *          description: You don't have right role to carry out this operation.
    *        404:
    *          description: Explorer not found.
    *        422:
@@ -532,29 +554,31 @@ module.exports = function (app) {
     );
 
   app.route('/v1/explorerStats')
-    /**
-     * @swagger
-     * /v1/explorerStats:
-     *    post:
-     *      summary: Define how often will the explorer stats be computed
-     *      tags: [ExplorerStats]
-     *      parameters:
-     *        - in: query
-     *          name: rebuildPeriod
-     *          schema:
-     *            type: string
-     *          required: true
-     *          description: Valid unix cron expression.
-     *      responses:
-     *        201:
-     *          description: Rebuild period successfully defined.
-     *        401:
-     *          description: Unauthorized.
-     *        403:
-     *          description: You don't have right role to carry out this operation.
-     *        500:
-     *          description: Error trying to define the rebuild period.
-     */
+  /**
+   * @swagger
+   * /v1/explorerStats:
+   *    post:
+   *      summary: Define how often will the explorer stats be computed
+   *      tags: [ExplorerStats]
+   *      parameters:
+   *        - in: query
+   *          name: rebuildPeriod
+   *          schema:
+   *            type: string
+   *          required: true
+   *          description: Valid unix cron expression.
+   *      responses:
+   *        201:
+   *          description: Rebuild period successfully defined.
+   *        401:
+   *          description: Unauthorized.
+   *        403:
+   *          description: You don't have right role to carry out this operation.
+   *        500:
+   *          description: Error trying to define the rebuild period.
+   *      security:
+   *        - ApiKeyAuth: []
+   */
     .post(
       authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
       actors.rebuild_period

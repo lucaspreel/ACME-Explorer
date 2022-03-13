@@ -69,11 +69,20 @@ const TripSchema = new Schema({
 }, { strict: false });
 
 TripSchema.pre('save', function (callback) {
-  const newTrip = this;
+  let newTrip = this;
 
   newTrip.ticker = generateTicker();
   newTrip.price = calculatePrice(newTrip);
 
+  callback();
+});
+
+TripSchema.pre('findOneAndUpdate', async function (callback) {
+  console.log("findOneAndUpdate")
+  //let tripInDb = await this.model.findOne(this.getQuery());
+  let newTrip = this._update;
+  this._update.price = calculatePrice(newTrip);
+  // console.log("this._update", this._update)
   callback();
 });
 

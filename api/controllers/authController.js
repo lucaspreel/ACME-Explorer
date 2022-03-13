@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const admin = require('firebase-admin');
 const Actor = mongoose.model('Actors');
 const Trip = mongoose.model('Trips');
+const Sponsorship = mongoose.model('Sponsorship');
+const Application = mongoose.model('Application');
+const ObjectId = mongoose.Types.ObjectId;
 
 const getAuthenticadedActor = async function (idToken) {
   console.log('idToken: ' + idToken);
@@ -147,9 +150,6 @@ exports.verifyAuthenticatedActorCanAccessParameterTrip = function () {
         if (err) {
           return res.status(500).json({ message: 'Error trying to get the trip.' });
         } else {
-          // console.log("authenticatedActor._id.toString() !== trip.managerId.toString()")
-          // console.log("'"+authenticatedActor._id.toString()+"' !== '"+trip.managerId.toString()+"'")
-          // console.log(authenticatedActor._id.toString() !== trip.managerId.toString())
           if (authenticatedActor._id.toString() !== trip.managerId.toString()) {
             return res.status(403).send('Authenticated actor can not access this trip.');
           } else {
@@ -163,9 +163,9 @@ exports.verifyAuthenticatedActorCanAccessParameterTrip = function () {
   };
 };
 
-exports.verifyTripCanBeModifiedOrDeleted = function () {
+exports.verifyTripIsNotPublished = function () {
   return async function (req, res, callback) {
-    console.log('verifyTripCanBeModifiedOrDeleted');
+    console.log('verifyTripIsNotPublished');
 
     Trip.findById(req.params.tripId, function (err, trip) {
       if (err) {
@@ -173,13 +173,72 @@ exports.verifyTripCanBeModifiedOrDeleted = function () {
       } else {
         const tripObject = trip.toObject();
 
-        const tripIsNotPublished = (trip.publicationDate === null || typeof trip.publicationDate === 'undefined' || !Object.prototype.hasOwnProperty.call(tripObject, 'publicationDate'));
-        const tripIsAlreadyPublished = !tripIsNotPublished;
-        if (tripIsAlreadyPublished) {
-          return res.status(403).send('Trip can not be modified or deleted because it is already published.');
+        const tripNotPublished = (trip.publicationDate === null || typeof trip.publicationDate === 'undefined' || !Object.prototype.hasOwnProperty.call(tripObject, 'publicationDate'));
+        const tripAlreadyPublished = !tripNotPublished;
+        if (tripAlreadyPublished) {
+          return res.status(403).send('Trip can not be published, modified or deleted because it is already published.');
         } else {
           return callback();
         }
+      }
+    });
+  };
+};
+
+exports.verifyTripCanBeCancelled = function () {
+  return async function (req, res, callback) {
+    console.log('verifyTripCanBeCancelled');
+
+    Trip.findById(req.params.tripId, function (err, trip) {
+      if (err) {
+        return res.status(500).json({ message: 'Error trying to get the trip.' });
+      } else {
+        const tripObject = trip.toObject();
+        console.log('tripObject');
+        console.log(tripObject);
+        const reason = [];
+
+        // Cancel a trip that
+        // 1 - has been published
+        const tripNotPublished = (trip.publicationDate === null || typeof trip.publicationDate === 'undefined' || !Object.prototype.hasOwnProperty.call(tripObject, 'publicationDate'));
+        const tripAlreadyPublished = !tripNotPublished;
+
+        if (tripNotPublished) {
+          reason.push('A trip that has not been published can not be cancelled.');
+        }
+
+        // 2 - but has not yet started
+        const today = new Date();
+        const startDate = trip.startDate;
+        const tripAlreadyStarted = startDate <= today;
+        if (tripAlreadyStarted) {
+          reason.push('A trip that has already started can not be cancelled.');
+        }
+
+        // 3 - and does not have any accepted applications.
+        const filter = {
+          $and: [
+            { trip_Id: req.params.tripId },
+            { status: 'ACCEPTED' }
+          ]
+        };
+
+        Application.count(filter, function (err, count) {
+          console.log('Number of ACCEPTED applications:', count);
+
+          if (count > 0) {
+            reason.push('A trip that already has accepted applications can not be cancelled.');
+          }
+
+          const tripHasAcceptedAplications = (count > 0);
+          const tripCanBeCancelled = tripAlreadyPublished && !tripAlreadyStarted && !tripHasAcceptedAplications;
+
+          if (!tripCanBeCancelled) {
+            return res.status(403).send(reason);
+          } else {
+            return callback();
+          }
+        });
       }
     });
   };

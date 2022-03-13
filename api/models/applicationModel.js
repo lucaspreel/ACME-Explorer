@@ -20,8 +20,8 @@ const ApplicationSchema = new Schema({
     required: 'explorer id required'
   },
   trip_Id: {
-    type: String,
-    required: 'trip id required'
+    type: Schema.Types.ObjectId,
+    ref: 'Trips'
   },
   rejected_reason: {
     type: String
