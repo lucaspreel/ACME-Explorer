@@ -100,4 +100,7 @@ module.exports = function (app) {
    *          description: Error trying to get the finder.
    */
   app.route('/v1/finder/explorer/:explorerId').get(finder.find_by_explorer_id);
+
+  app.route('/v1/finder/stats')
+  .get(finder.finder_stats);
 };

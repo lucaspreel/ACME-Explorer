@@ -116,3 +116,68 @@ exports.find_by_explorer_id = function (req, res) {
     }
   );
 };
+
+exports.finder_stats = function (req, res)  {
+  Finder.aggregate([
+    {
+      '$facet': {
+        'topTen': [
+          {
+            '$group': {
+              '_id': '$keyWord', 
+              'count': {
+                '$sum': 1
+              }
+            }
+          }, {
+            '$sort': {
+              'count': -1
+            }
+          }, {
+            '$limit': 10
+          }
+        ], 
+        'other': [
+          {
+            '$group': {
+              '_id': '$noField', 
+              'lowerAvg': {
+                '$avg': '$priceLowerBound'
+              }, 
+              'upperAvg': {
+                '$avg': '$priceUpperBound'
+              }
+            }
+          }
+        ]
+      }
+    }, {
+      '$project': {
+        'topKeyWords': '$topTen', 
+        'lowerPrice': {
+          '$getField': {
+            'field': 'lowerAvg', 
+            'input': {
+              '$first': '$other'
+            }
+          }
+        }, 
+        'upperPrice': {
+          '$getField': {
+            'field': 'upperAvg', 
+            'input': {
+              '$first': '$other'
+            }
+          }
+        }
+      }
+    }
+  ]).exec((error, results) => {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+      } else {
+        res.json(results);
+      }
+    });
+}
