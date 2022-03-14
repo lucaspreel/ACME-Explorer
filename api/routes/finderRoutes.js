@@ -9,28 +9,28 @@ module.exports = function (app) {
    *      properties:
    *        keyWord:
    *          type: string
-   *          description:.
-   *       priceLowerBound:
+   *          description:
+   *        priceLowerBound:
    *          type: number
-   *          description: .
+   *          description: 
    *        priceUpperBound:
    *          type: number
-   *          description: .
+   *          description:
    *        dateLowerBound:
    *          type: string
-   *          description: .
+   *          description:
    *        dateUpperBound:
    *          type: string
-   *          description: .
+   *          description:
    *        results:
    *          type: array
-   *          description: .
+   *          description:
    *        explorer_Id:
    *          type: string
-   *          description: .
-   *         expiration_date:
+   *          description:
+   *        expiration_date:
    *          type: date
-   *          description: .
+   *          description:
    *      required:
    *        - keyWord
    *        - explorer_Id

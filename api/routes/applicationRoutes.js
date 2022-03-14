@@ -1,57 +1,56 @@
 'use strict';
 module.exports = function (app) {
-/**
- * @swagger
- * components:
- *  schemas:
- *    Application:
- *      type: object
- *      properties:
-*         applicationMoment:
-*           type: string
-*           description: .
-*         comments:
-*           type: string
-*           description: .
-*         status:
-*           type: string
-*           description: .
-*         explorer_Id:
-*           type: string
-*           description: .
-*         trip_Id:
-*           type: string
-*           description: .
-*         rejected_reason:
-*           type: string
-*           description: .
-*         tripPrice:
-*           type: number
-*           description:.
-*         manager_Id:
-*           type: string
-*            description: .
-*         deleted:
-*           type: boolean
-*           description:
-  *     required:
-  *       - comments
-  *       - explorer_Id
-  *       - trip_Id
-  *     example:
-  *      applicationMoment: 2022-04-09T04:22:38.500Z
-  *      comments: Quam eius voluptas
-  *      status: PENDING
-  *      explorer_Id: 621a7673d84d61951111e55d
-  *      trip_Id: 621a7673b71cac0f344720d5
-  *      rejected_reason:
-  *      tripPrice: 84
-  *      manager_Id: 961a7673b71fas0f344720d3
-  *      deleted:false
-  *
-  *
-  */
-  const application = require('../controllers/applicationController');
+  /**
+   * @swagger
+   * components:
+   *  schemas:
+   *    Application:
+   *      type: object
+   *      properties:
+   *        applicationMoment:
+   *          type: string
+   *          description: The application date.
+   *        comments:
+   *          type: string
+   *          description: The application comments.
+   *        status:
+   *          type: string
+   *          description: The application status.
+   *        explorer_Id:
+   *          type: string
+   *          description: The application explorer_Id.
+   *        trip_Id:
+   *          type: string
+   *          description: The application trip_Id.
+   *        rejected_reason:
+   *          type: string
+   *          description: The application rjected reason.
+   *        tripPrice:
+   *          type: number
+   *          description: The application trip price.
+   *        manager_Id:
+   *          type: string
+   *          description: The application manager Id.
+   *        deleted:
+   *          type: boolean
+   *          description: The application deleted field.
+   *      required:
+   *       - comments
+   *       - explorer_Id
+   *       - trip_Id
+   *      example:
+   *        applicationMoment: 2022-04-09T04:22:38.500Z
+   *        comments: Quam eius voluptas
+   *        status: PENDING
+   *        explorer_Id: 621a7673d84d61951111e55d
+   *        trip_Id: 621a7673b71cac0f344720d5
+   *        rejected_reason:
+   *        tripPrice: 84
+   *        manager_Id: 961a7673b71fas0f344720d3
+   */
+
+
+const application = require('../controllers/applicationController');
 
   app.route('/v1/applications')
   /**
@@ -159,9 +158,9 @@ module.exports = function (app) {
     .get(application.find_by_manager_id);
 
   app.route('/v1/applications/explorer/:explorerId')
-    /**
+  /**
    * @swagger
-   * /v1/applications/explorer/{explorerId}
+   * /v1/applications/explorer/{explorerId}:
    *    get:
    *      summary: Returns an application .
    *      tags: [Application]
