@@ -220,7 +220,7 @@ module.exports = function (app) {
    *            application/json:
    *              schema:
    *                type: object
-   *                $ref: '#/components/schemas/trip'
+   *                $ref: '#/components/schemas/Trip'
    *        404:
    *          description: trip not found.
    *        500:
