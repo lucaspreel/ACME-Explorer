@@ -151,3 +151,5 @@ mongoose.connection.on('error', function (err) {
 
 DashboardInformationTools.createDashboardInformationJob();
 actorController.createExplorerStatsJob();
+
+module.exports = app;
