@@ -7,7 +7,7 @@ import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
 import scala.util.Random
 
-class BasicMarketExplorerTest extends Simulation {
+class AcmeExplorerTests extends Simulation {
 
 	val httpProtocol = http
 		.baseUrl("http://localhost:8080/")		
@@ -21,7 +21,7 @@ class BasicMarketExplorerTest extends Simulation {
 	object CreateExplorer {
 		val createExplorer = exec(http("POST ACTOR EXPLORER")
 			.post("v1/actors")
-			.body(ElFileBody("C:/gatling/user-files/resources/acme-explorer/actor-explorer.json"))
+			.body(ElFileBody("../resources/acmeexplorer/actor-explorer.json"))
 			.headers(headers_0))
 		.pause(1)
 	}
@@ -55,23 +55,19 @@ class BasicMarketExplorerTest extends Simulation {
 									ShowPublishedTrips.showPublishedTrips
 									)
 
+	var numberOfUsersAtTheSameTime :Int = 1000;
+	var durationInSeconds :Int = 60;
+	var maximumResponseMaxTimeInMillisecondsExpected :Int = 5000;
+	var maximumResponseMeanTimeInMillisecondsExpected :Int = 1000;
+	var minimumSuccessPercentageExpected :Int = 95;
+
 	setUp(
-		actorScn.inject(rampUsers(5000) during (100 seconds)),
-		tripScn.inject(rampUsers(5000) during (100 seconds))
+		actorScn.inject(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds)),
+		tripScn.inject(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds))
 	).protocols(httpProtocol)
      .assertions(
-        global.responseTime.max.lt(5000),    
-        global.responseTime.mean.lt(1000),
-        global.successfulRequests.percent.gt(95)
+        global.responseTime.max.lt(maximumResponseMaxTimeInMillisecondsExpected),    
+        global.responseTime.mean.lt(maximumResponseMeanTimeInMillisecondsExpected),
+        global.successfulRequests.percent.gt(minimumSuccessPercentageExpected)
 	)
-
-	/*
-	val scn = scenario("BasicMarketExplorerTest")
-		.exec(http("POST ACTOR EXPLORER")
-			.post("v1/actors")
-			.body(RawFileBody("C:/gatling/user-files/resources/acme-explorer/actor-explorer.json"))
-			.headers(headers_0))
-
-	setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
-	*/
 }
