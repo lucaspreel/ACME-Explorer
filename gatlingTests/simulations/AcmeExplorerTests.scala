@@ -48,12 +48,22 @@ class AcmeExplorerTests extends Simulation {
 		.pause(1)
 	}
 
+	//SPONSORSHIPS
+	object ShowAllSponsorships {
+		val showAllSponsorships = exec(http("GET ALL SPONSORSHIPS")
+			.get("v1/sponsorships/")
+			.headers(headers_0))
+		.pause(1)
+	}
+
 	val actorScn = scenario("Actors").feed(feeder).exec(CreateExplorer.createExplorer)
 
 	val tripScn = scenario("Trips").exec(ShowAllTrips.showAllTrips,
 									ShowTripsByKeyWord.showTripsByKeyWord,
 									ShowPublishedTrips.showPublishedTrips
 									)
+	
+	val sponsorshipScn = scenario("Sponsorships").exec(ShowAllSponsorships.showAllSponsorships)
 
 	var numberOfUsersAtTheSameTime :Int = 1000;
 	var durationInSeconds :Int = 60;
@@ -63,7 +73,8 @@ class AcmeExplorerTests extends Simulation {
 
 	setUp(
 		actorScn.inject(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds)),
-		tripScn.inject(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds))
+		tripScn.inject(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds)),
+		sponsorshipScn(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds))
 	).protocols(httpProtocol)
      .assertions(
         global.responseTime.max.lt(maximumResponseMaxTimeInMillisecondsExpected),    
