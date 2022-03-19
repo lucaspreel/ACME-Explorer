@@ -74,7 +74,7 @@ class AcmeExplorerTests extends Simulation {
 	setUp(
 		actorScn.inject(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds)),
 		tripScn.inject(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds)),
-		sponsorshipScn(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds))
+		sponsorshipScn.inject(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds))
 	).protocols(httpProtocol)
      .assertions(
         global.responseTime.max.lt(maximumResponseMaxTimeInMillisecondsExpected),    
