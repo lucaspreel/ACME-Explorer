@@ -62,4 +62,4 @@ This will create these files, please check they are not empty:
 
 ## 8 - The terminal will ask for an optional run description, it can be skipped by pressing enter.
 
-## 9 - Check the tests results by openin in a broser the index.html of the last folder inside %TESTS_FOLDER%results
+## 9 - Check the tests results by opening in a broser the index.html of the last folder inside %TESTS_FOLDER%results

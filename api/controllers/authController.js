@@ -51,13 +51,13 @@ exports.getAuthenticadedActor = getAuthenticadedActor;
 
 exports.verifyAuthenticadedActor = function (requiredRoles) {
   return async function (req, res, callback) {
-    console.log('verifyAuthenticadedActor');
+    // console.log('verifyAuthenticadedActor');
 
     if (!Object.prototype.hasOwnProperty.call(req.headers, 'idtoken')) {
       res.status(401).send(req.t('Token must be present in request header.'));
     } else {
       const idToken = req.headers.idtoken;
-      console.log('idToken: ', idToken);
+      // console.log('idToken: ', idToken);
 
       const authenticatedActor = await getAuthenticadedActor(idToken);
       console.log('authenticatedActor: ', authenticatedActor);
@@ -72,7 +72,7 @@ exports.verifyAuthenticadedActor = function (requiredRoles) {
         for (let i = 0; i < requiredRoles.length; i++) {
           for (let j = 0; j < actorRoles.length; j++) {
             if (requiredRoles[i] === actorRoles[j]) {
-              console.log('requiredRoles', requiredRoles[i], 'actorRoles', actorRoles[j]);
+              // console.log('requiredRoles', requiredRoles[i], 'actorRoles', actorRoles[j]);
 
               if (authenticatedActor.isActive === true) {
                 isAuth = true;
@@ -99,7 +99,7 @@ exports.verifyAuthenticadedActor = function (requiredRoles) {
 
 exports.verifyAuthenticatedActorCanAccessParameterActor = function () {
   return async function (req, res, callback) {
-    console.log('verifyAuthenticatedActorCanAccessParameterActor');
+    // console.log('verifyAuthenticatedActorCanAccessParameterActor');
 
     const authenticatedActor = req.authenticatedActor;
     const authenticatedActorIsAdministrator = authenticatedActor.role.includes('ADMINISTRATOR');
@@ -116,7 +116,7 @@ exports.verifyAuthenticatedActorCanAccessParameterActor = function () {
 
 exports.verifyAuthenticatedActorCanAccessParameterSponsorship = function () {
   return async function (req, res, callback) {
-    console.log('verifyAuthenticatedActorCanAccessParameterSponsorship');
+    // console.log('verifyAuthenticatedActorCanAccessParameterSponsorship');
 
     const authenticatedActor = req.authenticatedActor;
     const authenticatedActorIsAdministrator = authenticatedActor.role.includes('ADMINISTRATOR');
@@ -139,7 +139,7 @@ exports.verifyAuthenticatedActorCanAccessParameterSponsorship = function () {
 
 exports.verifyAuthenticatedActorCanAccessParameterTrip = function () {
   return async function (req, res, callback) {
-    console.log('verifyAuthenticatedActorCanAccessParameterTrip');
+    // console.log('verifyAuthenticatedActorCanAccessParameterTrip');
 
     const authenticatedActor = req.authenticatedActor;
     const authenticatedActorIsAdministrator = authenticatedActor.role.includes('ADMINISTRATOR');
@@ -166,7 +166,7 @@ exports.verifyAuthenticatedActorCanAccessParameterTrip = function () {
 
 exports.verifyTripIsNotPublished = function () {
   return async function (req, res, callback) {
-    console.log('verifyTripIsNotPublished');
+    // console.log('verifyTripIsNotPublished');
 
     Trip.findById(req.params.tripId, function (err, trip) {
       if (err) {
@@ -188,15 +188,15 @@ exports.verifyTripIsNotPublished = function () {
 
 exports.verifyTripCanBeCancelled = function () {
   return async function (req, res, callback) {
-    console.log('verifyTripCanBeCancelled');
+    // console.log('verifyTripCanBeCancelled');
 
     Trip.findById(req.params.tripId, function (err, trip) {
       if (err) {
         return res.status(500).json({ message: req.t('Error trying to get the trip.') });
       } else {
         const tripObject = trip.toObject();
-        console.log('tripObject');
-        console.log(tripObject);
+        // console.log('tripObject');
+        // console.log(tripObject);
         const reason = [];
 
         // Cancel a trip that
@@ -228,7 +228,7 @@ exports.verifyTripCanBeCancelled = function () {
           if (err) {
             return res.status(500).json({ message: req.t('Error trying to get the applications of the trip.') });
           } else {
-            console.log('Number of ACCEPTED applications:', count);
+            // console.log('Number of ACCEPTED applications:', count);
 
             if (count > 0) {
               reason.push(req.t('A trip that already has accepted applications can not be cancelled.'));
