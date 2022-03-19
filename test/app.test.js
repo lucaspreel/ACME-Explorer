@@ -1,6 +1,8 @@
 const app = require('../app');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const { faker } = require('@faker-js/faker');
+const massiveLoadTools = require('../massiveLoad/massiveLoadTools');
 
 const { expect } = chai;
 chai.use(chaiHttp);
@@ -153,3 +155,117 @@ describe('Dashboard Information Testing', () => {
         });
       });
   });
+
+/*---------------------------------------------------------------------------*/
+/*-----------------------------------ACTORS----------------------------------*/
+
+describe('Actors Testing', () => {
+  
+  describe('/GET actors', () => {
+    it('Should deny access since user is not authenticated.', done => {
+      chai
+        .request(app)
+        .get('/v1/actors')
+        .end((err, res) => {
+
+          expect(res).to.have.status(401);
+          expect(res.text).to.equal('Token must be present in request header.');
+
+          if (err) done(err);
+          else done();
+
+        });
+    });
+  });
+
+  describe('/POST actors', () => {
+    it('Should create explorer actor.', done => {
+      chai
+        .request(app)
+        .post('/v1/actors')
+        .send({
+          _id: massiveLoadTools.generateMongoObjectId(),
+          name: faker.name.firstName(),
+          surname: faker.name.lastName(),
+          email: faker.internet.email(),
+          password: faker.internet.password(),
+          language: "SPANISH",
+          phone_number: faker.phone.phoneNumber(),
+          address: faker.address.streetAddress(),
+          isActive: true,
+          role: ["EXPLORER"],
+          deleted: false
+        })
+        .end((err, res) => {
+
+          expect(res).to.have.status(201);
+          expect('Content-Type', /json/);
+
+          if (err) done(err);
+          else done();
+
+        });
+    });
+  });
+
+  describe('/POST actors2', () => {
+    it('Should deny access since user is not authenticated.', done => {
+      chai
+        .request(app)
+        .post('/v1/actors2')
+        .end((err, res) => {
+
+          expect(res).to.have.status(401);
+          expect(res.text).to.equal('Token must be present in request header.');
+
+          if (err) done(err);
+          else done();
+        });
+    });
+  });
+
+});
+
+/*----------------------------------------------------------------------------*/
+/*------------------------------------TRIPS-----------------------------------*/
+
+describe('Trips Testing', () => {
+  
+  describe('/GET trips', () => {
+    it('Should return list of trips.', done => {
+      chai
+        .request(app)
+        .get('/v1/trips')
+        .end((err, res) => {
+
+          expect(res).to.have.status(200);
+          expect('Content-Type', /json/);
+
+          if (err) done(err);
+          else done();
+
+        });
+    });
+  });
+
+  describe('/POST trips', () => {
+    it('Should deny access since user is not authenticated.', done => {
+      chai
+        .request(app)
+        .post('/v1/trips')
+        .send({
+          atributes: "are not important in this test"
+        })
+        .end((err, res) => {
+
+          expect(res).to.have.status(401);
+          expect(res.text).to.equal('Token must be present in request header.');
+
+          if (err) done(err);
+          else done();
+
+        });
+    });
+  });
+
+});
