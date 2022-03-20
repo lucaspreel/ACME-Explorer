@@ -69,7 +69,7 @@ This will create these files, please check they are not empty:
 
 ## 7 - In the same terminal run gatling tests.
     
-    gatling --simulations-folder %TESTS_FOLDER%simulations --resources-folder %TESTS_FOLDER%resources --results-folder %TESTS_FOLDER%results
+    gatling --run-description AcmeMarketTests --simulations-folder %TESTS_FOLDER%simulations --resources-folder %TESTS_FOLDER%resources --results-folder %TESTS_FOLDER%results
 
 ## 8 - The terminal will ask for an optional run description, it can be skipped by pressing enter.
 
