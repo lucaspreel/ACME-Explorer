@@ -48,21 +48,21 @@ exports.list_all_trips = function (req, res) {
     }
   }
 
-  query.exec(function (err, trips) {
+  let page = 1;
+  const pageParameter = req.query.page;
+  if (typeof pageParameter !== 'undefined' && !isNaN(pageParameter)) {
+    page = pageParameter;
+  }
+
+  let paginateOptions = {page: page, limit: 10};
+
+  Trip.paginate(query, paginateOptions, function (err, trips) {
     if (err) {
       res.send(err);
     } else {
       res.json(trips);
     }
   });
-
-  // Trip.find(filter, function (err, trips) {
-  //   if (err) {
-  //     res.send(err);
-  //   } else {
-  //     res.json(trips);
-  //   }
-  // });
 };
 
 exports.create_a_trip = function (req, res) {

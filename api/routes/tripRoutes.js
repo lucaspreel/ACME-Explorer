@@ -145,6 +145,12 @@ module.exports = function (app) {
   *            type: boolean
   *          required: false
   *          description: Boolean parameter to filter or not published trips.
+  *        - in: query
+  *          name: page
+  *          schema:
+  *            type: integer
+  *          required: false
+  *          description: The number of the page for pagination.
   *      responses:
   *        200:
   *          description: trips successfully retrieved.

@@ -1,6 +1,7 @@
 'use strict';
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const dateFormat = require('date-format');
 const customAlphabet = require('nanoid').customAlphabet;
@@ -67,6 +68,8 @@ const TripSchema = new Schema({
   },
   stages: [StageSchema]
 }, { strict: false });
+
+TripSchema.plugin(mongoosePaginate);
 
 TripSchema.pre('save', function (callback) {
   const newTrip = this;
