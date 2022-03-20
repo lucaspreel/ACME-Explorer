@@ -1,5 +1,6 @@
 'use strict';
 module.exports = function (app) {
+  const authController = require('../controllers/authController');
   /**
    * @swagger
    * components:
@@ -71,7 +72,7 @@ module.exports = function (app) {
    *        500:
    *          description: Error trying to create the finder.
    */
-  app.route('/v1/finder').post(finder.create_a_finder);
+  app.route('/v1/finder').post(authController.verifyAuthenticadedActor(['EXPLORER']),finder.create_a_finder);
 
   /**
    * @swagger
@@ -99,8 +100,27 @@ module.exports = function (app) {
    *        500:
    *          description: Error trying to get the finder.
    */
-  app.route('/v1/finder/explorer/:explorerId').get(finder.find_by_explorer_id);
-
+  app.route('/v1/finder/explorer/:explorerId').get(authController.verifyAuthenticadedActor(['EXPLORER']),finder.find_by_explorer_id);
+  
+  /**
+   * @swagger
+   * /v1/finder/stats:
+   *    get:
+   *      summary: Returns finder statistics.
+   *      tags: [Finder]
+   *      responses:
+   *        200:
+   *          description: Finder successfully retrieved.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                $ref: '#/components/schemas/Actor'
+   *        404:
+   *          description: Finder not found.
+   *        500:
+   *          description: Error trying to get the finder.
+   */
   app.route('/v1/finder/stats')
-  .get(finder.finder_stats);
+  .get(authController.verifyAuthenticadedActor(['ADMINISTRATOR']),finder.finder_stats);
 };

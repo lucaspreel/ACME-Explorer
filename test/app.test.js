@@ -269,3 +269,59 @@ describe('Trips Testing', () => {
   });
 
 });
+
+/*----------------APPLICATIONS-------------------------------*/
+describe('Application test Testing', () => {
+  before((done) => {
+    Application.remove({}, (err) => {
+      done();
+    });
+  });
+
+  describe('/GET application', () => {
+    it('Should deny access since user is not authenticated', done => {
+      chai
+        .request(app)
+        .get('/v1/applications')
+        .end((err, res) => {
+          expect(res).to.have.status(401);
+          if (err) done(err);
+          else done();
+        });
+    });
+  });
+
+  describe('/POST application', () => {
+      it('Should deny access since user is not authenticated', done => {
+        chai
+          .request(app)
+          .post('/v1/applications')
+          .end((err, res) => {
+            expect(res).to.have.status(401);
+            if (err) done(err);
+            else done();
+          });
+      });
+    });
+});
+/*----------------Finder-------------------------------*/
+describe('Finder test Testing', () => {
+  before((done) => {
+    Finder.remove({}, (err) => {
+      done();
+    });
+  });
+
+  describe('/POST finder', () => {
+      it('Should deny access since user is not authenticated', done => {
+        chai
+          .request(app)
+          .post('/v1/finder')
+          .end((err, res) => {
+            expect(res).to.have.status(401);
+            if (err) done(err);
+            else done();
+          });
+      });
+    });
+});

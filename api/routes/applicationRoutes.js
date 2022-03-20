@@ -1,5 +1,6 @@
 'use strict';
 module.exports = function (app) {
+  const authController = require('../controllers/authController');
   /**
    * @swagger
    * components:
@@ -71,7 +72,10 @@ const application = require('../controllers/applicationController');
    *        500:
    *          description: Error trying to get all applications.
    */
-    .get(application.list_all_application)
+
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      application.list_all_application)
   /**
    * @swagger
    * /v1/applications:
@@ -95,7 +99,9 @@ const application = require('../controllers/applicationController');
    *        500:
    *          description: Error trying to create the application .
    */
-    .post(application.create_an_application);
+    .post(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      application.create_an_application);
 
   app.route('/v1/applications/:applicationId')
     /**
@@ -126,7 +132,9 @@ const application = require('../controllers/applicationController');
    *        500:
    *          description: Error trying to delete the application .
    */
-    .delete(application.delete_an_application);
+    .delete(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      application.delete_an_application);
 
   app.route('/v1/applications/manager/:managerId')
   /**
@@ -155,7 +163,9 @@ const application = require('../controllers/applicationController');
    *        500:
    *          description: Error trying to get the application .
    */
-    .get(application.find_by_manager_id);
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      application.find_by_manager_id);
 
   app.route('/v1/applications/explorer/:explorerId')
   /**
@@ -184,7 +194,9 @@ const application = require('../controllers/applicationController');
    *        500:
    *          description: Error trying to get the application .
    */
-    .get(application.find_by_explorer_id);
+    .get(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      application.find_by_explorer_id);
 
   app.route('/v1/applications/:applicationId/reject')
     /**
@@ -215,7 +227,9 @@ const application = require('../controllers/applicationController');
    *        500:
    *          description: Error trying to ban the application .
    */
-    .patch(application.reject_application);
+    .patch(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      application.reject_application);
 
   app.route('/v1/applications/:applicationId/due')
   /**
@@ -246,7 +260,9 @@ const application = require('../controllers/applicationController');
    *        500:
    *          description: Error trying to ban the application .
    */
-    .patch(application.due_application);
+    .patch(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      application.due_application);
 
   app.route('/v1/applications/:applicationId/pay')
   /**
@@ -277,7 +293,9 @@ const application = require('../controllers/applicationController');
    *        500:
    *          description: Error trying to ban the application .
    */
-    .patch(application.pay_application);
+    .patch(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      application.pay_application);
 
   app.route('/v1/applications/:applicationId/cancel')
   /**
@@ -308,5 +326,7 @@ const application = require('../controllers/applicationController');
    *        500:
    *          description: Error trying to ban the application .
    */
-    .patch(application.cancelled_application);
+    .patch(
+      authController.verifyAuthenticadedActor(['ADMINISTRATOR']),
+      application.cancelled_application);
 };
