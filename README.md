@@ -31,6 +31,17 @@ This will create these files, please check they are not empty:
 
 ## 9 - In Thunder Client run "TRIPS TESTS" tests.
 
+## 10 - In Thunder Client run "APPLICATION" tests.
+
+## 11 - In Thunder Client run "FINDER" tests.
+
+#
+# Mocha and Chai Tests
+
+## 1 - In a terminal execute the command.
+
+    npm test
+
 #
 # Gatling Tests
 
