@@ -15,7 +15,7 @@ class AcmeExplorerTests extends Simulation {
 	val headers_0 = Map(
 		"Content-Type" -> "application/json")
 
-	val feeder = Iterator.continually(Map(("email", "email"+Random.nextInt(150000)+"@fakemail.com")))
+	val feeder = Iterator.continually(Map(("email", "email"+Random.nextInt(150000)+Random.nextInt(150000)+"@fakemail.com")))
 
 	//ACTORS
 	object CreateExplorer {
@@ -65,16 +65,16 @@ class AcmeExplorerTests extends Simulation {
 	
 	val sponsorshipScn = scenario("Sponsorships").exec(ShowAllSponsorships.showAllSponsorships)
 
-	var numberOfUsersAtTheSameTime :Int = 1000;
+	var numberOfUsers :Int = 40000;
 	var durationInSeconds :Int = 60;
 	var maximumResponseMaxTimeInMillisecondsExpected :Int = 5000;
 	var maximumResponseMeanTimeInMillisecondsExpected :Int = 1000;
 	var minimumSuccessPercentageExpected :Int = 95;
 
 	setUp(
-		actorScn.inject(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds)),
-		tripScn.inject(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds)),
-		sponsorshipScn.inject(rampUsers(numberOfUsersAtTheSameTime) during (durationInSeconds seconds))
+		actorScn.inject(rampUsers(numberOfUsers) during (durationInSeconds seconds)),
+		tripScn.inject(rampUsers(numberOfUsers) during (durationInSeconds seconds)),
+		sponsorshipScn.inject(rampUsers(numberOfUsers) during (durationInSeconds seconds))
 	).protocols(httpProtocol)
      .assertions(
         global.responseTime.max.lt(maximumResponseMaxTimeInMillisecondsExpected),    
